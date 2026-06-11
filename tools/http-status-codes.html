@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Status Codes Reference - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Complete HTTP status codes reference. Search and filter all HTTP response codes (1xx-5xx) with descriptions, examples, and common causes. Quick reference for developers.">
+    <meta name="keywords" content="http status codes, http response codes, 404 not found, 500 internal server error, 200 ok, 301 redirect, http codes list, status code reference, rest api status codes">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/http-status-codes.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / HTTP Status Codes</div>
+            <h1>HTTP Status Codes Reference</h1>
+            <p>Complete reference of all HTTP response status codes with descriptions, use cases, and common causes.</p>
+        </div>
+
+        <div class="tool-container">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                <input type="text" id="search" placeholder="Search by code or description..." style="flex: 1; min-width: 200px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font-size: 14px;" oninput="filterCodes()">
+                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
+                    <button class="filter-btn" data-filter="1" onclick="setFilter('1', this)" style="border-color: #3b82f6;">1xx</button>
+                    <button class="filter-btn" data-filter="2" onclick="setFilter('2', this)" style="border-color: #22c55e;">2xx</button>
+                    <button class="filter-btn" data-filter="3" onclick="setFilter('3', this)" style="border-color: #f59e0b;">3xx</button>
+                    <button class="filter-btn" data-filter="4" onclick="setFilter('4', this)" style="border-color: #ef4444;">4xx</button>
+                    <button class="filter-btn" data-filter="5" onclick="setFilter('5', this)" style="border-color: #a855f7;">5xx</button>
+                </div>
+            </div>
+
+            <div id="codes-container"></div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About HTTP Status Codes</h2>
+            <p>HTTP status codes are three-digit numbers returned by web servers to indicate the result of a client's request. They're essential for debugging APIs, understanding web behavior, and building robust applications.</p>
+
+            <h3>Status Code Categories</h3>
+            <ul>
+                <li><strong>1xx Informational:</strong> Request received, continuing process</li>
+                <li><strong>2xx Success:</strong> Request successfully received, understood, and accepted</li>
+                <li><strong>3xx Redirection:</strong> Further action needed to complete the request</li>
+                <li><strong>4xx Client Error:</strong> Request contains bad syntax or cannot be fulfilled</li>
+                <li><strong>5xx Server Error:</strong> Server failed to fulfill a valid request</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>What's the difference between 301 and 302 redirects?</h4>
+            <p>301 (Moved Permanently) tells search engines to transfer SEO value to the new URL. 302 (Found/Temporary) says the move is temporary — search engines keep the original URL indexed. Use 301 for permanent URL changes and 302 for temporary redirects.</p>
+
+            <h4>When should I use 400 vs 422?</h4>
+            <p>400 (Bad Request) means the request syntax is malformed. 422 (Unprocessable Entity) means the syntax is correct but the content is semantically invalid (e.g., valid JSON with an email field that's not a valid email). Use 400 for parse errors, 422 for validation errors.</p>
+
+            <h4>What does 204 No Content mean?</h4>
+            <p>204 means the request succeeded but there's no response body. Common for DELETE requests, auto-save operations, and PUT/PATCH where the client already has the updated data.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <style>
+    .filter-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.15s;
+    }
+    .filter-btn:hover { background: var(--border); }
+    .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .status-card {
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .status-card:hover { border-color: var(--accent); background: rgba(99,102,241,0.03); }
+    .status-code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        font-weight: 700;
+        min-width: 40px;
+    }
+    .status-card .details { display: none; margin-top: 8px; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+    .status-card.expanded .details { display: block; }
+    .code-1xx .status-code { color: #3b82f6; }
+    .code-2xx .status-code { color: #22c55e; }
+    .code-3xx .status-code { color: #f59e0b; }
+    .code-4xx .status-code { color: #ef4444; }
+    .code-5xx .status-code { color: #a855f7; }
+
+    .category-header {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 12px 0 6px;
+        margin-top: 8px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+    }
+    </style>
+
+    <script>
+    const HTTP_CODES = [
+        // 1xx
+        { code: 100, name: 'Continue', desc: 'The server received the request headers. The client should proceed to send the request body.', use: 'Used with Expect: 100-continue header. The server confirms it will accept the request body before the client sends it (useful for large uploads).' },
+        { code: 101, name: 'Switching Protocols', desc: 'The server is switching protocols as requested by the client.', use: 'Used when upgrading from HTTP to WebSocket (Upgrade: websocket header). The client and server agree to change protocols.' },
+        { code: 102, name: 'Processing', desc: 'The server has received and is processing the request, but no response is available yet.', use: 'WebDAV. Prevents the client from timing out while the server processes a long request.' },
+        { code: 103, name: 'Early Hints', desc: 'Used to return response headers before the final HTTP message.', use: 'Allows the browser to start preloading resources (CSS, JS) while the server is still preparing the full response. Improves page load performance.' },
+
+        // 2xx
+        { code: 200, name: 'OK', desc: 'The request succeeded. The meaning depends on the HTTP method used.', use: 'GET: resource returned. POST: result of action returned. PUT/PATCH: updated resource returned. The most common success status.' },
+        { code: 201, name: 'Created', desc: 'The request succeeded and a new resource was created.', use: 'Returned after a POST request that creates a resource. Should include a Location header with the URL of the new resource.' },
+        { code: 202, name: 'Accepted', desc: 'The request has been accepted for processing, but processing is not complete.', use: 'Used for async operations: the server queued the work but hasn\'t finished it. Client should poll or use webhooks for completion.' },
+        { code: 204, name: 'No Content', desc: 'The request succeeded but there is no content to send back.', use: 'Common for DELETE requests and auto-save PUT/PATCH where the client already has the latest data. The response has no body.' },
+        { code: 206, name: 'Partial Content', desc: 'The server is delivering only part of the resource due to a Range header.', use: 'Used for video streaming and resumable downloads. The client requested a specific byte range of the resource.' },
+        { code: 207, name: 'Multi-Status', desc: 'Conveys information about multiple resources where multiple status codes might be appropriate.', use: 'WebDAV. The response body contains XML with individual status codes for each sub-request in a batch operation.' },
+
+        // 3xx
+        { code: 301, name: 'Moved Permanently', desc: 'The resource has been permanently moved to a new URL.', use: 'SEO-safe redirect. Search engines transfer link equity to the new URL. Use for domain changes, HTTP-to-HTTPS, or permanent URL restructuring.' },
+        { code: 302, name: 'Found', desc: 'The resource is temporarily located at a different URL.', use: 'Temporary redirect. Search engines keep the original URL indexed. Use for A/B tests, maintenance pages, or geo-redirects.' },
+        { code: 303, name: 'See Other', desc: 'The response can be found at a different URL using GET.', use: 'Often used after POST to redirect to a result page (POST-Redirect-GET pattern). Prevents form resubmission on browser refresh.' },
+        { code: 304, name: 'Not Modified', desc: 'The resource has not been modified since the last request.', use: 'Browser caching. The client sent If-None-Match or If-Modified-Since; the server confirms the cached version is still valid. No body sent.' },
+        { code: 307, name: 'Temporary Redirect', desc: 'Like 302 but guarantees the HTTP method will not change.', use: 'POST stays POST after redirect (unlike 302 which might change to GET in some browsers). Use when method preservation matters.' },
+        { code: 308, name: 'Permanent Redirect', desc: 'Like 301 but guarantees the HTTP method will not change.', use: 'Permanent redirect that preserves the HTTP method. POST stays POST. Use for permanent URL changes where the method matters.' },
+
+        // 4xx
+        { code: 400, name: 'Bad Request', desc: 'The server cannot process the request due to malformed syntax.', use: 'Missing required fields, invalid JSON/XML, wrong data types, malformed query parameters. The client should fix the request before retrying.' },
+        { code: 401, name: 'Unauthorized', desc: 'The request requires authentication. The client must authenticate.', use: 'Missing or invalid authentication credentials (API key, JWT, session token). Should include WWW-Authenticate header indicating the auth scheme.' },
+        { code: 403, name: 'Forbidden', desc: 'The server understood the request but refuses to authorize it.', use: 'The client is authenticated but doesn\'t have permission. Unlike 401, re-authenticating won\'t help. Check user roles/permissions.' },
+        { code: 404, name: 'Not Found', desc: 'The server cannot find the requested resource.', use: 'The URL doesn\'t match any known resource. Can also be used to hide the existence of a resource from unauthorized users (instead of 403).' },
+        { code: 405, name: 'Method Not Allowed', desc: 'The HTTP method is not allowed for this resource.', use: 'e.g., sending DELETE to a read-only resource, or POST to a GET-only endpoint. Response should include Allow header listing valid methods.' },
+        { code: 408, name: 'Request Timeout', desc: 'The server timed out waiting for the request.', use: 'The client took too long to send the complete request. Different from 504 (gateway timeout) which is a server-side timeout.' },
+        { code: 409, name: 'Conflict', desc: 'The request conflicts with the current state of the resource.', use: 'Concurrent edit conflicts, duplicate resource creation, or state violations (e.g., deleting a resource that has dependencies).' },
+        { code: 410, name: 'Gone', desc: 'The resource is no longer available and will not be available again.', use: 'Unlike 404, this is permanent. Search engines will de-index the URL. Use for intentionally removed content.' },
+        { code: 413, name: 'Payload Too Large', desc: 'The request body is larger than the server is willing to accept.', use: 'File upload exceeds size limit, request body exceeds max. The server may close the connection to prevent the client from continuing.' },
+        { code: 415, name: 'Unsupported Media Type', desc: 'The server does not support the media type of the request body.', use: 'e.g., sending XML when only JSON is accepted, or uploading an unsupported file type. Check Content-Type header.' },
+        { code: 422, name: 'Unprocessable Entity', desc: 'The request is well-formed but contains semantic errors.', use: 'Validation errors: the JSON/XML is syntactically valid but the content fails business rules (invalid email, negative price, future birthdate).' },
+        { code: 429, name: 'Too Many Requests', desc: 'The user has sent too many requests in a given time period.', use: 'Rate limiting. Response should include Retry-After header. The client should implement exponential backoff.' },
+        { code: 451, name: 'Unavailable For Legal Reasons', desc: 'The resource cannot be provided for legal reasons.', use: 'Government-mandated censorship, DMCA takedowns, GDPR right-to-be-forgotten. Named after Fahrenheit 451.' },
+
+        // 5xx
+        { code: 500, name: 'Internal Server Error', desc: 'The server encountered an unexpected condition that prevented it from fulfilling the request.', use: 'Generic server-side error. Check server logs for the actual error. Usually indicates a bug in application code.' },
+        { code: 501, name: 'Not Implemented', desc: 'The server does not support the functionality required to fulfill the request.', use: 'The HTTP method is recognized but not supported by the server. Unlike 405 (which is per-resource), this is server-wide.' },
+        { code: 502, name: 'Bad Gateway', desc: 'The server acting as a gateway received an invalid response from an upstream server.', use: 'A reverse proxy (Nginx, Cloudflare, load balancer) couldn\'t get a valid response from the backend application server.' },
+        { code: 503, name: 'Service Unavailable', desc: 'The server is currently unable to handle the request.', use: 'Server is overloaded, down for maintenance, or overwhelmed by traffic. Should include Retry-After header when possible.' },
+        { code: 504, name: 'Gateway Timeout', desc: 'The server acting as a gateway did not receive a timely response from an upstream server.', use: 'The reverse proxy/load balancer timed out waiting for the backend. The backend is too slow — optimize the endpoint or increase timeouts.' },
+        { code: 507, name: 'Insufficient Storage', desc: 'The server cannot store the representation needed to complete the request.', use: 'WebDAV. The server ran out of disk space. In practice, also used when database storage limits are reached.' },
+        { code: 508, name: 'Loop Detected', desc: 'The server detected an infinite loop while processing the request.', use: 'WebDAV. Internal redirect loops or circular references in server configuration.' }
+    ];
+
+    const CATEGORIES = {
+        '1': { name: '1xx — Informational', color: '#3b82f6' },
+        '2': { name: '2xx — Success', color: '#22c55e' },
+        '3': { name: '3xx — Redirection', color: '#f59e0b' },
+        '4': { name: '4xx — Client Error', color: '#ef4444' },
+        '5': { name: '5xx — Server Error', color: '#a855f7' }
+    };
+
+    let activeFilter = 'all';
+
+    function renderCodes(codes) {
+        const container = document.getElementById('codes-container');
+        container.innerHTML = '';
+
+        let currentCategory = '';
+
+        codes.forEach(code => {
+            const cat = String(code.code)[0];
+
+            if (cat !== currentCategory) {
+                currentCategory = cat;
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.style.color = CATEGORIES[cat]?.color || 'var(--text)';
+                header.textContent = CATEGORIES[cat]?.name || cat + 'xx';
+                container.appendChild(header);
+            }
+
+            const card = document.createElement('div');
+            card.className = `status-card code-${cat}xx`;
+            card.onclick = () => card.classList.toggle('expanded');
+            card.innerHTML = `
+                <span class="status-code">${code.code}</span>
+                <div style="flex: 1;">
+                    <strong>${code.name}</strong>
+                    <div style="color: var(--text-muted); font-size: 13px; margin-top: 2px;">${code.desc}</div>
+                    <div class="details"><strong>When to use:</strong> ${code.use}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        if (codes.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No matching status codes found</div>';
+        }
+    }
+
+    function filterCodes() {
+        const query = document.getElementById('search').value.toLowerCase();
+        let filtered = HTTP_CODES;
+
+        if (activeFilter !== 'all') {
+            filtered = filtered.filter(c => String(c.code).startsWith(activeFilter));
+        }
+
+        if (query) {
+            filtered = filtered.filter(c =>
+                String(c.code).includes(query) ||
+                c.name.toLowerCase().includes(query) ||
+                c.desc.toLowerCase().includes(query) ||
+                c.use.toLowerCase().includes(query)
+            );
+        }
+
+        renderCodes(filtered);
+    }
+
+    function setFilter(filter, btn) {
+        activeFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterCodes();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Initialize
+    renderCodes(HTTP_CODES);
+    </script>
+</body>
+</html>

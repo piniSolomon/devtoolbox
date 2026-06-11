@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aspect Ratio Calculator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online aspect ratio calculator. Calculate dimensions for 16:9, 4:3, 21:9, and custom ratios. Resize images, videos, and screens while maintaining proportions.">
+    <meta name="keywords" content="aspect ratio calculator, 16:9 calculator, screen resolution, image resize ratio, video aspect ratio, width height calculator, proportion calculator, 4:3 to 16:9">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/aspect-ratio-calculator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Aspect Ratio Calculator</div>
+            <h1>Aspect Ratio Calculator</h1>
+            <p>Calculate dimensions while maintaining aspect ratio. Perfect for resizing images, videos, and responsive design.</p>
+        </div>
+
+        <div class="tool-container">
+            <!-- Mode 1: Calculate from dimensions -->
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 280px;">
+                    <h3 style="margin-top: 0; font-size: 16px;">Original Dimensions</h3>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--text-muted);">Width</label>
+                            <input type="number" id="orig-w" value="1920" min="1" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 16px;" oninput="calculateRatio()">
+                        </div>
+                        <span style="font-size: 20px; color: var(--text-muted); padding-top: 18px;">×</span>
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--text-muted);">Height</label>
+                            <input type="number" id="orig-h" value="1080" min="1" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 16px;" oninput="calculateRatio()">
+                        </div>
+                    </div>
+
+                    <div id="ratio-display" style="text-align: center; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px;">
+                        <div style="font-size: 14px; color: var(--text-muted);">Aspect Ratio</div>
+                        <div id="ratio-value" style="font-size: 32px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace;">16:9</div>
+                        <div id="ratio-decimal" style="font-size: 13px; color: var(--text-muted);">1.7778 (decimal)</div>
+                    </div>
+
+                    <div id="ratio-preview" style="margin: 0 auto; border: 2px solid var(--accent); border-radius: 4px; max-width: 200px; transition: all 0.2s;"></div>
+                </div>
+
+                <div style="flex: 1; min-width: 280px;">
+                    <h3 style="margin-top: 0; font-size: 16px;">Resize (lock ratio)</h3>
+                    <div class="option-row" style="margin-bottom: 12px;">
+                        <label><input type="radio" name="lock" value="width" checked onchange="resizeCalc()"> Set new width</label>
+                        <label><input type="radio" name="lock" value="height" onchange="resizeCalc()"> Set new height</label>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--text-muted);">New Width</label>
+                            <input type="number" id="new-w" value="1280" min="1" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 16px;" oninput="resizeCalc()">
+                        </div>
+                        <span style="font-size: 20px; color: var(--text-muted); padding-top: 18px;">×</span>
+                        <div style="flex: 1;">
+                            <label style="font-size: 12px; color: var(--text-muted);">New Height</label>
+                            <input type="number" id="new-h" value="720" min="1" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-size: 16px;" oninput="resizeCalc()">
+                        </div>
+                    </div>
+
+                    <div style="padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                        <div style="font-size: 13px; color: var(--text-muted);">Scale factor: <strong id="scale-factor">66.7%</strong></div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Pixels: <strong id="pixel-count">921,600 px</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common presets -->
+            <div style="margin-top: 24px;">
+                <label style="font-size: 14px; color: var(--text-muted); display: block; margin-bottom: 8px;">Common Aspect Ratios</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="setRatio(1,1)">1:1</button>
+                    <button class="btn btn-secondary" onclick="setRatio(4,3)">4:3</button>
+                    <button class="btn btn-secondary" onclick="setRatio(3,2)">3:2</button>
+                    <button class="btn btn-secondary" onclick="setRatio(16,9)">16:9</button>
+                    <button class="btn btn-secondary" onclick="setRatio(16,10)">16:10</button>
+                    <button class="btn btn-secondary" onclick="setRatio(21,9)">21:9</button>
+                    <button class="btn btn-secondary" onclick="setRatio(9,16)">9:16</button>
+                    <button class="btn btn-secondary" onclick="setRatio(2,3)">2:3</button>
+                </div>
+            </div>
+
+            <!-- Common resolutions -->
+            <div style="margin-top: 16px;">
+                <label style="font-size: 14px; color: var(--text-muted); display: block; margin-bottom: 8px;">Common Resolutions</label>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--border);">Name</th>
+                                <th style="text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--border);">Resolution</th>
+                                <th style="text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--border);">Ratio</th>
+                                <th style="text-align: left; padding: 6px 12px; border-bottom: 1px solid var(--border);">Use</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resolutions-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Aspect Ratio Calculator</h2>
+            <p>Aspect ratio is the proportional relationship between width and height. Maintaining aspect ratio when resizing prevents distortion — images stay sharp, videos don't stretch, and layouts remain proportional.</p>
+
+            <h3>Common Aspect Ratios</h3>
+            <ul>
+                <li><strong>16:9:</strong> Standard widescreen (HD/4K TV, YouTube, most monitors)</li>
+                <li><strong>4:3:</strong> Classic TV and older monitors, iPad</li>
+                <li><strong>1:1:</strong> Square format (Instagram posts, profile pictures)</li>
+                <li><strong>9:16:</strong> Vertical video (TikTok, Instagram Reels, YouTube Shorts)</li>
+                <li><strong>21:9:</strong> Ultra-wide monitors and cinematic video</li>
+                <li><strong>3:2:</strong> DSLR photography, MacBook screens</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>How do I maintain aspect ratio in CSS?</h4>
+            <p>Use the <code>aspect-ratio</code> property: <code>aspect-ratio: 16 / 9;</code> Or for older browsers, the padding-top trick: set <code>padding-top: 56.25%</code> (which is 9/16 × 100) on a container.</p>
+
+            <h4>What aspect ratio should I use for social media?</h4>
+            <p>Instagram feed: 1:1 or 4:5. Stories/Reels: 9:16. YouTube: 16:9. Twitter: 16:9 or 2:1. LinkedIn: 1.91:1. Always check platform-specific guidelines as they change.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    const RESOLUTIONS = [
+        { name: 'VGA', w: 640, h: 480, use: 'Legacy displays' },
+        { name: 'HD (720p)', w: 1280, h: 720, use: 'Web video' },
+        { name: 'Full HD (1080p)', w: 1920, h: 1080, use: 'Standard monitors, TV' },
+        { name: 'QHD (1440p)', w: 2560, h: 1440, use: 'Gaming monitors' },
+        { name: '4K UHD', w: 3840, h: 2160, use: '4K TV, high-end monitors' },
+        { name: '8K UHD', w: 7680, h: 4320, use: '8K TV' },
+        { name: 'iPhone 15 Pro', w: 1179, h: 2556, use: 'iOS development' },
+        { name: 'Instagram Post', w: 1080, h: 1080, use: 'Social media' },
+        { name: 'Instagram Story', w: 1080, h: 1920, use: 'Vertical content' },
+        { name: 'YouTube Thumbnail', w: 1280, h: 720, use: 'Video thumbnails' },
+        { name: 'Twitter Header', w: 1500, h: 500, use: 'Profile banner' },
+        { name: 'A4 Paper (300dpi)', w: 2480, h: 3508, use: 'Print' },
+    ];
+
+    function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b) { [a, b] = [b, a % b]; }
+        return a;
+    }
+
+    function calculateRatio() {
+        const w = parseInt(document.getElementById('orig-w').value) || 1;
+        const h = parseInt(document.getElementById('orig-h').value) || 1;
+
+        const g = gcd(w, h);
+        const rw = w / g;
+        const rh = h / g;
+        const decimal = (w / h).toFixed(4);
+
+        document.getElementById('ratio-value').textContent = `${rw}:${rh}`;
+        document.getElementById('ratio-decimal').textContent = `${decimal} (decimal)`;
+
+        // Update preview
+        const preview = document.getElementById('ratio-preview');
+        const maxDim = 200;
+        if (w >= h) {
+            preview.style.width = maxDim + 'px';
+            preview.style.height = Math.round(maxDim * h / w) + 'px';
+        } else {
+            preview.style.height = maxDim + 'px';
+            preview.style.width = Math.round(maxDim * w / h) + 'px';
+        }
+
+        resizeCalc();
+    }
+
+    function resizeCalc() {
+        const origW = parseInt(document.getElementById('orig-w').value) || 1;
+        const origH = parseInt(document.getElementById('orig-h').value) || 1;
+        const ratio = origW / origH;
+        const lock = document.querySelector('input[name="lock"]:checked').value;
+
+        let newW, newH;
+        if (lock === 'width') {
+            newW = parseInt(document.getElementById('new-w').value) || 1;
+            newH = Math.round(newW / ratio);
+            document.getElementById('new-h').value = newH;
+        } else {
+            newH = parseInt(document.getElementById('new-h').value) || 1;
+            newW = Math.round(newH * ratio);
+            document.getElementById('new-w').value = newW;
+        }
+
+        const scale = ((newW / origW) * 100).toFixed(1);
+        document.getElementById('scale-factor').textContent = scale + '%';
+        document.getElementById('pixel-count').textContent = (newW * newH).toLocaleString() + ' px';
+    }
+
+    function setRatio(rw, rh) {
+        // Set to a common resolution for this ratio
+        const base = 1080;
+        if (rw >= rh) {
+            document.getElementById('orig-w').value = Math.round(base * rw / rh);
+            document.getElementById('orig-h').value = base;
+        } else {
+            document.getElementById('orig-w').value = base;
+            document.getElementById('orig-h').value = Math.round(base * rh / rw);
+        }
+        calculateRatio();
+    }
+
+    function renderResolutions() {
+        const tbody = document.getElementById('resolutions-table');
+        RESOLUTIONS.forEach(res => {
+            const g = gcd(res.w, res.h);
+            const row = document.createElement('tr');
+            row.style.cursor = 'pointer';
+            row.onclick = () => {
+                document.getElementById('orig-w').value = res.w;
+                document.getElementById('orig-h').value = res.h;
+                calculateRatio();
+            };
+            row.innerHTML = `
+                <td style="padding: 6px 12px; border-bottom: 1px solid var(--border);">${res.name}</td>
+                <td style="padding: 6px 12px; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace;">${res.w} × ${res.h}</td>
+                <td style="padding: 6px 12px; border-bottom: 1px solid var(--border);">${res.w/g}:${res.h/g}</td>
+                <td style="padding: 6px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted);">${res.use}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Initialize
+    calculateRatio();
+    renderResolutions();
+    </script>
+</body>
+</html>

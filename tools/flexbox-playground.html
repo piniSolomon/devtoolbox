@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Playground - CSS Flexbox Generator | DevToolBox</title>
+    <meta name="description" content="Free online CSS Flexbox playground. Visually learn and generate flexbox layouts with live preview. Adjust direction, wrap, justify, align, gap, and individual item properties.">
+    <meta name="keywords" content="flexbox playground, css flexbox generator, flexbox layout, flexbox cheatsheet, flex direction, justify content, align items, css flex, flexbox tool, flexbox visual">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/flexbox-playground.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Flexbox Playground</div>
+            <h1>CSS Flexbox Playground</h1>
+            <p>Visually explore CSS Flexbox properties with a live preview. Adjust container and item properties, then copy the generated CSS.</p>
+        </div>
+
+        <div class="tool-container">
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <!-- Controls -->
+                <div style="flex: 0 0 280px; min-width: 250px;">
+                    <h3 style="margin-top: 0; font-size: 16px;">Container Properties</h3>
+
+                    <div class="prop-group">
+                        <label class="prop-label">flex-direction</label>
+                        <div class="prop-options" id="opt-direction">
+                            <button class="prop-btn active" onclick="setProp('direction','row',this)">row</button>
+                            <button class="prop-btn" onclick="setProp('direction','row-reverse',this)">row-reverse</button>
+                            <button class="prop-btn" onclick="setProp('direction','column',this)">column</button>
+                            <button class="prop-btn" onclick="setProp('direction','column-reverse',this)">column-reverse</button>
+                        </div>
+                    </div>
+
+                    <div class="prop-group">
+                        <label class="prop-label">flex-wrap</label>
+                        <div class="prop-options" id="opt-wrap">
+                            <button class="prop-btn active" onclick="setProp('wrap','nowrap',this)">nowrap</button>
+                            <button class="prop-btn" onclick="setProp('wrap','wrap',this)">wrap</button>
+                            <button class="prop-btn" onclick="setProp('wrap','wrap-reverse',this)">wrap-reverse</button>
+                        </div>
+                    </div>
+
+                    <div class="prop-group">
+                        <label class="prop-label">justify-content</label>
+                        <div class="prop-options" id="opt-justify">
+                            <button class="prop-btn active" onclick="setProp('justify','flex-start',this)">flex-start</button>
+                            <button class="prop-btn" onclick="setProp('justify','flex-end',this)">flex-end</button>
+                            <button class="prop-btn" onclick="setProp('justify','center',this)">center</button>
+                            <button class="prop-btn" onclick="setProp('justify','space-between',this)">space-between</button>
+                            <button class="prop-btn" onclick="setProp('justify','space-around',this)">space-around</button>
+                            <button class="prop-btn" onclick="setProp('justify','space-evenly',this)">space-evenly</button>
+                        </div>
+                    </div>
+
+                    <div class="prop-group">
+                        <label class="prop-label">align-items</label>
+                        <div class="prop-options" id="opt-align">
+                            <button class="prop-btn" onclick="setProp('align','flex-start',this)">flex-start</button>
+                            <button class="prop-btn" onclick="setProp('align','flex-end',this)">flex-end</button>
+                            <button class="prop-btn" onclick="setProp('align','center',this)">center</button>
+                            <button class="prop-btn active" onclick="setProp('align','stretch',this)">stretch</button>
+                            <button class="prop-btn" onclick="setProp('align','baseline',this)">baseline</button>
+                        </div>
+                    </div>
+
+                    <div class="prop-group">
+                        <label class="prop-label">align-content</label>
+                        <div class="prop-options" id="opt-alignContent">
+                            <button class="prop-btn active" onclick="setProp('alignContent','stretch',this)">stretch</button>
+                            <button class="prop-btn" onclick="setProp('alignContent','flex-start',this)">flex-start</button>
+                            <button class="prop-btn" onclick="setProp('alignContent','flex-end',this)">flex-end</button>
+                            <button class="prop-btn" onclick="setProp('alignContent','center',this)">center</button>
+                            <button class="prop-btn" onclick="setProp('alignContent','space-between',this)">space-between</button>
+                            <button class="prop-btn" onclick="setProp('alignContent','space-around',this)">space-around</button>
+                        </div>
+                    </div>
+
+                    <div class="prop-group">
+                        <label class="prop-label">gap: <strong id="gap-val">12</strong>px</label>
+                        <input type="range" min="0" max="40" value="12" oninput="flexState.gap=this.value; document.getElementById('gap-val').textContent=this.value; updatePreview();" style="width: 100%;">
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button class="btn btn-secondary" onclick="addItem()" style="flex: 1;">+ Item</button>
+                        <button class="btn btn-secondary" onclick="removeItem()" style="flex: 1;">- Item</button>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Click an item in the preview to edit its individual properties.</div>
+                </div>
+
+                <!-- Preview -->
+                <div style="flex: 1; min-width: 300px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 14px;">Preview</label>
+                        <span style="font-size: 12px; color: var(--text-muted);" id="item-count">6 items</span>
+                    </div>
+                    <div id="flex-container" style="min-height: 300px; border: 2px dashed var(--border); border-radius: 8px; padding: 8px; display: flex; gap: 12px;"></div>
+
+                    <!-- Selected item props -->
+                    <div id="item-props" style="display: none; margin-top: 12px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="font-size: 14px;">Item <span id="selected-item-num">1</span> Properties</strong>
+                            <button onclick="document.getElementById('item-props').style.display='none'; selectedItem=-1;" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">×</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted);">flex-grow</label>
+                                <input type="number" id="item-grow" min="0" max="10" value="0" oninput="updateItemProp()" style="width: 100%; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted);">flex-shrink</label>
+                                <input type="number" id="item-shrink" min="0" max="10" value="1" oninput="updateItemProp()" style="width: 100%; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; color: var(--text-muted);">flex-basis</label>
+                                <input type="text" id="item-basis" value="auto" oninput="updateItemProp()" style="width: 100%; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 11px; color: var(--text-muted);">align-self</label>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;">
+                                <button class="prop-btn mini active" data-self="auto" onclick="setItemSelf('auto',this)">auto</button>
+                                <button class="prop-btn mini" data-self="flex-start" onclick="setItemSelf('flex-start',this)">flex-start</button>
+                                <button class="prop-btn mini" data-self="flex-end" onclick="setItemSelf('flex-end',this)">flex-end</button>
+                                <button class="prop-btn mini" data-self="center" onclick="setItemSelf('center',this)">center</button>
+                                <button class="prop-btn mini" data-self="stretch" onclick="setItemSelf('stretch',this)">stretch</button>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 11px; color: var(--text-muted);">order</label>
+                            <input type="number" id="item-order" min="-10" max="10" value="0" oninput="updateItemProp()" style="width: 80px; padding: 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSS Output -->
+            <div style="margin-top: 24px;">
+                <label for="css-output" style="display: block; margin-bottom: 8px;">Generated CSS</label>
+                <textarea id="css-output" readonly style="height: 120px; font-family: 'JetBrains Mono', monospace; font-size: 12px;"></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="copyCss()">Copy CSS</button>
+                <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About CSS Flexbox</h2>
+            <p>Flexbox (Flexible Box Layout) is a CSS layout model designed for building responsive, dynamic layouts. It distributes space among items in a container, even when their sizes are unknown.</p>
+
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>Main axis:</strong> The primary axis along which items are laid out (horizontal for row, vertical for column)</li>
+                <li><strong>Cross axis:</strong> Perpendicular to the main axis</li>
+                <li><strong>justify-content:</strong> Aligns items along the main axis</li>
+                <li><strong>align-items:</strong> Aligns items along the cross axis</li>
+                <li><strong>flex-grow:</strong> How much an item grows relative to siblings (0 = don't grow)</li>
+                <li><strong>flex-shrink:</strong> How much an item shrinks when space is limited</li>
+                <li><strong>flex-basis:</strong> Default size before growing/shrinking (like width/height)</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Flexbox vs Grid — when to use which?</h4>
+            <p>Use Flexbox for one-dimensional layouts (a row or a column of items). Use CSS Grid for two-dimensional layouts (rows AND columns). Flexbox is great for navbars, card rows, and centering. Grid is better for page layouts and complex grids.</p>
+
+            <h4>What does flex: 1 mean?</h4>
+            <p><code>flex: 1</code> is shorthand for <code>flex-grow: 1; flex-shrink: 1; flex-basis: 0%</code>. It means the item will grow to fill available space equally with other flex: 1 items.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <style>
+    .prop-group { margin-bottom: 12px; }
+    .prop-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+    .prop-options { display: flex; flex-wrap: wrap; gap: 4px; }
+    .prop-btn {
+        padding: 4px 8px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 11px;
+        font-family: 'JetBrains Mono', monospace;
+        transition: all 0.1s;
+    }
+    .prop-btn:hover { border-color: var(--accent); }
+    .prop-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .prop-btn.mini { padding: 2px 6px; font-size: 10px; }
+
+    .flex-item {
+        min-width: 50px;
+        min-height: 50px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        color: #fff;
+        cursor: pointer;
+        transition: outline 0.1s;
+        padding: 8px;
+    }
+    .flex-item:hover { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .flex-item.selected { outline: 2px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 4px var(--accent); }
+    </style>
+
+    <script>
+    const COLORS = ['#6366f1','#ec4899','#22c55e','#f59e0b','#3b82f6','#a855f7','#ef4444','#14b8a6','#f97316','#8b5cf6'];
+
+    let flexState = {
+        direction: 'row',
+        wrap: 'nowrap',
+        justify: 'flex-start',
+        align: 'stretch',
+        alignContent: 'stretch',
+        gap: 12
+    };
+
+    let items = [
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 80, height: 60 },
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 100, height: 80 },
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 60, height: 100 },
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 90, height: 70 },
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 70, height: 50 },
+        { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 110, height: 90 },
+    ];
+
+    let selectedItem = -1;
+
+    function setProp(prop, value, btn) {
+        flexState[prop] = value;
+        btn.parentElement.querySelectorAll('.prop-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updatePreview();
+    }
+
+    function addItem() {
+        if (items.length >= 12) return;
+        items.push({ grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 60 + Math.floor(Math.random() * 60), height: 50 + Math.floor(Math.random() * 60) });
+        updatePreview();
+    }
+
+    function removeItem() {
+        if (items.length <= 1) return;
+        if (selectedItem >= 0 && selectedItem < items.length) {
+            items.splice(selectedItem, 1);
+            selectedItem = -1;
+            document.getElementById('item-props').style.display = 'none';
+        } else {
+            items.pop();
+        }
+        updatePreview();
+    }
+
+    function selectItem(index) {
+        selectedItem = index;
+        const item = items[index];
+        document.getElementById('selected-item-num').textContent = index + 1;
+        document.getElementById('item-grow').value = item.grow;
+        document.getElementById('item-shrink').value = item.shrink;
+        document.getElementById('item-basis').value = item.basis;
+        document.getElementById('item-order').value = item.order;
+        document.getElementById('item-props').style.display = '';
+
+        // Update align-self buttons
+        document.querySelectorAll('#item-props .prop-btn.mini').forEach(b => {
+            b.classList.toggle('active', b.dataset.self === item.alignSelf);
+        });
+
+        // Update visual selection
+        document.querySelectorAll('.flex-item').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+    }
+
+    function updateItemProp() {
+        if (selectedItem < 0 || selectedItem >= items.length) return;
+        items[selectedItem].grow = parseInt(document.getElementById('item-grow').value) || 0;
+        items[selectedItem].shrink = parseInt(document.getElementById('item-shrink').value) || 1;
+        items[selectedItem].basis = document.getElementById('item-basis').value || 'auto';
+        items[selectedItem].order = parseInt(document.getElementById('item-order').value) || 0;
+        updatePreview();
+    }
+
+    function setItemSelf(value, btn) {
+        if (selectedItem < 0) return;
+        items[selectedItem].alignSelf = value;
+        document.querySelectorAll('#item-props .prop-btn.mini').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const container = document.getElementById('flex-container');
+        container.style.flexDirection = flexState.direction;
+        container.style.flexWrap = flexState.wrap;
+        container.style.justifyContent = flexState.justify;
+        container.style.alignItems = flexState.align;
+        container.style.alignContent = flexState.alignContent;
+        container.style.gap = flexState.gap + 'px';
+
+        container.innerHTML = '';
+        items.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'flex-item' + (i === selectedItem ? ' selected' : '');
+            div.style.backgroundColor = COLORS[i % COLORS.length];
+            div.style.width = item.basis !== 'auto' ? item.basis : item.width + 'px';
+            div.style.height = item.height + 'px';
+            div.style.flexGrow = item.grow;
+            div.style.flexShrink = item.shrink;
+            div.style.flexBasis = item.basis;
+            div.style.alignSelf = item.alignSelf;
+            div.style.order = item.order;
+            div.textContent = i + 1;
+            div.onclick = () => selectItem(i);
+            container.appendChild(div);
+        });
+
+        document.getElementById('item-count').textContent = items.length + ' items';
+        generateCSS();
+    }
+
+    function generateCSS() {
+        let css = `.container {\n  display: flex;\n`;
+        if (flexState.direction !== 'row') css += `  flex-direction: ${flexState.direction};\n`;
+        if (flexState.wrap !== 'nowrap') css += `  flex-wrap: ${flexState.wrap};\n`;
+        if (flexState.justify !== 'flex-start') css += `  justify-content: ${flexState.justify};\n`;
+        if (flexState.align !== 'stretch') css += `  align-items: ${flexState.align};\n`;
+        if (flexState.alignContent !== 'stretch' && flexState.wrap !== 'nowrap') css += `  align-content: ${flexState.alignContent};\n`;
+        if (flexState.gap > 0) css += `  gap: ${flexState.gap}px;\n`;
+        css += `}\n`;
+
+        // Add item-specific rules if any are non-default
+        items.forEach((item, i) => {
+            const parts = [];
+            if (item.grow !== 0) parts.push(`flex-grow: ${item.grow}`);
+            if (item.shrink !== 1) parts.push(`flex-shrink: ${item.shrink}`);
+            if (item.basis !== 'auto') parts.push(`flex-basis: ${item.basis}`);
+            if (item.alignSelf !== 'auto') parts.push(`align-self: ${item.alignSelf}`);
+            if (item.order !== 0) parts.push(`order: ${item.order}`);
+            if (parts.length > 0) {
+                css += `\n.item-${i + 1} {\n  ${parts.join(';\n  ')};\n}\n`;
+            }
+        });
+
+        document.getElementById('css-output').value = css;
+    }
+
+    function copyCss() {
+        const css = document.getElementById('css-output').value;
+        navigator.clipboard.writeText(css).then(() => showStatus('CSS copied!', 'success'));
+    }
+
+    function resetAll() {
+        flexState = { direction: 'row', wrap: 'nowrap', justify: 'flex-start', align: 'stretch', alignContent: 'stretch', gap: 12 };
+        items = [
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 80, height: 60 },
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 100, height: 80 },
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 60, height: 100 },
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 90, height: 70 },
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 70, height: 50 },
+            { grow: 0, shrink: 1, basis: 'auto', alignSelf: 'auto', order: 0, width: 110, height: 90 },
+        ];
+        selectedItem = -1;
+        document.getElementById('item-props').style.display = 'none';
+
+        // Reset button states
+        document.querySelectorAll('.prop-options').forEach(group => {
+            group.querySelectorAll('.prop-btn').forEach(b => b.classList.remove('active'));
+            group.querySelector('.prop-btn')?.classList.add('active');
+        });
+
+        updatePreview();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Initialize
+    updatePreview();
+    </script>
+</body>
+</html>
