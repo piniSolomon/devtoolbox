@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.env Editor - Environment Variables Editor | DevToolBox</title>
+    <meta name="description" content="Free online .env file editor. Parse, edit, sort, and validate environment variable files. Convert between .env, JSON, YAML, Docker, and shell formats.">
+    <meta name="keywords" content="env editor, dotenv editor, environment variables, .env file, env parser, env to json, env converter, docker env, config editor, env validator">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/env-editor.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / .env Editor</div>
+            <h1>.env Editor</h1>
+            <p>Parse, edit, sort, and convert environment variable files. Supports .env, JSON, YAML, Docker, and shell export formats.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">.env Input</label>
+                    <textarea id="input" placeholder="DATABASE_URL=postgres://localhost:5432/mydb
+API_KEY=sk-1234567890
+NODE_ENV=production
+DEBUG=false
+# Comment lines are preserved"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Output format:
+                    <select id="format">
+                        <option value="env">.env</option>
+                        <option value="json">JSON</option>
+                        <option value="yaml">YAML</option>
+                        <option value="docker">Docker --env-file</option>
+                        <option value="shell">Shell export</option>
+                        <option value="windows">Windows set</option>
+                        <option value="table">Table view</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="convert()">Convert</button>
+                <button class="btn btn-secondary" onclick="sortVars()">Sort A-Z</button>
+                <button class="btn btn-secondary" onclick="validate()">Validate</button>
+                <button class="btn btn-secondary" onclick="maskSecrets()">Mask Secrets</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+
+            <div id="stats" style="display:none;margin-top:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+                <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                    <div><span style="color:var(--text-muted);">Variables:</span> <strong id="stat-vars">0</strong></div>
+                    <div><span style="color:var(--text-muted);">Comments:</span> <strong id="stat-comments">0</strong></div>
+                    <div><span style="color:var(--text-muted);">Empty:</span> <strong id="stat-empty">0</strong></div>
+                </div>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About .env Editor</h2>
+            <p>The <code>.env</code> file format stores environment variables as KEY=VALUE pairs. It's used by Node.js (dotenv), Python (python-dotenv), Docker, and many other tools for application configuration.</p>
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Parse & validate:</strong> Check for duplicate keys, missing values, and syntax errors</li>
+                <li><strong>Sort:</strong> Alphabetically sort variables for easier reading</li>
+                <li><strong>Mask secrets:</strong> Replace sensitive values with asterisks for safe sharing</li>
+                <li><strong>Convert:</strong> Export to JSON, YAML, Docker env-file, shell exports, or Windows set commands</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>Should I commit .env files to git?</h4>
+            <p>No. The <code>.env</code> file contains secrets and should be in <code>.gitignore</code>. Commit a <code>.env.example</code> file instead with placeholder values so team members know which variables are needed.</p>
+            <h4>How do I handle quotes in .env values?</h4>
+            <p>Values with spaces should be quoted: <code>MY_VAR="hello world"</code>. Single quotes prevent variable expansion, double quotes allow it (in some parsers). Unquoted values end at the first whitespace in some parsers.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <script>
+    function parseEnv(text) {
+        const lines = text.split('\n');
+        const vars = [];
+        let comments = 0, empty = 0;
+
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) { empty++; vars.push({type:'empty'}); continue; }
+            if (trimmed.startsWith('#')) { comments++; vars.push({type:'comment', value: trimmed}); continue; }
+
+            const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)/);
+            if (match) {
+                let val = match[2];
+                // Strip surrounding quotes
+                if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.slice(1, -1);
+                }
+                vars.push({type:'var', key: match[1], value: val});
+            } else {
+                vars.push({type:'invalid', value: trimmed});
+            }
+        }
+
+        return { vars, comments, empty };
+    }
+
+    function convert() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Enter .env content','error'); return; }
+
+        const { vars, comments, empty } = parseEnv(input);
+        const envVars = vars.filter(v => v.type === 'var');
+        const format = document.getElementById('format').value;
+        let output = '';
+
+        switch (format) {
+            case 'env':
+                output = vars.map(v => {
+                    if (v.type === 'empty') return '';
+                    if (v.type === 'comment') return v.value;
+                    if (v.type === 'var') return `${v.key}=${v.value.includes(' ') ? '"'+v.value+'"' : v.value}`;
+                    return '# INVALID: ' + v.value;
+                }).join('\n');
+                break;
+            case 'json':
+                const obj = {};
+                envVars.forEach(v => obj[v.key] = v.value);
+                output = JSON.stringify(obj, null, 2);
+                break;
+            case 'yaml':
+                output = envVars.map(v => `${v.key}: "${v.value.replace(/"/g,'\\"')}"`).join('\n');
+                break;
+            case 'docker':
+                output = envVars.map(v => `${v.key}=${v.value}`).join('\n');
+                break;
+            case 'shell':
+                output = envVars.map(v => `export ${v.key}="${v.value.replace(/"/g,'\\"')}"`).join('\n');
+                break;
+            case 'windows':
+                output = envVars.map(v => `set ${v.key}=${v.value}`).join('\n');
+                break;
+            case 'table':
+                const maxKey = Math.max(...envVars.map(v => v.key.length), 3);
+                output = 'Key' + ' '.repeat(maxKey - 3) + ' | Value\n';
+                output += '-'.repeat(maxKey) + '-+-' + '-'.repeat(40) + '\n';
+                output += envVars.map(v => v.key.padEnd(maxKey) + ' | ' + v.value).join('\n');
+                break;
+        }
+
+        document.getElementById('output').value = output;
+        document.getElementById('stat-vars').textContent = envVars.length;
+        document.getElementById('stat-comments').textContent = comments;
+        document.getElementById('stat-empty').textContent = empty;
+        document.getElementById('stats').style.display = '';
+        showStatus(`Converted to ${format.toUpperCase()}`,'success');
+    }
+
+    function sortVars() {
+        const input = document.getElementById('input').value;
+        const { vars } = parseEnv(input);
+        const envVars = vars.filter(v => v.type === 'var').sort((a,b) => a.key.localeCompare(b.key));
+        const commentLines = vars.filter(v => v.type === 'comment');
+
+        let output = '';
+        if (commentLines.length) output = commentLines.map(c => c.value).join('\n') + '\n\n';
+        output += envVars.map(v => `${v.key}=${v.value.includes(' ') ? '"'+v.value+'"' : v.value}`).join('\n');
+
+        document.getElementById('input').value = output;
+        showStatus('Variables sorted A-Z','success');
+    }
+
+    function validate() {
+        const input = document.getElementById('input').value;
+        const { vars } = parseEnv(input);
+        const issues = [];
+        const seen = {};
+
+        vars.forEach((v, i) => {
+            if (v.type === 'invalid') issues.push(`Line ${i+1}: Invalid syntax "${v.value}"`);
+            if (v.type === 'var') {
+                if (seen[v.key]) issues.push(`Line ${i+1}: Duplicate key "${v.key}" (first on line ${seen[v.key]})`);
+                seen[v.key] = i + 1;
+                if (!v.value) issues.push(`Line ${i+1}: Empty value for "${v.key}"`);
+            }
+        });
+
+        if (issues.length) {
+            document.getElementById('output').value = '⚠ Validation Issues:\n\n' + issues.join('\n');
+            showStatus(`Found ${issues.length} issue(s)`, 'error');
+        } else {
+            document.getElementById('output').value = '✓ No issues found. All variables are valid.';
+            showStatus('Validation passed!', 'success');
+        }
+    }
+
+    function maskSecrets() {
+        const input = document.getElementById('input').value;
+        const { vars } = parseEnv(input);
+        const secretPatterns = /key|secret|password|token|api|auth|credential|private|jwt|session/i;
+
+        const output = vars.map(v => {
+            if (v.type === 'var' && secretPatterns.test(v.key)) {
+                const masked = v.value.length > 4 ? v.value.slice(0,2) + '*'.repeat(v.value.length - 4) + v.value.slice(-2) : '****';
+                return `${v.key}=${masked}`;
+            }
+            if (v.type === 'var') return `${v.key}=${v.value}`;
+            if (v.type === 'comment') return v.value;
+            return '';
+        }).join('\n');
+
+        document.getElementById('output').value = output;
+        showStatus('Sensitive values masked','success');
+    }
+
+    function copyOutput() {
+        const o = document.getElementById('output').value;
+        if (!o) { showStatus('Nothing to copy','error'); return; }
+        navigator.clipboard.writeText(o).then(() => showStatus('Copied!','success'));
+    }
+
+    function clearAll() { document.getElementById('input').value=''; document.getElementById('output').value=''; document.getElementById('stats').style.display='none'; document.getElementById('status').classList.remove('show'); }
+
+    function loadSample() {
+        document.getElementById('input').value = `# Application Settings
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+
+# Database
+DATABASE_URL=postgres://user:password@localhost:5432/myapp
+DB_POOL_SIZE=10
+
+# Authentication
+JWT_SECRET=super-secret-key-change-me
+SESSION_TIMEOUT=3600
+API_KEY=sk_live_1234567890abcdef
+
+# External Services
+REDIS_URL=redis://localhost:6379
+SMTP_HOST=smtp.example.com
+SMTP_USER=noreply@example.com
+SMTP_PASSWORD=email-password-here
+
+# Feature Flags
+ENABLE_SIGNUP=true
+MAINTENANCE_MODE=false
+DEBUG=false`;
+        convert();
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+    </script>
+</body>
+</html>

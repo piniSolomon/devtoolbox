@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Binary Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online text to binary converter. Convert text to binary, binary to text, hex, octal, and decimal. See ASCII values for each character. No sign-up required.">
+    <meta name="keywords" content="text to binary, binary to text, binary converter, ascii to binary, text binary translator, binary code, binary encoder, binary decoder, text encoder">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/text-to-binary.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Text to Binary</div>
+            <h1>Text to Binary Converter</h1>
+            <p>Convert text to binary and binary to text. Also shows hex, octal, and decimal representations.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Text / Binary Input</label>
+                    <textarea id="input" placeholder="Hello World" oninput="autoConvert()"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Output format:
+                    <select id="format" onchange="autoConvert()">
+                        <option value="binary">Binary (01001000)</option>
+                        <option value="hex">Hexadecimal (48)</option>
+                        <option value="octal">Octal (110)</option>
+                        <option value="decimal">Decimal (72)</option>
+                    </select>
+                </label>
+                <label>Separator:
+                    <select id="separator" onchange="autoConvert()">
+                        <option value=" ">Space</option>
+                        <option value="  ">Double space</option>
+                        <option value="\n">Newline</option>
+                        <option value="">None</option>
+                    </select>
+                </label>
+                <label>Padding:
+                    <select id="padding" onchange="autoConvert()">
+                        <option value="8">8-bit</option>
+                        <option value="0">No padding</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="textToCode()">Text → Code</button>
+                <button class="btn btn-primary" onclick="codeToText()">Code → Text</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <!-- Character table -->
+            <div id="char-table" style="display:none;margin-top:16px;">
+                <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Character Breakdown</label>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;padding:6px 8px;border-bottom:2px solid var(--border);">Char</th>
+                                <th style="text-align:center;padding:6px 8px;border-bottom:2px solid var(--border);">ASCII</th>
+                                <th style="text-align:center;padding:6px 8px;border-bottom:2px solid var(--border);">Binary</th>
+                                <th style="text-align:center;padding:6px 8px;border-bottom:2px solid var(--border);">Hex</th>
+                                <th style="text-align:center;padding:6px 8px;border-bottom:2px solid var(--border);">Octal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="char-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About Text to Binary Converter</h2>
+            <p>Convert any text into its binary representation (and back). Each character has a unique numeric value (ASCII/Unicode code point) which can be expressed in binary, hexadecimal, octal, or decimal.</p>
+            <h3>How It Works</h3>
+            <ul>
+                <li>'A' has ASCII value 65, which is 01000001 in binary, 41 in hex</li>
+                <li>'a' has ASCII value 97, which is 01100001 in binary, 61 in hex</li>
+                <li>Space has ASCII value 32, which is 00100000 in binary, 20 in hex</li>
+                <li>Each character occupies 8 bits (1 byte) in standard ASCII</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>Can this handle emoji and non-English text?</h4>
+            <p>Yes, but characters beyond basic ASCII (0-127) require multiple bytes in UTF-8. This tool processes each character's Unicode code point. Emoji and CJK characters will produce larger binary values.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <script>
+    function autoConvert() { textToCode(); }
+
+    function textToCode() {
+        const text = document.getElementById('input').value;
+        if (!text) { document.getElementById('output').value = ''; document.getElementById('char-table').style.display='none'; return; }
+
+        const format = document.getElementById('format').value;
+        const sep = document.getElementById('separator').value.replace('\\n','\n');
+        const pad = parseInt(document.getElementById('padding').value);
+
+        const codes = [];
+        for (const char of text) {
+            const cp = char.codePointAt(0);
+            switch (format) {
+                case 'binary': codes.push(pad ? cp.toString(2).padStart(pad,'0') : cp.toString(2)); break;
+                case 'hex': codes.push(cp.toString(16).toUpperCase().padStart(2,'0')); break;
+                case 'octal': codes.push(cp.toString(8).padStart(3,'0')); break;
+                case 'decimal': codes.push(cp.toString()); break;
+            }
+        }
+
+        document.getElementById('output').value = codes.join(sep);
+
+        // Build character table
+        const tbody = document.getElementById('char-tbody');
+        tbody.innerHTML = '';
+        for (const char of text) {
+            const cp = char.codePointAt(0);
+            const displayChar = cp === 32 ? '⎵' : cp === 10 ? '↵' : cp === 9 ? '→' : char;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="text-align:center;padding:4px 8px;border-bottom:1px solid var(--border);font-size:18px;">${displayChar}</td>
+                <td style="text-align:center;padding:4px 8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;">${cp}</td>
+                <td style="text-align:center;padding:4px 8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;">${cp.toString(2).padStart(8,'0')}</td>
+                <td style="text-align:center;padding:4px 8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;">${cp.toString(16).toUpperCase().padStart(2,'0')}</td>
+                <td style="text-align:center;padding:4px 8px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;">${cp.toString(8).padStart(3,'0')}</td>
+            `;
+            tbody.appendChild(row);
+        }
+        document.getElementById('char-table').style.display = '';
+        showStatus('Converted to ' + format, 'success');
+    }
+
+    function codeToText() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) { showStatus('Enter binary/hex/octal/decimal values','error'); return; }
+
+        const format = document.getElementById('format').value;
+        // Split by spaces, commas, or newlines
+        const parts = input.split(/[\s,]+/).filter(Boolean);
+
+        try {
+            let text = '';
+            for (const part of parts) {
+                let cp;
+                switch (format) {
+                    case 'binary': cp = parseInt(part, 2); break;
+                    case 'hex': cp = parseInt(part, 16); break;
+                    case 'octal': cp = parseInt(part, 8); break;
+                    case 'decimal': cp = parseInt(part, 10); break;
+                }
+                if (isNaN(cp)) throw new Error(`Invalid ${format} value: ${part}`);
+                text += String.fromCodePoint(cp);
+            }
+            document.getElementById('output').value = text;
+            showStatus('Decoded to text', 'success');
+        } catch(e) {
+            showStatus('Error: ' + e.message, 'error');
+        }
+    }
+
+    function copyOutput() {
+        const o = document.getElementById('output').value;
+        if (!o) { showStatus('Nothing to copy','error'); return; }
+        navigator.clipboard.writeText(o).then(() => showStatus('Copied!','success'));
+    }
+
+    function clearAll() { document.getElementById('input').value=''; document.getElementById('output').value=''; document.getElementById('char-table').style.display='none'; document.getElementById('status').classList.remove('show'); }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+    </script>
+</body>
+</html>

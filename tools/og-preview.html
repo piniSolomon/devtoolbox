@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Graph Preview - Social Media Debugger | DevToolBox</title>
+    <meta name="description" content="Free online Open Graph preview tool. Test how your URL will appear when shared on Facebook, Twitter, LinkedIn, and Discord. Check OG tags, Twitter Cards, and metadata.">
+    <meta name="keywords" content="open graph preview, og tag checker, social media preview, facebook preview, twitter card preview, linkedin preview, og debugger, social share preview, meta tag checker">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/og-preview.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / OG Preview</div>
+            <h1>Open Graph Preview</h1>
+            <p>Preview how your page will look when shared on social media. Enter OG tag values to see Facebook, Twitter, LinkedIn, and Discord previews.</p>
+        </div>
+        <div class="tool-container">
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:280px;">
+                    <h3 style="margin-top:0;font-size:16px;">Open Graph Tags</h3>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <label class="og-label">og:title</label>
+                            <input type="text" id="og-title" placeholder="Page Title" oninput="updatePreviews()" class="og-input">
+                        </div>
+                        <div>
+                            <label class="og-label">og:description</label>
+                            <textarea id="og-desc" placeholder="Page description..." oninput="updatePreviews()" class="og-input" style="height:60px;"></textarea>
+                        </div>
+                        <div>
+                            <label class="og-label">og:image</label>
+                            <input type="url" id="og-image" placeholder="https://example.com/image.jpg" oninput="updatePreviews()" class="og-input">
+                        </div>
+                        <div>
+                            <label class="og-label">og:url</label>
+                            <input type="url" id="og-url" placeholder="https://example.com/page" oninput="updatePreviews()" class="og-input">
+                        </div>
+                        <div>
+                            <label class="og-label">og:site_name</label>
+                            <input type="text" id="og-site" placeholder="My Website" oninput="updatePreviews()" class="og-input">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadExample()" style="margin-top:12px;">Load Example</button>
+                </div>
+
+                <div style="flex:1;min-width:300px;">
+                    <!-- Facebook Preview -->
+                    <h3 style="font-size:16px;margin-top:0;">Facebook</h3>
+                    <div class="social-preview fb-preview" style="margin-bottom:20px;">
+                        <div id="fb-image" class="sp-image" style="background:#e4e6eb;">1200 × 630</div>
+                        <div class="sp-body">
+                            <div id="fb-domain" class="sp-domain">EXAMPLE.COM</div>
+                            <div id="fb-title" class="sp-title">Page Title</div>
+                            <div id="fb-desc" class="sp-desc">Page description will appear here...</div>
+                        </div>
+                    </div>
+
+                    <!-- Twitter Preview -->
+                    <h3 style="font-size:16px;">Twitter / X</h3>
+                    <div class="social-preview tw-preview" style="margin-bottom:20px;border-radius:16px;">
+                        <div id="tw-image" class="sp-image" style="background:#e4e6eb;border-radius:16px 16px 0 0;">1200 × 630</div>
+                        <div class="sp-body" style="padding:10px 14px;">
+                            <div id="tw-domain" class="sp-domain">example.com</div>
+                            <div id="tw-title" class="sp-title" style="font-size:14px;">Page Title</div>
+                            <div id="tw-desc" class="sp-desc" style="font-size:13px;">Description...</div>
+                        </div>
+                    </div>
+
+                    <!-- LinkedIn Preview -->
+                    <h3 style="font-size:16px;">LinkedIn</h3>
+                    <div class="social-preview li-preview" style="margin-bottom:20px;">
+                        <div id="li-image" class="sp-image" style="background:#e4e6eb;">1200 × 630</div>
+                        <div class="sp-body" style="background:#f3f2ef;padding:10px 14px;">
+                            <div id="li-title" class="sp-title" style="font-size:14px;color:#000;">Page Title</div>
+                            <div id="li-domain" class="sp-domain" style="font-size:11px;">example.com</div>
+                        </div>
+                    </div>
+
+                    <!-- Discord Preview -->
+                    <h3 style="font-size:16px;">Discord</h3>
+                    <div style="background:#2f3136;border-radius:4px;border-left:4px solid #5865f2;padding:12px;margin-bottom:20px;">
+                        <div id="dc-site" style="font-size:12px;color:#b9bbbe;margin-bottom:4px;">example.com</div>
+                        <div id="dc-title" style="font-size:16px;color:#00b0f4;font-weight:600;margin-bottom:4px;">Page Title</div>
+                        <div id="dc-desc" style="font-size:14px;color:#dcddde;margin-bottom:8px;">Description...</div>
+                        <div id="dc-image" style="max-width:400px;height:100px;background:#36393f;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#72767d;font-size:12px;">Image preview</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated HTML -->
+            <div style="margin-top:24px;">
+                <label style="display:block;margin-bottom:8px;">Generated Meta Tags</label>
+                <textarea id="html-output" readonly style="height:120px;font-family:'JetBrains Mono',monospace;font-size:12px;"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="copyHTML()">Copy HTML</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About Open Graph Preview</h2>
+            <p>Open Graph (OG) tags control how your content appears when shared on social media. Getting them right increases click-through rates by up to 2-3x compared to pages with missing or poorly configured OG tags.</p>
+            <h3>Essential OG Tags</h3>
+            <ul>
+                <li><strong>og:title:</strong> The title shown in the social share card (different from your page title)</li>
+                <li><strong>og:description:</strong> A brief summary (200 chars max for most platforms)</li>
+                <li><strong>og:image:</strong> Preview image — 1200×630px is the universal recommended size</li>
+                <li><strong>og:url:</strong> The canonical URL of the content</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>What image size should I use?</h4>
+            <p>1200×630 pixels works across all platforms. Facebook requires at least 600×315. Twitter accepts 2:1 or 1:1. LinkedIn needs at least 1200×627. The 1200×630 size is the sweet spot.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <style>
+    .og-label { display:block;font-size:12px;color:var(--text-muted);margin-bottom:3px;font-family:'JetBrains Mono',monospace; }
+    .og-input { width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:14px;font-family:inherit; }
+    .social-preview { background:#fff;border:1px solid #dadce0;border-radius:8px;overflow:hidden; }
+    .sp-image { height:160px;display:flex;align-items:center;justify-content:center;color:#9aa0a6;font-size:14px;background-size:cover;background-position:center; }
+    .sp-body { padding:10px 12px; }
+    .sp-domain { font-size:11px;color:#65676b;text-transform:uppercase;margin-bottom:2px; }
+    .sp-title { font-size:15px;font-weight:600;color:#1d2129;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .sp-desc { font-size:13px;color:#606770;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+    </style>
+    <script>
+    function updatePreviews() {
+        const title = document.getElementById('og-title').value || 'Page Title';
+        const desc = document.getElementById('og-desc').value || 'Page description will appear here...';
+        const image = document.getElementById('og-image').value;
+        const url = document.getElementById('og-url').value;
+        const site = document.getElementById('og-site').value;
+
+        let domain = 'example.com';
+        if (url) { try { domain = new URL(url).hostname; } catch(e) {} }
+
+        // Facebook
+        document.getElementById('fb-title').textContent = title;
+        document.getElementById('fb-desc').textContent = desc;
+        document.getElementById('fb-domain').textContent = domain.toUpperCase();
+        setImage('fb-image', image);
+
+        // Twitter
+        document.getElementById('tw-title').textContent = title;
+        document.getElementById('tw-desc').textContent = desc;
+        document.getElementById('tw-domain').textContent = domain;
+        setImage('tw-image', image);
+
+        // LinkedIn
+        document.getElementById('li-title').textContent = title;
+        document.getElementById('li-domain').textContent = domain;
+        setImage('li-image', image);
+
+        // Discord
+        document.getElementById('dc-title').textContent = title;
+        document.getElementById('dc-desc').textContent = desc;
+        document.getElementById('dc-site').textContent = site || domain;
+        setImage('dc-image', image);
+
+        // Generate HTML
+        const lines = [];
+        if (document.getElementById('og-title').value) lines.push(`<meta property="og:title" content="${esc(title)}">`);
+        if (document.getElementById('og-desc').value) lines.push(`<meta property="og:description" content="${esc(desc)}">`);
+        if (image) lines.push(`<meta property="og:image" content="${esc(image)}">`);
+        if (url) lines.push(`<meta property="og:url" content="${esc(url)}">`);
+        if (site) lines.push(`<meta property="og:site_name" content="${esc(site)}">`);
+        lines.push(`<meta property="og:type" content="website">`);
+        lines.push('');
+        lines.push(`<meta name="twitter:card" content="summary_large_image">`);
+        if (document.getElementById('og-title').value) lines.push(`<meta name="twitter:title" content="${esc(title)}">`);
+        if (document.getElementById('og-desc').value) lines.push(`<meta name="twitter:description" content="${esc(desc)}">`);
+        if (image) lines.push(`<meta name="twitter:image" content="${esc(image)}">`);
+        document.getElementById('html-output').value = lines.join('\n');
+    }
+
+    function setImage(id, url) {
+        const el = document.getElementById(id);
+        if (url) {
+            el.style.backgroundImage = `url(${url})`;
+            el.style.backgroundSize = 'cover';
+            el.textContent = '';
+        } else {
+            el.style.backgroundImage = '';
+            el.textContent = '1200 × 630';
+        }
+    }
+
+    function esc(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+    function loadExample() {
+        document.getElementById('og-title').value = 'How to Build a Modern Web App in 2026';
+        document.getElementById('og-desc').value = 'A comprehensive guide to building production-ready web applications with React, TypeScript, and modern deployment strategies. Covers architecture, testing, CI/CD, and monitoring.';
+        document.getElementById('og-image').value = 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop';
+        document.getElementById('og-url').value = 'https://example.com/blog/modern-web-app-guide';
+        document.getElementById('og-site').value = 'DevBlog';
+        updatePreviews();
+    }
+
+    function copyHTML() {
+        const html = document.getElementById('html-output').value;
+        if (!html) return;
+        navigator.clipboard.writeText(html).then(() => showStatus('HTML copied!','success'));
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+
+    updatePreviews();
+    </script>
+</body>
+</html>

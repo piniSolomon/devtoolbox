@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Border Radius Generator - CSS Tool | DevToolBox</title>
+    <meta name="description" content="Free online CSS border-radius generator. Create complex rounded corners with visual controls. Individual corner values, percentage/pixel units, and live preview.">
+    <meta name="keywords" content="border radius generator, css border radius, rounded corners, css generator, border radius tool, corner radius, css rounded, pill shape, circle css">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/border-radius-generator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Border Radius Generator</div>
+            <h1>CSS Border Radius Generator</h1>
+            <p>Create rounded corners with a visual editor. Adjust each corner independently or uniformly. Copy the CSS instantly.</p>
+        </div>
+        <div class="tool-container">
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                <!-- Preview -->
+                <div style="flex:1;min-width:280px;">
+                    <label style="display:block;margin-bottom:8px;">Preview</label>
+                    <div style="background:#f3f4f6;padding:40px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:280px;">
+                        <div id="preview-box" style="width:220px;height:180px;background:var(--accent);transition:border-radius 0.2s;"></div>
+                    </div>
+                    <div class="option-row" style="margin-top:8px;">
+                        <label>Width: <input type="number" id="box-w" value="220" min="50" max="400" onchange="updateBox()" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);"> px</label>
+                        <label>Height: <input type="number" id="box-h" value="180" min="50" max="400" onchange="updateBox()" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);"> px</label>
+                        <label>Color: <input type="color" id="box-color" value="#6366f1" onchange="updateBox()"></label>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div style="flex:1;min-width:260px;">
+                    <div style="margin-bottom:12px;">
+                        <label><input type="checkbox" id="link-corners" checked onchange="toggleLink()"> Link all corners</label>
+                    </div>
+
+                    <div class="corner-control">
+                        <label class="corner-label">Top Left: <strong id="tl-val">12</strong>px</label>
+                        <input type="range" id="tl" min="0" max="200" value="12" oninput="updateCorner('tl')" style="width:100%;">
+                    </div>
+                    <div class="corner-control">
+                        <label class="corner-label">Top Right: <strong id="tr-val">12</strong>px</label>
+                        <input type="range" id="tr" min="0" max="200" value="12" oninput="updateCorner('tr')" style="width:100%;">
+                    </div>
+                    <div class="corner-control">
+                        <label class="corner-label">Bottom Right: <strong id="br-val">12</strong>px</label>
+                        <input type="range" id="br" min="0" max="200" value="12" oninput="updateCorner('br')" style="width:100%;">
+                    </div>
+                    <div class="corner-control">
+                        <label class="corner-label">Bottom Left: <strong id="bl-val">12</strong>px</label>
+                        <input type="range" id="bl" min="0" max="200" value="12" oninput="updateCorner('bl')" style="width:100%;">
+                    </div>
+
+                    <div class="option-row" style="margin-top:12px;">
+                        <label>Unit:
+                            <select id="unit" onchange="updateRadius()">
+                                <option value="px">px</option>
+                                <option value="%">%</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">Presets</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                            <button class="btn btn-secondary" onclick="setPreset(0,0,0,0)" style="font-size:12px;">None</button>
+                            <button class="btn btn-secondary" onclick="setPreset(4,4,4,4)" style="font-size:12px;">Subtle</button>
+                            <button class="btn btn-secondary" onclick="setPreset(8,8,8,8)" style="font-size:12px;">Small</button>
+                            <button class="btn btn-secondary" onclick="setPreset(16,16,16,16)" style="font-size:12px;">Medium</button>
+                            <button class="btn btn-secondary" onclick="setPreset(24,24,24,24)" style="font-size:12px;">Large</button>
+                            <button class="btn btn-secondary" onclick="setPreset(100,100,100,100)" style="font-size:12px;">Pill</button>
+                            <button class="btn btn-secondary" onclick="setPreset(50,50,50,50);document.getElementById('unit').value='%';updateRadius();" style="font-size:12px;">Circle</button>
+                            <button class="btn btn-secondary" onclick="setPreset(20,0,20,0)" style="font-size:12px;">Leaf</button>
+                            <button class="btn btn-secondary" onclick="setPreset(50,0,0,50)" style="font-size:12px;">Tab</button>
+                            <button class="btn btn-secondary" onclick="setPreset(30,30,0,0)" style="font-size:12px;">Arch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:24px;">
+                <label for="css-output" style="display:block;margin-bottom:8px;">Generated CSS</label>
+                <textarea id="css-output" readonly style="height:60px;font-family:'JetBrains Mono',monospace;font-size:13px;"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="copyCss()">Copy CSS</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About CSS Border Radius</h2>
+            <p>The <code>border-radius</code> property rounds the corners of an element's border. You can set all corners equally, each corner individually, or even create elliptical corners.</p>
+            <h3>Syntax</h3>
+            <ul>
+                <li><code>border-radius: 10px;</code> — all corners equal</li>
+                <li><code>border-radius: 10px 20px;</code> — top-left/bottom-right, top-right/bottom-left</li>
+                <li><code>border-radius: 10px 20px 30px 40px;</code> — TL, TR, BR, BL</li>
+                <li><code>border-radius: 50%;</code> — perfect circle (on a square element)</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>How do I make a perfect circle?</h4>
+            <p>Set <code>border-radius: 50%</code> on a square element (equal width and height). For a non-square element, 50% creates an ellipse, which can also be useful.</p>
+            <h4>What's the difference between px and % for border-radius?</h4>
+            <p>Pixel values give fixed radii regardless of element size. Percentage values are relative to the element's dimensions — 50% always creates the maximum rounding (circle/ellipse), while a large px value may not fully round a large element.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <style>
+    .corner-control { margin-bottom:12px; }
+    .corner-label { display:block; font-size:13px; color:var(--text-muted); margin-bottom:4px; }
+    </style>
+    <script>
+    let linked = true;
+
+    function toggleLink() { linked = document.getElementById('link-corners').checked; }
+
+    function updateCorner(id) {
+        const val = document.getElementById(id).value;
+        document.getElementById(id+'-val').textContent = val;
+        if (linked) {
+            ['tl','tr','br','bl'].forEach(c => {
+                document.getElementById(c).value = val;
+                document.getElementById(c+'-val').textContent = val;
+            });
+        }
+        updateRadius();
+    }
+
+    function updateRadius() {
+        const unit = document.getElementById('unit').value;
+        const tl = document.getElementById('tl').value;
+        const tr = document.getElementById('tr').value;
+        const br = document.getElementById('br').value;
+        const bl = document.getElementById('bl').value;
+
+        const radius = `${tl}${unit} ${tr}${unit} ${br}${unit} ${bl}${unit}`;
+        document.getElementById('preview-box').style.borderRadius = radius;
+
+        // Simplify CSS output
+        let css;
+        if (tl === tr && tr === br && br === bl) {
+            css = `border-radius: ${tl}${unit};`;
+        } else if (tl === br && tr === bl) {
+            css = `border-radius: ${tl}${unit} ${tr}${unit};`;
+        } else {
+            css = `border-radius: ${tl}${unit} ${tr}${unit} ${br}${unit} ${bl}${unit};`;
+        }
+
+        document.getElementById('css-output').value = css;
+    }
+
+    function setPreset(tl, tr, br, bl) {
+        document.getElementById('tl').value = tl; document.getElementById('tl-val').textContent = tl;
+        document.getElementById('tr').value = tr; document.getElementById('tr-val').textContent = tr;
+        document.getElementById('br').value = br; document.getElementById('br-val').textContent = br;
+        document.getElementById('bl').value = bl; document.getElementById('bl-val').textContent = bl;
+        linked = tl === tr && tr === br && br === bl;
+        document.getElementById('link-corners').checked = linked;
+        updateRadius();
+    }
+
+    function updateBox() {
+        const box = document.getElementById('preview-box');
+        box.style.width = document.getElementById('box-w').value + 'px';
+        box.style.height = document.getElementById('box-h').value + 'px';
+        box.style.background = document.getElementById('box-color').value;
+    }
+
+    function copyCss() {
+        const css = document.getElementById('css-output').value;
+        navigator.clipboard.writeText(css).then(() => showStatus('CSS copied!','success'));
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+
+    updateRadius();
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Event KeyCodes - Keyboard Event Reference | DevToolBox</title>
+    <meta name="description" content="Free online JavaScript keyboard event reference. Press any key to see its keyCode, key, code, which, and location values. Essential for handling keyboard events in web apps.">
+    <meta name="keywords" content="javascript keycode, keyboard event, keydown event, key code reference, event.key, event.code, keypress event, keyboard shortcut detector, javascript key events">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/keycode-info.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / KeyCode Info</div>
+            <h1>JavaScript KeyCode Info</h1>
+            <p>Press any key to see all keyboard event properties. Essential reference for handling keyboard events.</p>
+        </div>
+        <div class="tool-container">
+            <div id="prompt" style="text-align:center;padding:48px;background:var(--surface);border:2px dashed var(--border);border-radius:12px;margin-bottom:16px;cursor:pointer;" tabindex="0">
+                <div style="font-size:48px;margin-bottom:12px;">⌨</div>
+                <p style="font-size:18px;font-weight:600;">Press any key</p>
+                <p style="color:var(--text-muted);font-size:13px;">Click here first if keys aren't detected</p>
+            </div>
+
+            <div id="key-display" style="display:none;text-align:center;margin-bottom:24px;">
+                <div id="key-visual" style="display:inline-block;min-width:80px;padding:20px 32px;background:var(--surface);border:2px solid var(--accent);border-radius:12px;font-size:36px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent);box-shadow:0 4px 12px rgba(99,102,241,0.2);"></div>
+            </div>
+
+            <div id="key-info" style="display:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                    <div class="key-prop"><div class="key-prop-label">event.key</div><div class="key-prop-value" id="prop-key">-</div><div class="key-prop-desc">The key value</div></div>
+                    <div class="key-prop"><div class="key-prop-label">event.code</div><div class="key-prop-value" id="prop-code">-</div><div class="key-prop-desc">Physical key position</div></div>
+                    <div class="key-prop"><div class="key-prop-label">event.keyCode</div><div class="key-prop-value" id="prop-keycode">-</div><div class="key-prop-desc">Numeric key code (deprecated)</div></div>
+                    <div class="key-prop"><div class="key-prop-label">event.which</div><div class="key-prop-value" id="prop-which">-</div><div class="key-prop-desc">Same as keyCode (deprecated)</div></div>
+                    <div class="key-prop"><div class="key-prop-label">event.location</div><div class="key-prop-value" id="prop-location">-</div><div class="key-prop-desc">Key location on keyboard</div></div>
+                    <div class="key-prop"><div class="key-prop-label">event.type</div><div class="key-prop-value" id="prop-type">-</div><div class="key-prop-desc">Event type</div></div>
+                </div>
+
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                    <div class="modifier-badge" id="mod-shift">Shift</div>
+                    <div class="modifier-badge" id="mod-ctrl">Ctrl</div>
+                    <div class="modifier-badge" id="mod-alt">Alt</div>
+                    <div class="modifier-badge" id="mod-meta">Meta</div>
+                    <div class="modifier-badge" id="mod-repeat">Repeat</div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Code Snippet</label>
+                    <textarea id="code-snippet" readonly style="height:80px;font-family:'JetBrains Mono',monospace;font-size:12px;"></textarea>
+                    <button class="btn btn-secondary" onclick="copySnippet()" style="margin-top:4px;">Copy Code</button>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">Event History</label>
+                    <div id="history" style="max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;"></div>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About JavaScript KeyCode Info</h2>
+            <p>Keyboard events in JavaScript provide several properties to identify which key was pressed. Understanding these properties is essential for building keyboard shortcuts, game controls, and accessible interfaces.</p>
+            <h3>Key Properties</h3>
+            <ul>
+                <li><strong>event.key:</strong> The actual character or key name ("a", "Enter", "ArrowUp"). This is the modern, recommended property.</li>
+                <li><strong>event.code:</strong> The physical key position ("KeyA", "Enter", "ArrowUp"). Same regardless of keyboard layout or modifier keys.</li>
+                <li><strong>event.keyCode:</strong> Numeric code (deprecated but widely used). 65 = A, 13 = Enter, 27 = Escape.</li>
+                <li><strong>event.location:</strong> 0 = standard, 1 = left, 2 = right, 3 = numpad</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>Should I use keyCode or key?</h4>
+            <p>Use <code>event.key</code> for new code. <code>keyCode</code> is deprecated and varies across browsers and keyboard layouts. <code>event.key</code> gives human-readable values like "Enter", "Escape", "a", making code more maintainable.</p>
+            <h4>keydown vs keypress vs keyup?</h4>
+            <p><code>keydown</code> fires when a key is pressed (including modifiers and non-character keys). <code>keypress</code> is deprecated. <code>keyup</code> fires when a key is released. Use <code>keydown</code> for most keyboard handling.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <style>
+    .key-prop { padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;text-align:center; }
+    .key-prop-label { font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px; }
+    .key-prop-value { font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent);word-break:break-all; }
+    .key-prop-desc { font-size:10px;color:var(--text-muted);margin-top:4px; }
+    .modifier-badge { padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);transition:all 0.15s; }
+    .modifier-badge.active { background:var(--accent);color:#fff;border-color:var(--accent); }
+    </style>
+    <script>
+    const history = [];
+    const LOCATIONS = ['Standard', 'Left', 'Right', 'Numpad'];
+
+    document.addEventListener('keydown', function(e) {
+        e.preventDefault();
+
+        document.getElementById('prompt').style.display = 'none';
+        document.getElementById('key-display').style.display = '';
+        document.getElementById('key-info').style.display = '';
+
+        // Key visual
+        let display = e.key;
+        if (e.key === ' ') display = 'Space';
+        if (e.key.length > 1) display = e.key;
+        document.getElementById('key-visual').textContent = display;
+
+        // Properties
+        document.getElementById('prop-key').textContent = e.key === ' ' ? '" "' : e.key;
+        document.getElementById('prop-code').textContent = e.code;
+        document.getElementById('prop-keycode').textContent = e.keyCode;
+        document.getElementById('prop-which').textContent = e.which;
+        document.getElementById('prop-location').textContent = `${e.location} (${LOCATIONS[e.location] || 'Unknown'})`;
+        document.getElementById('prop-type').textContent = e.type;
+
+        // Modifiers
+        document.getElementById('mod-shift').classList.toggle('active', e.shiftKey);
+        document.getElementById('mod-ctrl').classList.toggle('active', e.ctrlKey);
+        document.getElementById('mod-alt').classList.toggle('active', e.altKey);
+        document.getElementById('mod-meta').classList.toggle('active', e.metaKey);
+        document.getElementById('mod-repeat').classList.toggle('active', e.repeat);
+
+        // Code snippet
+        let conditions = [`e.key === '${e.key === "'" ? "\\'" : e.key}'`];
+        if (e.ctrlKey) conditions.unshift('e.ctrlKey');
+        if (e.shiftKey) conditions.unshift('e.shiftKey');
+        if (e.altKey) conditions.unshift('e.altKey');
+        if (e.metaKey) conditions.unshift('e.metaKey');
+
+        document.getElementById('code-snippet').value =
+`document.addEventListener('keydown', (e) => {
+  if (${conditions.join(' && ')}) {
+    e.preventDefault();
+    // Your action here
+  }
+});`;
+
+        // History
+        const mods = [e.ctrlKey?'Ctrl':'', e.shiftKey?'Shift':'', e.altKey?'Alt':'', e.metaKey?'Meta':''].filter(Boolean).join('+');
+        history.unshift(`${mods ? mods+'+' : ''}${e.key} | code: ${e.code} | keyCode: ${e.keyCode}`);
+        if (history.length > 20) history.pop();
+        document.getElementById('history').innerHTML = history.map(h => `<div style="padding:2px 0;border-bottom:1px solid var(--border);">${h}</div>`).join('');
+    });
+
+    function copySnippet() {
+        const code = document.getElementById('code-snippet').value;
+        if (!code) return;
+        navigator.clipboard.writeText(code).then(() => showStatus('Code copied!', 'success'));
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+    </script>
+</body>
+</html>

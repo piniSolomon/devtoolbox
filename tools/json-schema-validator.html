@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Schema Validator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online JSON Schema validator. Validate JSON data against a JSON Schema definition. Supports Draft-07 with detailed error messages. No sign-up required.">
+    <meta name="keywords" content="json schema validator, validate json schema, json schema checker, json schema tester, json validation, json schema draft 07, schema validation online">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/json-schema-validator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JSON Schema Validator</div>
+            <h1>JSON Schema Validator</h1>
+            <p>Validate JSON data against a JSON Schema. Check if your API responses, config files, or data models match their schema definition.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="schema-input">JSON Schema</label>
+                    <textarea id="schema-input" placeholder='{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "age": { "type": "integer", "minimum": 0 }
+  },
+  "required": ["name"]
+}'></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="data-input">JSON Data</label>
+                    <textarea id="data-input" placeholder='{
+  "name": "John",
+  "age": 30
+}'></textarea>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="validate()">Validate</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+                <button class="btn btn-secondary" onclick="swapPanels()">Swap</button>
+            </div>
+
+            <div id="results" style="margin-top:16px;display:none;">
+                <div id="result-header" style="padding:16px;border-radius:8px;margin-bottom:12px;"></div>
+                <div id="error-list"></div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About JSON Schema Validator</h2>
+            <p>JSON Schema is a vocabulary for annotating and validating JSON documents. It describes the structure, types, and constraints of your JSON data, enabling automatic validation in APIs, forms, and configuration systems.</p>
+            <h3>Supported Validations</h3>
+            <ul>
+                <li><strong>Type checking:</strong> string, number, integer, boolean, array, object, null</li>
+                <li><strong>String:</strong> minLength, maxLength, pattern (regex)</li>
+                <li><strong>Number:</strong> minimum, maximum, exclusiveMinimum, exclusiveMaximum, multipleOf</li>
+                <li><strong>Array:</strong> minItems, maxItems, uniqueItems, items schema</li>
+                <li><strong>Object:</strong> required properties, additionalProperties, minProperties, maxProperties</li>
+                <li><strong>Enum:</strong> restrict to specific values</li>
+                <li><strong>Format:</strong> email, uri, date-time, ipv4, ipv6, uuid</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>What JSON Schema version does this support?</h4>
+            <p>This validator supports a practical subset of JSON Schema Draft-07, covering the most commonly used keywords. For advanced features like $ref, allOf/anyOf/oneOf, use a dedicated schema validator library.</p>
+            <h4>Where is JSON Schema used?</h4>
+            <p>API documentation (OpenAPI/Swagger), form validation, configuration files, database schema validation, CI/CD pipeline validation, and AI tool/function definitions.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <script>
+    function validate() {
+        const schemaText = document.getElementById('schema-input').value;
+        const dataText = document.getElementById('data-input').value;
+
+        if (!schemaText.trim() || !dataText.trim()) {
+            showStatus('Enter both schema and data', 'error');
+            return;
+        }
+
+        let schema, data;
+        try { schema = JSON.parse(schemaText); } catch(e) { showStatus('Invalid JSON in schema: ' + e.message, 'error'); return; }
+        try { data = JSON.parse(dataText); } catch(e) { showStatus('Invalid JSON in data: ' + e.message, 'error'); return; }
+
+        const errors = validateValue(data, schema, '');
+        const results = document.getElementById('results');
+        const header = document.getElementById('result-header');
+        const errorList = document.getElementById('error-list');
+        results.style.display = '';
+
+        if (errors.length === 0) {
+            header.style.background = 'rgba(34,197,94,0.1)';
+            header.style.border = '1px solid rgba(34,197,94,0.3)';
+            header.innerHTML = '<div style="color:#22c55e;font-size:18px;font-weight:700;">✓ Valid</div><div style="color:var(--text-muted);font-size:13px;margin-top:4px;">JSON data matches the schema.</div>';
+            errorList.innerHTML = '';
+        } else {
+            header.style.background = 'rgba(239,68,68,0.1)';
+            header.style.border = '1px solid rgba(239,68,68,0.3)';
+            header.innerHTML = `<div style="color:#ef4444;font-size:18px;font-weight:700;">✗ Invalid</div><div style="color:var(--text-muted);font-size:13px;margin-top:4px;">${errors.length} validation error(s) found.</div>`;
+            errorList.innerHTML = errors.map(e => `
+                <div style="padding:10px 14px;margin-bottom:4px;border-left:3px solid #ef4444;background:var(--surface);border-radius:0 6px 6px 0;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#ef4444;">${e.path || '(root)'}</div>
+                    <div style="font-size:13px;margin-top:2px;">${e.message}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function validateValue(data, schema, path) {
+        const errors = [];
+
+        // Type check
+        if (schema.type) {
+            const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+            const actualType = getType(data);
+            if (!types.includes(actualType) && !(actualType === 'integer' && types.includes('number'))) {
+                errors.push({ path, message: `Expected type "${schema.type}" but got "${actualType}"` });
+                return errors; // Skip further checks if type is wrong
+            }
+        }
+
+        // Enum
+        if (schema.enum) {
+            if (!schema.enum.some(v => JSON.stringify(v) === JSON.stringify(data))) {
+                errors.push({ path, message: `Value must be one of: ${schema.enum.map(v => JSON.stringify(v)).join(', ')}` });
+            }
+        }
+
+        // Const
+        if ('const' in schema) {
+            if (JSON.stringify(data) !== JSON.stringify(schema.const)) {
+                errors.push({ path, message: `Value must be ${JSON.stringify(schema.const)}` });
+            }
+        }
+
+        // String validations
+        if (typeof data === 'string') {
+            if (schema.minLength !== undefined && data.length < schema.minLength) {
+                errors.push({ path, message: `String is too short (${data.length} < ${schema.minLength})` });
+            }
+            if (schema.maxLength !== undefined && data.length > schema.maxLength) {
+                errors.push({ path, message: `String is too long (${data.length} > ${schema.maxLength})` });
+            }
+            if (schema.pattern) {
+                try {
+                    if (!new RegExp(schema.pattern).test(data)) {
+                        errors.push({ path, message: `String does not match pattern "${schema.pattern}"` });
+                    }
+                } catch(e) {}
+            }
+            if (schema.format) {
+                const formatErrors = validateFormat(data, schema.format, path);
+                errors.push(...formatErrors);
+            }
+        }
+
+        // Number validations
+        if (typeof data === 'number') {
+            if (schema.minimum !== undefined && data < schema.minimum) {
+                errors.push({ path, message: `Number ${data} is less than minimum ${schema.minimum}` });
+            }
+            if (schema.maximum !== undefined && data > schema.maximum) {
+                errors.push({ path, message: `Number ${data} is greater than maximum ${schema.maximum}` });
+            }
+            if (schema.exclusiveMinimum !== undefined && data <= schema.exclusiveMinimum) {
+                errors.push({ path, message: `Number ${data} must be greater than ${schema.exclusiveMinimum}` });
+            }
+            if (schema.exclusiveMaximum !== undefined && data >= schema.exclusiveMaximum) {
+                errors.push({ path, message: `Number ${data} must be less than ${schema.exclusiveMaximum}` });
+            }
+            if (schema.multipleOf !== undefined && data % schema.multipleOf !== 0) {
+                errors.push({ path, message: `Number ${data} must be a multiple of ${schema.multipleOf}` });
+            }
+        }
+
+        // Array validations
+        if (Array.isArray(data)) {
+            if (schema.minItems !== undefined && data.length < schema.minItems) {
+                errors.push({ path, message: `Array has ${data.length} items, minimum is ${schema.minItems}` });
+            }
+            if (schema.maxItems !== undefined && data.length > schema.maxItems) {
+                errors.push({ path, message: `Array has ${data.length} items, maximum is ${schema.maxItems}` });
+            }
+            if (schema.uniqueItems && new Set(data.map(JSON.stringify)).size !== data.length) {
+                errors.push({ path, message: 'Array items must be unique' });
+            }
+            if (schema.items) {
+                data.forEach((item, i) => {
+                    errors.push(...validateValue(item, schema.items, `${path}[${i}]`));
+                });
+            }
+        }
+
+        // Object validations
+        if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+            const keys = Object.keys(data);
+
+            if (schema.required) {
+                for (const req of schema.required) {
+                    if (!(req in data)) {
+                        errors.push({ path: path ? `${path}.${req}` : req, message: `Required property "${req}" is missing` });
+                    }
+                }
+            }
+
+            if (schema.properties) {
+                for (const [key, propSchema] of Object.entries(schema.properties)) {
+                    if (key in data) {
+                        errors.push(...validateValue(data[key], propSchema, path ? `${path}.${key}` : key));
+                    }
+                }
+            }
+
+            if (schema.additionalProperties === false) {
+                const allowed = new Set(Object.keys(schema.properties || {}));
+                for (const key of keys) {
+                    if (!allowed.has(key)) {
+                        errors.push({ path: path ? `${path}.${key}` : key, message: `Additional property "${key}" is not allowed` });
+                    }
+                }
+            }
+
+            if (schema.minProperties !== undefined && keys.length < schema.minProperties) {
+                errors.push({ path, message: `Object has ${keys.length} properties, minimum is ${schema.minProperties}` });
+            }
+            if (schema.maxProperties !== undefined && keys.length > schema.maxProperties) {
+                errors.push({ path, message: `Object has ${keys.length} properties, maximum is ${schema.maxProperties}` });
+            }
+        }
+
+        return errors;
+    }
+
+    function getType(value) {
+        if (value === null) return 'null';
+        if (Array.isArray(value)) return 'array';
+        if (typeof value === 'number') return Number.isInteger(value) ? 'integer' : 'number';
+        return typeof value;
+    }
+
+    function validateFormat(value, format, path) {
+        const patterns = {
+            'email': /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            'uri': /^https?:\/\/.+/,
+            'date-time': /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+            'date': /^\d{4}-\d{2}-\d{2}$/,
+            'time': /^\d{2}:\d{2}:\d{2}/,
+            'ipv4': /^(\d{1,3}\.){3}\d{1,3}$/,
+            'ipv6': /^[0-9a-fA-F:]+$/,
+            'uuid': /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        };
+        if (patterns[format] && !patterns[format].test(value)) {
+            return [{ path, message: `String does not match format "${format}"` }];
+        }
+        return [];
+    }
+
+    function swapPanels() { const a=document.getElementById('schema-input'),b=document.getElementById('data-input'); [a.value,b.value]=[b.value,a.value]; }
+    function clearAll() { document.getElementById('schema-input').value=''; document.getElementById('data-input').value=''; document.getElementById('results').style.display='none'; document.getElementById('status').classList.remove('show'); }
+
+    function loadSample() {
+        document.getElementById('schema-input').value = JSON.stringify({
+            type: "object",
+            properties: {
+                id: { type: "integer", minimum: 1 },
+                name: { type: "string", minLength: 1, maxLength: 100 },
+                email: { type: "string", format: "email" },
+                age: { type: "integer", minimum: 0, maximum: 150 },
+                role: { type: "string", enum: ["admin", "user", "moderator"] },
+                tags: { type: "array", items: { type: "string" }, uniqueItems: true }
+            },
+            required: ["id", "name", "email"],
+            additionalProperties: false
+        }, null, 2);
+        document.getElementById('data-input').value = JSON.stringify({
+            id: 1,
+            name: "Jane Doe",
+            email: "jane@example.com",
+            age: 28,
+            role: "admin",
+            tags: ["developer", "team-lead"]
+        }, null, 2);
+        validate();
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+    </script>
+</body>
+</html>

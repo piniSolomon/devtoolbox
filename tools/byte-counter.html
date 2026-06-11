@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte / Bit Counter - Text Size Calculator | DevToolBox</title>
+    <meta name="description" content="Free online byte and bit counter. Calculate the size of text in bytes, kilobytes, and bits for UTF-8, UTF-16, ASCII, and Latin-1 encodings. Perfect for database field sizing.">
+    <meta name="keywords" content="byte counter, text size calculator, string length bytes, utf-8 size, character encoding size, bit counter, text byte count, database field size, varchar length">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/byte-counter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Byte Counter</div>
+            <h1>Byte / Bit Counter</h1>
+            <p>Calculate the size of text in bytes, kilobytes, and bits across different character encodings.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col" style="flex:1;">
+                    <label for="input">Text Input</label>
+                    <textarea id="input" placeholder="Type or paste text here to see its size in bytes..." oninput="calculate()"></textarea>
+                </div>
+            </div>
+
+            <div id="results" style="margin-top:16px;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+                    <div class="stat-card">
+                        <div class="stat-label">Characters</div>
+                        <div class="stat-value" id="chars">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Code Points</div>
+                        <div class="stat-value" id="codepoints">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value" id="lines">0</div>
+                    </div>
+                </div>
+
+                <h3 style="font-size:16px;margin-top:20px;">Size by Encoding</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;padding:8px 12px;border-bottom:2px solid var(--border);">Encoding</th>
+                                <th style="text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);">Bytes</th>
+                                <th style="text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);">Bits</th>
+                                <th style="text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);">KB</th>
+                                <th style="text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);">Avg bytes/char</th>
+                            </tr>
+                        </thead>
+                        <tbody id="encoding-table"></tbody>
+                    </table>
+                </div>
+
+                <h3 style="font-size:16px;margin-top:20px;">Character Breakdown</h3>
+                <div id="breakdown" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="document.getElementById('input').value=''; calculate();">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About Byte Counter</h2>
+            <p>Different character encodings use different numbers of bytes to represent text. This matters for database column sizing (VARCHAR limits), API payload limits, URL length limits, and network bandwidth estimation.</p>
+            <h3>Encodings Explained</h3>
+            <ul>
+                <li><strong>UTF-8:</strong> 1-4 bytes per character. ASCII characters = 1 byte, most European = 2, CJK = 3, emoji = 4. The web standard.</li>
+                <li><strong>UTF-16:</strong> 2 or 4 bytes per character. Used by JavaScript internally, Windows APIs, Java/C#.</li>
+                <li><strong>ASCII:</strong> 1 byte per character, 0-127 only. Characters outside ASCII are counted as 1 byte (replacement char).</li>
+                <li><strong>Latin-1 (ISO-8859-1):</strong> 1 byte per character, 0-255. Covers Western European languages.</li>
+            </ul>
+            <h3>FAQ</h3>
+            <h4>Why is my string longer in bytes than in characters?</h4>
+            <p>Non-ASCII characters (accented letters, CJK, emoji) require multiple bytes in UTF-8. The string "Hello" is 5 bytes, but "Héllo" is 6 bytes (é = 2 bytes). An emoji like "🚀" is 4 bytes.</p>
+            <h4>Which encoding should I use for database columns?</h4>
+            <p>Use UTF-8 (specifically utf8mb4 in MySQL) for any text that might contain non-English characters or emoji. VARCHAR(255) in utf8mb4 can store 255 characters but up to 1020 bytes. Check your database's limits.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
+    <style>
+    .stat-card {
+        padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;text-align:center;
+    }
+    .stat-label { font-size:12px;color:var(--text-muted);margin-bottom:4px; }
+    .stat-value { font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent); }
+    </style>
+    <script>
+    function calculate() {
+        const text = document.getElementById('input').value;
+        const chars = text.length;
+        const codePoints = [...text].length;
+        const lines = text ? text.split('\n').length : 0;
+
+        document.getElementById('chars').textContent = chars.toLocaleString();
+        document.getElementById('codepoints').textContent = codePoints.toLocaleString();
+        document.getElementById('lines').textContent = lines.toLocaleString();
+
+        // Calculate sizes for each encoding
+        const utf8Bytes = new TextEncoder().encode(text).length;
+        const utf16Bytes = chars * 2; // Simplified; supplementary chars are 4 bytes
+        const asciiBytes = codePoints; // 1 byte per character (lossy)
+        const latin1Bytes = codePoints; // 1 byte per character (lossy)
+
+        const encodings = [
+            { name: 'UTF-8', bytes: utf8Bytes, note: 'Web standard' },
+            { name: 'UTF-16', bytes: utf16Bytes, note: 'JavaScript, Java' },
+            { name: 'ASCII', bytes: asciiBytes, note: '7-bit, English only' },
+            { name: 'Latin-1', bytes: latin1Bytes, note: 'Western European' },
+        ];
+
+        const tbody = document.getElementById('encoding-table');
+        tbody.innerHTML = '';
+        encodings.forEach(enc => {
+            const kb = (enc.bytes / 1024).toFixed(2);
+            const bits = enc.bytes * 8;
+            const avg = codePoints > 0 ? (enc.bytes / codePoints).toFixed(2) : '0';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><strong>${enc.name}</strong> <span style="color:var(--text-muted);font-size:12px;">(${enc.note})</span></td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-family:'JetBrains Mono',monospace;">${enc.bytes.toLocaleString()}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-family:'JetBrains Mono',monospace;">${bits.toLocaleString()}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-family:'JetBrains Mono',monospace;">${kb}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-family:'JetBrains Mono',monospace;">${avg}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Character breakdown
+        const categories = { ascii: 0, latin: 0, bmp: 0, supplementary: 0 };
+        for (const ch of text) {
+            const cp = ch.codePointAt(0);
+            if (cp <= 127) categories.ascii++;
+            else if (cp <= 255) categories.latin++;
+            else if (cp <= 0xFFFF) categories.bmp++;
+            else categories.supplementary++;
+        }
+
+        const breakdown = document.getElementById('breakdown');
+        breakdown.innerHTML = '';
+        const catInfo = [
+            { name: 'ASCII (0-127)', count: categories.ascii, bytes: '1 byte each (UTF-8)', color: '#22c55e' },
+            { name: 'Latin Extended (128-255)', count: categories.latin, bytes: '2 bytes each (UTF-8)', color: '#3b82f6' },
+            { name: 'BMP (256-65535)', count: categories.bmp, bytes: '2-3 bytes each (UTF-8)', color: '#f59e0b' },
+            { name: 'Supplementary (65536+)', count: categories.supplementary, bytes: '4 bytes each (UTF-8)', color: '#ef4444' },
+        ];
+        catInfo.forEach(cat => {
+            if (cat.count === 0 && !text) return;
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;';
+            div.innerHTML = `
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                    <div style="width:8px;height:8px;border-radius:50%;background:${cat.color};"></div>
+                    <span style="font-size:12px;font-weight:600;">${cat.name}</span>
+                </div>
+                <div style="font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;">${cat.count}</div>
+                <div style="font-size:11px;color:var(--text-muted);">${cat.bytes}</div>
+            `;
+            breakdown.appendChild(div);
+        });
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = 'Hello World! 🌍\nCafé résumé naïve\nТекст на русском\n日本語テキスト\n🚀 Rocket emoji = 4 UTF-8 bytes\n¢ = 2 bytes, € = 3 bytes';
+        calculate();
+    }
+
+    function showStatus(m,t) { const e=document.getElementById('status'); e.textContent=m; e.className='status show '+t; }
+
+    calculate();
+    </script>
+</body>
+</html>
