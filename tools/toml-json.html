@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOML to JSON Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online TOML to JSON converter. Convert between TOML and JSON formats for Rust, Go, Python configuration files. Bidirectional conversion. No sign-up required.">
+    <meta name="keywords" content="toml to json, json to toml, toml converter, toml parser, cargo toml, pyproject toml, config file converter, toml editor online">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/toml-json.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / TOML to JSON</div>
+            <h1>TOML to JSON Converter</h1>
+            <p>Convert between TOML and JSON formats. Perfect for Cargo.toml, pyproject.toml, and other configuration files.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">TOML Input</label>
+                    <textarea id="input" placeholder='[package]
+name = "my-project"
+version = "1.0.0"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }'></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">JSON Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Indent:
+                    <select id="indent-size">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="sort-keys"> Sort keys</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="tomlToJson()">TOML → JSON</button>
+                <button class="btn btn-primary" onclick="jsonToToml()">JSON → TOML</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="swapPanels()">Swap</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About TOML to JSON Converter</h2>
+            <p>Convert between TOML (Tom's Obvious, Minimal Language) and JSON formats. TOML is widely used for configuration files in Rust (Cargo.toml), Python (pyproject.toml), Go, and many other ecosystems.</p>
+
+            <h3>TOML Features Supported</h3>
+            <ul>
+                <li><strong>Tables:</strong> <code>[section]</code> and <code>[section.subsection]</code></li>
+                <li><strong>Inline tables:</strong> <code>{ key = "value", num = 42 }</code></li>
+                <li><strong>Arrays:</strong> <code>[1, 2, 3]</code> and array of tables <code>[[items]]</code></li>
+                <li><strong>Strings:</strong> Basic <code>"..."</code> and literal <code>'...'</code></li>
+                <li><strong>Numbers:</strong> Integers, floats, hex, octal, binary</li>
+                <li><strong>Booleans:</strong> <code>true</code> / <code>false</code></li>
+                <li><strong>Dates:</strong> <code>2026-06-11T10:30:00Z</code></li>
+                <li><strong>Comments:</strong> <code># comment</code></li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Where is TOML used?</h4>
+            <p>TOML is the standard config format for Rust (Cargo.toml), Python packaging (pyproject.toml), Hugo, Netlify, and many other tools. It's designed to be more readable than JSON and less ambiguous than YAML.</p>
+
+            <h4>TOML vs YAML vs JSON?</h4>
+            <p>TOML is simpler than YAML (no indentation sensitivity, fewer gotchas) and more readable than JSON (supports comments, no quotes on keys). Use TOML when you need a human-editable config format.</p>
+
+            <h4>Can TOML represent everything JSON can?</h4>
+            <p>Nearly. TOML has a stricter type system (integers vs. floats are distinct) and natively supports dates. The main limitation is that TOML can't represent null values — use empty strings or omit the key instead.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ============ TOML Parser ============
+    function parseTOML(input) {
+        const lines = input.split('\n');
+        const result = {};
+        let currentTable = result;
+        let currentPath = [];
+        let i = 0;
+
+        while (i < lines.length) {
+            let line = lines[i].trim();
+            i++;
+
+            // Skip empty lines and comments
+            if (!line || line.startsWith('#')) continue;
+
+            // Remove inline comments (not inside strings)
+            line = removeInlineComment(line);
+
+            // Array of tables [[...]]
+            if (line.startsWith('[[') && line.endsWith(']]')) {
+                const path = line.slice(2, -2).trim().split('.').map(k => unquoteKey(k.trim()));
+                currentPath = path;
+                let target = result;
+                for (let p = 0; p < path.length - 1; p++) {
+                    if (!(path[p] in target)) target[path[p]] = {};
+                    target = target[path[p]];
+                }
+                const lastKey = path[path.length - 1];
+                if (!(lastKey in target)) target[lastKey] = [];
+                if (!Array.isArray(target[lastKey])) target[lastKey] = [target[lastKey]];
+                const newObj = {};
+                target[lastKey].push(newObj);
+                currentTable = newObj;
+                continue;
+            }
+
+            // Table [...]
+            if (line.startsWith('[') && line.endsWith(']')) {
+                const path = line.slice(1, -1).trim().split('.').map(k => unquoteKey(k.trim()));
+                currentPath = path;
+                currentTable = result;
+                for (const key of path) {
+                    if (!(key in currentTable)) currentTable[key] = {};
+                    const val = currentTable[key];
+                    if (Array.isArray(val)) {
+                        currentTable = val[val.length - 1];
+                    } else {
+                        currentTable = val;
+                    }
+                }
+                continue;
+            }
+
+            // Key = Value
+            const eqIdx = findEquals(line);
+            if (eqIdx === -1) continue;
+
+            const rawKey = line.slice(0, eqIdx).trim();
+            const rawVal = line.slice(eqIdx + 1).trim();
+            const keys = rawKey.split('.').map(k => unquoteKey(k.trim()));
+
+            // Handle multi-line basic strings
+            let value = rawVal;
+            if (value.startsWith('"""')) {
+                while (!value.slice(3).includes('"""') && i < lines.length) {
+                    value += '\n' + lines[i];
+                    i++;
+                }
+            } else if (value.startsWith("'''")) {
+                while (!value.slice(3).includes("'''") && i < lines.length) {
+                    value += '\n' + lines[i];
+                    i++;
+                }
+            } else if ((value.startsWith('[') && !value.includes(']')) ||
+                       (value.startsWith('{') && !value.includes('}'))) {
+                // Multi-line array or inline table
+                while (i < lines.length) {
+                    value += ' ' + lines[i].trim();
+                    i++;
+                    if ((value.startsWith('[') && value.includes(']')) ||
+                        (value.startsWith('{') && value.includes('}'))) break;
+                }
+            }
+
+            const parsed = parseValue(value);
+
+            // Set nested key
+            let target = currentTable;
+            for (let k = 0; k < keys.length - 1; k++) {
+                if (!(keys[k] in target)) target[keys[k]] = {};
+                target = target[keys[k]];
+            }
+            target[keys[keys.length - 1]] = parsed;
+        }
+
+        return result;
+    }
+
+    function removeInlineComment(line) {
+        let inString = false;
+        let stringChar = '';
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inString) {
+                if (ch === '\\') { i++; continue; }
+                if (ch === stringChar) inString = false;
+            } else {
+                if (ch === '"' || ch === "'") { inString = true; stringChar = ch; }
+                else if (ch === '#') return line.slice(0, i).trim();
+            }
+        }
+        return line;
+    }
+
+    function findEquals(line) {
+        let inString = false;
+        let stringChar = '';
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inString) {
+                if (ch === '\\') { i++; continue; }
+                if (ch === stringChar) inString = false;
+            } else {
+                if (ch === '"' || ch === "'") { inString = true; stringChar = ch; }
+                else if (ch === '=') return i;
+            }
+        }
+        return -1;
+    }
+
+    function unquoteKey(key) {
+        if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+            return key.slice(1, -1);
+        }
+        return key;
+    }
+
+    function parseValue(val) {
+        val = val.trim();
+
+        // Multi-line basic string
+        if (val.startsWith('"""')) {
+            let s = val.slice(3);
+            if (s.endsWith('"""')) s = s.slice(0, -3);
+            if (s.startsWith('\n')) s = s.slice(1);
+            return processEscapes(s);
+        }
+
+        // Multi-line literal string
+        if (val.startsWith("'''")) {
+            let s = val.slice(3);
+            if (s.endsWith("'''")) s = s.slice(0, -3);
+            if (s.startsWith('\n')) s = s.slice(1);
+            return s;
+        }
+
+        // Basic string
+        if (val.startsWith('"') && val.endsWith('"')) {
+            return processEscapes(val.slice(1, -1));
+        }
+
+        // Literal string
+        if (val.startsWith("'") && val.endsWith("'")) {
+            return val.slice(1, -1);
+        }
+
+        // Boolean
+        if (val === 'true') return true;
+        if (val === 'false') return false;
+
+        // Integer (hex, oct, bin)
+        if (val.startsWith('0x') || val.startsWith('0X')) return parseInt(val, 16);
+        if (val.startsWith('0o') || val.startsWith('0O')) return parseInt(val.slice(2), 8);
+        if (val.startsWith('0b') || val.startsWith('0B')) return parseInt(val.slice(2), 2);
+
+        // Special floats
+        if (val === 'inf' || val === '+inf') return Infinity;
+        if (val === '-inf') return -Infinity;
+        if (val === 'nan' || val === '+nan' || val === '-nan') return NaN;
+
+        // Number (integer or float)
+        const numStr = val.replace(/_/g, '');
+        if (/^[+-]?\d+$/.test(numStr)) return parseInt(numStr, 10);
+        if (/^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(numStr)) return parseFloat(numStr);
+
+        // Date/Time
+        if (/^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/.test(val)) {
+            return val; // Keep as string
+        }
+
+        // Inline table
+        if (val.startsWith('{') && val.endsWith('}')) {
+            return parseInlineTable(val);
+        }
+
+        // Array
+        if (val.startsWith('[') && val.endsWith(']')) {
+            return parseArray(val);
+        }
+
+        return val;
+    }
+
+    function processEscapes(s) {
+        return s.replace(/\\(.)/g, (_, ch) => {
+            switch (ch) {
+                case 'n': return '\n';
+                case 't': return '\t';
+                case 'r': return '\r';
+                case '\\': return '\\';
+                case '"': return '"';
+                case 'b': return '\b';
+                case 'f': return '\f';
+                default: return '\\' + ch;
+            }
+        });
+    }
+
+    function parseInlineTable(val) {
+        const inner = val.slice(1, -1).trim();
+        if (!inner) return {};
+        const obj = {};
+        const pairs = splitTopLevel(inner, ',');
+        for (const pair of pairs) {
+            const eq = findEquals(pair);
+            if (eq === -1) continue;
+            const key = unquoteKey(pair.slice(0, eq).trim());
+            const value = parseValue(pair.slice(eq + 1).trim());
+            obj[key] = value;
+        }
+        return obj;
+    }
+
+    function parseArray(val) {
+        const inner = val.slice(1, -1).trim();
+        if (!inner) return [];
+        const items = splitTopLevel(inner, ',');
+        return items.filter(s => s.trim()).map(s => parseValue(s.trim()));
+    }
+
+    function splitTopLevel(str, delimiter) {
+        const parts = [];
+        let depth = 0;
+        let inString = false;
+        let stringChar = '';
+        let current = '';
+
+        for (let i = 0; i < str.length; i++) {
+            const ch = str[i];
+
+            if (inString) {
+                current += ch;
+                if (ch === '\\') { i++; current += str[i] || ''; continue; }
+                if (ch === stringChar) inString = false;
+                continue;
+            }
+
+            if (ch === '"' || ch === "'") { inString = true; stringChar = ch; current += ch; continue; }
+            if (ch === '[' || ch === '{') { depth++; current += ch; continue; }
+            if (ch === ']' || ch === '}') { depth--; current += ch; continue; }
+
+            if (ch === delimiter && depth === 0) {
+                parts.push(current);
+                current = '';
+                continue;
+            }
+
+            current += ch;
+        }
+
+        if (current.trim()) parts.push(current);
+        return parts;
+    }
+
+    // ============ JSON to TOML ============
+    function jsonToTOMLStr(obj, prefix = '') {
+        let result = '';
+        const simple = {};
+        const tables = {};
+        const arrayOfTables = {};
+
+        for (const [key, value] of Object.entries(obj)) {
+            if (value === null || value === undefined) continue;
+            if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && !Array.isArray(value[0])) {
+                arrayOfTables[key] = value;
+            } else if (typeof value === 'object' && !Array.isArray(value)) {
+                tables[key] = value;
+            } else {
+                simple[key] = value;
+            }
+        }
+
+        // Simple key-value pairs
+        for (const [key, value] of Object.entries(simple)) {
+            result += `${quoteKey(key)} = ${tomlValue(value)}\n`;
+        }
+
+        // Sub-tables
+        for (const [key, value] of Object.entries(tables)) {
+            const path = prefix ? `${prefix}.${quoteKey(key)}` : quoteKey(key);
+            result += `\n[${path}]\n`;
+            result += jsonToTOMLStr(value, path);
+        }
+
+        // Array of tables
+        for (const [key, arr] of Object.entries(arrayOfTables)) {
+            const path = prefix ? `${prefix}.${quoteKey(key)}` : quoteKey(key);
+            for (const item of arr) {
+                result += `\n[[${path}]]\n`;
+                result += jsonToTOMLStr(item, path);
+            }
+        }
+
+        return result;
+    }
+
+    function quoteKey(key) {
+        if (/^[A-Za-z0-9_-]+$/.test(key)) return key;
+        return '"' + key.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+    }
+
+    function tomlValue(val) {
+        if (typeof val === 'string') return '"' + val.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"';
+        if (typeof val === 'boolean') return val ? 'true' : 'false';
+        if (typeof val === 'number') {
+            if (!isFinite(val)) return val > 0 ? 'inf' : '-inf';
+            if (isNaN(val)) return 'nan';
+            return String(val);
+        }
+        if (Array.isArray(val)) {
+            if (val.length === 0) return '[]';
+            return '[' + val.map(v => tomlValue(v)).join(', ') + ']';
+        }
+        if (typeof val === 'object' && val !== null) {
+            const pairs = Object.entries(val).map(([k, v]) => `${quoteKey(k)} = ${tomlValue(v)}`);
+            return '{ ' + pairs.join(', ') + ' }';
+        }
+        return String(val);
+    }
+
+    // ============ UI Functions ============
+    function tomlToJson() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter TOML', 'error'); return; }
+
+        try {
+            const obj = parseTOML(input);
+            const sortKeys = document.getElementById('sort-keys').checked;
+            const indentVal = document.getElementById('indent-size').value;
+            const indent = indentVal === 'tab' ? '\t' : parseInt(indentVal);
+
+            const replacer = sortKeys ? Object.keys(obj).sort() : null;
+            document.getElementById('output').value = JSON.stringify(obj, sortKeys ? (key, val) => {
+                if (val && typeof val === 'object' && !Array.isArray(val)) {
+                    return Object.keys(val).sort().reduce((sorted, k) => { sorted[k] = val[k]; return sorted; }, {});
+                }
+                return val;
+            } : null, indent);
+            showStatus('TOML converted to JSON successfully', 'success');
+        } catch (e) {
+            showStatus('Invalid TOML: ' + e.message, 'error');
+        }
+    }
+
+    function jsonToToml() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter JSON', 'error'); return; }
+
+        try {
+            const obj = JSON.parse(input);
+            document.getElementById('output').value = jsonToTOMLStr(obj).trim();
+            showStatus('JSON converted to TOML successfully', 'success');
+        } catch (e) {
+            showStatus('Invalid JSON: ' + e.message, 'error');
+        }
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function swapPanels() {
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const tmp = output.value;
+        input.value = tmp;
+        output.value = '';
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = `# Cargo.toml example
+[package]
+name = "my-web-server"
+version = "0.1.0"
+edition = "2021"
+authors = ["Developer <dev@example.com>"]
+description = "A fast web server"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+axum = "0.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+
+[dev-dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[[bin]]
+name = "cli"
+path = "src/cli.rs"`;
+        tomlToJson();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

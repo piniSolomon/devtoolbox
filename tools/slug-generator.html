@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Slug Generator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online URL slug generator. Convert titles and text into SEO-friendly URL slugs. Supports transliteration, custom separators, and bulk generation. No sign-up required.">
+    <meta name="keywords" content="slug generator, url slug, seo url, url friendly, permalink generator, slug converter, url sanitizer, kebab case url, seo friendly url">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/slug-generator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Slug Generator</div>
+            <h1>URL Slug Generator</h1>
+            <p>Convert text into SEO-friendly URL slugs. Handles special characters, transliteration, and multiple lines.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Text Input (one title per line for bulk)</label>
+                    <textarea id="input" placeholder="How to Build a REST API with Node.js in 2026
+The Developer's Guide to Docker & Kubernetes
+¿Cómo aprender programación?" oninput="generateSlug()"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">URL Slug(s)</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Separator:
+                    <select id="separator" onchange="generateSlug()">
+                        <option value="-" selected>Hyphen (-)</option>
+                        <option value="_">Underscore (_)</option>
+                        <option value=".">Dot (.)</option>
+                    </select>
+                </label>
+                <label>Max length:
+                    <select id="max-length" onchange="generateSlug()">
+                        <option value="0">No limit</option>
+                        <option value="50">50 chars</option>
+                        <option value="75" selected>75 chars</option>
+                        <option value="100">100 chars</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="transliterate" checked onchange="generateSlug()"> Transliterate accents</label>
+                <label><input type="checkbox" id="remove-stopwords" onchange="generateSlug()"> Remove stop words</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="generateSlug()">Generate</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <div id="slug-stats" style="display: none; margin-top: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                    <div><span style="color: var(--text-muted);">Characters:</span> <strong id="stat-chars">0</strong></div>
+                    <div><span style="color: var(--text-muted);">Words:</span> <strong id="stat-words">0</strong></div>
+                    <div><span style="color: var(--text-muted);">Lines:</span> <strong id="stat-lines">0</strong></div>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About URL Slug Generator</h2>
+            <p>A slug is the URL-friendly version of a title or text. Good slugs are essential for SEO, readability, and sharing. This tool converts any text into clean, SEO-optimized URL slugs.</p>
+
+            <h3>What Makes a Good URL Slug?</h3>
+            <ul>
+                <li><strong>Lowercase:</strong> URLs are case-sensitive; lowercase is standard and prevents duplicates</li>
+                <li><strong>Hyphens as separators:</strong> Google treats hyphens as word separators (underscores are not)</li>
+                <li><strong>No special characters:</strong> Only letters, numbers, and separators</li>
+                <li><strong>Concise:</strong> 3-5 words (50-75 characters) is ideal for SEO</li>
+                <li><strong>Descriptive:</strong> Include target keywords for search ranking</li>
+            </ul>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Transliteration:</strong> Converts accented characters (é→e, ñ→n, ü→u)</li>
+                <li><strong>Stop word removal:</strong> Optionally removes common words (the, a, an, is, in, etc.)</li>
+                <li><strong>Bulk generation:</strong> Process multiple titles at once (one per line)</li>
+                <li><strong>Custom separators:</strong> Hyphen, underscore, or dot</li>
+                <li><strong>Length limit:</strong> Truncate at word boundaries for clean URLs</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Should I remove stop words from slugs?</h4>
+            <p>It depends. For blog posts, removing stop words makes URLs shorter and cleaner. For page titles where every word matters for meaning, keep them. Google's guidance is that URL structure matters less than content quality.</p>
+
+            <h4>Hyphens or underscores?</h4>
+            <p>Use hyphens. Google's John Mueller has confirmed that Google treats hyphens as word separators in URLs, while underscores join words. Most CMS platforms default to hyphens.</p>
+
+            <h4>How long should a URL slug be?</h4>
+            <p>Aim for 50-75 characters (3-5 words). Google displays up to ~512 pixels of the URL in search results (roughly 50-60 characters). Shorter URLs are also easier to share and remember.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Common transliteration mappings
+    const TRANSLITERATIONS = {
+        'à':'a','á':'a','â':'a','ã':'a','ä':'a','å':'a','æ':'ae',
+        'ç':'c','č':'c','ć':'c',
+        'è':'e','é':'e','ê':'e','ë':'e','ě':'e',
+        'ì':'i','í':'i','î':'i','ï':'i',
+        'ð':'d','ď':'d',
+        'ñ':'n','ň':'n',
+        'ò':'o','ó':'o','ô':'o','õ':'o','ö':'o','ø':'o',
+        'ù':'u','ú':'u','û':'u','ü':'u','ů':'u',
+        'ý':'y','ÿ':'y',
+        'ž':'z','ź':'z','ż':'z',
+        'ß':'ss','þ':'th',
+        'ł':'l','đ':'d',
+        'ŕ':'r','ř':'r',
+        'š':'s','ś':'s',
+        'ť':'t','ţ':'t',
+        '¿':'','¡':'',
+        // Cyrillic basic
+        'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo',
+        'ж':'zh','з':'z','и':'i','й':'j','к':'k','л':'l','м':'m',
+        'н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u',
+        'ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
+        'ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+    };
+
+    const STOP_WORDS = new Set([
+        'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+        'of', 'with', 'by', 'from', 'is', 'it', 'as', 'be', 'was', 'were',
+        'been', 'are', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+        'would', 'could', 'should', 'may', 'might', 'shall', 'can', 'this',
+        'that', 'these', 'those', 'not', 'no', 'nor', 'so', 'if', 'then',
+        'than', 'too', 'very', 'just', 'about', 'above', 'after', 'again',
+        'all', 'also', 'am', 'any', 'because', 'before', 'below', 'between',
+        'both', 'each', 'few', 'here', 'how', 'into', 'its', 'more', 'most',
+        'my', 'only', 'other', 'our', 'out', 'over', 'own', 'same', 'some',
+        'such', 'there', 'through', 'under', 'up', 'we', 'what', 'when',
+        'where', 'which', 'while', 'who', 'whom', 'why', 'you', 'your'
+    ]);
+
+    function slugify(text) {
+        const separator = document.getElementById('separator').value;
+        const maxLength = parseInt(document.getElementById('max-length').value);
+        const transliterate = document.getElementById('transliterate').checked;
+        const removeStopWords = document.getElementById('remove-stopwords').checked;
+
+        let slug = text.toLowerCase().trim();
+
+        // Transliterate
+        if (transliterate) {
+            slug = slug.split('').map(ch => TRANSLITERATIONS[ch] || ch).join('');
+        }
+
+        // Remove non-alphanumeric (keep spaces for now)
+        slug = slug.replace(/[^a-z0-9\s-]/g, ' ');
+
+        // Remove stop words
+        if (removeStopWords) {
+            const words = slug.split(/\s+/).filter(w => w && !STOP_WORDS.has(w));
+            slug = words.join(' ');
+        }
+
+        // Replace spaces/multiple separators with single separator
+        slug = slug.replace(/[\s-]+/g, separator);
+
+        // Remove leading/trailing separators
+        slug = slug.replace(new RegExp(`^[${separator.replace('.', '\\.')}]+|[${separator.replace('.', '\\.')}]+$`, 'g'), '');
+
+        // Truncate at word boundary
+        if (maxLength > 0 && slug.length > maxLength) {
+            slug = slug.slice(0, maxLength);
+            // Don't cut in the middle of a word
+            const lastSep = slug.lastIndexOf(separator);
+            if (lastSep > maxLength * 0.5) {
+                slug = slug.slice(0, lastSep);
+            }
+        }
+
+        return slug;
+    }
+
+    function generateSlug() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) {
+            document.getElementById('output').value = '';
+            document.getElementById('slug-stats').style.display = 'none';
+            return;
+        }
+
+        const lines = input.split('\n').filter(l => l.trim());
+        const slugs = lines.map(line => slugify(line));
+
+        document.getElementById('output').value = slugs.join('\n');
+
+        // Stats
+        const totalChars = slugs.reduce((sum, s) => sum + s.length, 0);
+        const totalWords = slugs.reduce((sum, s) => sum + (s ? s.split(/[-_.]+/).length : 0), 0);
+        document.getElementById('stat-chars').textContent = totalChars;
+        document.getElementById('stat-words').textContent = totalWords;
+        document.getElementById('stat-lines').textContent = slugs.length;
+        document.getElementById('slug-stats').style.display = '';
+
+        if (slugs.length > 0) showStatus(`Generated ${slugs.length} slug(s)`, 'success');
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('slug-stats').style.display = 'none';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Base64 Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online image to Base64 converter. Convert PNG, JPG, GIF, SVG, WebP images to Base64 data URI strings. Copy as CSS, HTML, or raw Base64. No upload required.">
+    <meta name="keywords" content="image to base64, convert image base64, base64 image encoder, data uri converter, png to base64, jpg to base64, image data url, css background base64">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/image-to-base64.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Image to Base64</div>
+            <h1>Image to Base64 Converter</h1>
+            <p>Convert images to Base64 data URIs for embedding in HTML, CSS, or JavaScript. All processing in your browser.</p>
+        </div>
+
+        <div class="tool-container">
+            <div id="drop-zone" style="border: 2px dashed var(--border); border-radius: 12px; padding: 48px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 16px;">
+                <div style="font-size: 48px; margin-bottom: 12px;">&#128444;</div>
+                <p style="font-size: 16px; margin-bottom: 8px;"><strong>Drop an image here or click to upload</strong></p>
+                <p style="color: var(--text-muted); font-size: 13px;">Supports PNG, JPG, GIF, SVG, WebP, BMP, ICO</p>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="result-section" style="display: none;">
+                <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+                    <div id="preview" style="flex: 0 0 auto; max-width: 200px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 16px 16px;">
+                        <img id="preview-img" style="display: block; max-width: 200px; max-height: 200px;">
+                    </div>
+                    <div id="file-info" style="flex: 1;">
+                        <div style="display: grid; gap: 8px;">
+                            <div><span style="color: var(--text-muted);">Name:</span> <strong id="info-name">-</strong></div>
+                            <div><span style="color: var(--text-muted);">Type:</span> <strong id="info-type">-</strong></div>
+                            <div><span style="color: var(--text-muted);">Dimensions:</span> <strong id="info-dims">-</strong></div>
+                            <div><span style="color: var(--text-muted);">Original size:</span> <strong id="info-size">-</strong></div>
+                            <div><span style="color: var(--text-muted);">Base64 size:</span> <strong id="info-b64size">-</strong></div>
+                            <div><span style="color: var(--text-muted);">Size increase:</span> <strong id="info-increase">-</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <label>Output format:
+                        <select id="output-format" onchange="updateOutput()">
+                            <option value="datauri">Data URI</option>
+                            <option value="raw">Raw Base64</option>
+                            <option value="html-img">HTML &lt;img&gt; tag</option>
+                            <option value="css-bg">CSS background-image</option>
+                            <option value="markdown">Markdown image</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="tool-row">
+                    <div class="tool-col" style="flex: 1;">
+                        <label for="output">Base64 Output</label>
+                        <textarea id="output" readonly style="font-size: 12px; word-break: break-all;"></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="copyOutput()">Copy to Clipboard</button>
+                    <button class="btn btn-secondary" onclick="downloadText()">Download as .txt</button>
+                    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Image to Base64 Converter</h2>
+            <p>Convert any image to a Base64-encoded string that you can embed directly in your HTML, CSS, or JavaScript code. This eliminates the need for separate image files, reducing HTTP requests.</p>
+
+            <h3>When to Use Base64 Images</h3>
+            <ul>
+                <li><strong>Small icons and logos:</strong> Embed icons under 5KB directly in CSS to save HTTP requests</li>
+                <li><strong>Email templates:</strong> Inline images that render without external hosting</li>
+                <li><strong>Single-file applications:</strong> Self-contained HTML files with embedded images</li>
+                <li><strong>CSS backgrounds:</strong> Small decorative images and patterns</li>
+                <li><strong>Data URIs in JavaScript:</strong> Dynamic image generation and canvas exports</li>
+            </ul>
+
+            <h3>Output Formats</h3>
+            <ul>
+                <li><strong>Data URI:</strong> Full <code>data:image/png;base64,...</code> string for use anywhere</li>
+                <li><strong>Raw Base64:</strong> Just the encoded string, useful for API payloads</li>
+                <li><strong>HTML img tag:</strong> Ready-to-paste <code>&lt;img&gt;</code> element with data URI src</li>
+                <li><strong>CSS background:</strong> <code>background-image: url(data:...)</code> declaration</li>
+                <li><strong>Markdown:</strong> <code>![alt](data:...)</code> syntax for Markdown documents</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>How much larger is a Base64 image?</h4>
+            <p>Base64 encoding increases file size by approximately 33%. A 10KB image becomes about 13.3KB of Base64 text. For small images (under 5KB), this overhead is negligible compared to the saved HTTP request.</p>
+
+            <h4>Is my image uploaded anywhere?</h4>
+            <p>No. All conversion happens locally in your browser using the FileReader API. Your image never leaves your device.</p>
+
+            <h4>What image formats are supported?</h4>
+            <p>PNG, JPEG, GIF, SVG, WebP, BMP, and ICO. Any format your browser can display can be converted to Base64.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    let currentDataUri = '';
+    let currentMimeType = '';
+    let currentFileName = '';
+
+    // Drag and drop handling
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--accent)';
+        dropZone.style.background = 'rgba(99,102,241,0.05)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = 'var(--border)';
+        dropZone.style.background = '';
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--border)';
+        dropZone.style.background = '';
+        const file = e.dataTransfer.files[0];
+        if (file) processFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) processFile(file);
+    });
+
+    function processFile(file) {
+        if (!file.type.startsWith('image/')) {
+            showStatus('Please select an image file', 'error');
+            return;
+        }
+
+        currentFileName = file.name;
+        currentMimeType = file.type;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentDataUri = e.target.result;
+
+            // Show preview
+            const img = document.getElementById('preview-img');
+            img.src = currentDataUri;
+            img.onload = function() {
+                document.getElementById('info-dims').textContent = `${img.naturalWidth} × ${img.naturalHeight}px`;
+            };
+
+            // File info
+            document.getElementById('info-name').textContent = file.name;
+            document.getElementById('info-type').textContent = file.type;
+            document.getElementById('info-size').textContent = formatBytes(file.size);
+
+            const b64Size = currentDataUri.length;
+            document.getElementById('info-b64size').textContent = formatBytes(b64Size);
+
+            const increase = ((b64Size / file.size - 1) * 100).toFixed(1);
+            document.getElementById('info-increase').textContent = `+${increase}%`;
+
+            document.getElementById('result-section').style.display = '';
+            updateOutput();
+            showStatus('Image converted to Base64 successfully', 'success');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateOutput() {
+        const format = document.getElementById('output-format').value;
+        const output = document.getElementById('output');
+        const rawBase64 = currentDataUri.split(',')[1] || '';
+
+        switch (format) {
+            case 'datauri':
+                output.value = currentDataUri;
+                break;
+            case 'raw':
+                output.value = rawBase64;
+                break;
+            case 'html-img':
+                output.value = `<img src="${currentDataUri}" alt="${currentFileName}" />`;
+                break;
+            case 'css-bg':
+                output.value = `background-image: url('${currentDataUri}');`;
+                break;
+            case 'markdown':
+                output.value = `![${currentFileName}](${currentDataUri})`;
+                break;
+        }
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function downloadText() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to download', 'error'); return; }
+        const blob = new Blob([output], {type: 'text/plain'});
+        const link = document.createElement('a');
+        link.download = currentFileName.replace(/\.[^.]+$/, '') + '-base64.txt';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        showStatus('Downloaded', 'success');
+    }
+
+    function clearAll() {
+        currentDataUri = '';
+        currentMimeType = '';
+        currentFileName = '';
+        document.getElementById('result-section').style.display = 'none';
+        document.getElementById('file-input').value = '';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chmod Calculator - Unix File Permissions | DevToolBox</title>
+    <meta name="description" content="Free online chmod calculator. Convert between numeric (755) and symbolic (rwxr-xr-x) Unix file permissions. Interactive checkboxes, common presets, and chmod command generator.">
+    <meta name="keywords" content="chmod calculator, unix permissions, file permissions, chmod 755, chmod 777, rwx permissions, linux permissions, chmod command, permission calculator">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/chmod-calculator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Chmod Calculator</div>
+            <h1>Chmod Calculator</h1>
+            <p>Convert between numeric and symbolic Unix/Linux file permissions. Interactive checkboxes make it easy to set exactly the permissions you need.</p>
+        </div>
+
+        <div class="tool-container">
+            <!-- Numeric input -->
+            <div style="text-align: center; margin-bottom: 24px;">
+                <label style="font-size: 14px; color: var(--text-muted);">Numeric Permission</label>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px;">
+                    <input type="text" id="numeric-input" value="755" maxlength="4" style="font-family: 'JetBrains Mono', monospace; font-size: 36px; width: 160px; text-align: center; padding: 12px; border: 2px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--accent); font-weight: 700;" oninput="fromNumeric()">
+                </div>
+                <div style="margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 18px; color: var(--text);" id="symbolic-display">rwxr-xr-x</div>
+            </div>
+
+            <!-- Permission checkboxes -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 8px 12px; border-bottom: 2px solid var(--border); text-align: left;">Permission</th>
+                            <th colspan="3" style="padding: 8px 12px; border-bottom: 2px solid var(--border); color: #22c55e;">Owner</th>
+                            <th colspan="3" style="padding: 8px 12px; border-bottom: 2px solid var(--border); color: #3b82f6;">Group</th>
+                            <th colspan="3" style="padding: 8px 12px; border-bottom: 2px solid var(--border); color: #f59e0b;">Others</th>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Read</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Write</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Execute</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Read</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Write</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Execute</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Read</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Write</td>
+                            <td style="padding: 4px 8px; color: var(--text-muted); font-size: 12px;">Execute</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px 12px; text-align: left; font-weight: 500;">Standard</td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-ur" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-uw" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-ux" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-gr" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-gw" onchange="fromCheckboxes()"></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-gx" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-or" onchange="fromCheckboxes()" checked></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-ow" onchange="fromCheckboxes()"></td>
+                            <td style="padding: 8px;"><input type="checkbox" id="p-ox" onchange="fromCheckboxes()" checked></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Command output -->
+            <div style="margin-top: 16px; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--text-muted); min-width: 120px;">chmod command:</span>
+                        <code id="chmod-command" style="flex: 1; font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 14px;">chmod 755 filename</code>
+                        <button class="btn btn-secondary" onclick="copyCommand()" style="padding: 4px 12px; font-size: 12px;">Copy</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--text-muted); min-width: 120px;">Symbolic:</span>
+                        <code id="chmod-symbolic" style="flex: 1; font-family: 'JetBrains Mono', monospace; color: var(--text); font-size: 14px;">chmod u=rwx,g=rx,o=rx filename</code>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--text-muted); min-width: 120px;">ls -l output:</span>
+                        <code id="ls-output" style="flex: 1; font-family: 'JetBrains Mono', monospace; color: var(--text); font-size: 14px;">-rwxr-xr-x</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common presets -->
+            <div style="margin-top: 16px;">
+                <label style="font-size: 14px; color: var(--text-muted); display: block; margin-bottom: 8px;">Common Presets</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="setNumeric('644')" style="font-family: 'JetBrains Mono', monospace;">644 <span style="color: var(--text-muted); font-size: 11px;">file</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('755')" style="font-family: 'JetBrains Mono', monospace;">755 <span style="color: var(--text-muted); font-size: 11px;">script</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('600')" style="font-family: 'JetBrains Mono', monospace;">600 <span style="color: var(--text-muted); font-size: 11px;">private</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('700')" style="font-family: 'JetBrains Mono', monospace;">700 <span style="color: var(--text-muted); font-size: 11px;">private dir</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('775')" style="font-family: 'JetBrains Mono', monospace;">775 <span style="color: var(--text-muted); font-size: 11px;">shared dir</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('666')" style="font-family: 'JetBrains Mono', monospace;">666 <span style="color: var(--text-muted); font-size: 11px;">rw-all</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('777')" style="font-family: 'JetBrains Mono', monospace;">777 <span style="color: var(--text-muted); font-size: 11px;">all (danger)</span></button>
+                    <button class="btn btn-secondary" onclick="setNumeric('400')" style="font-family: 'JetBrains Mono', monospace;">400 <span style="color: var(--text-muted); font-size: 11px;">SSH key</span></button>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Chmod Calculator</h2>
+            <p>The <code>chmod</code> command in Unix/Linux changes file and directory permissions. Permissions control who can read, write, and execute files. This calculator makes it easy to convert between numeric (octal) and symbolic notation.</p>
+
+            <h3>Understanding Permission Bits</h3>
+            <ul>
+                <li><strong>Read (r = 4):</strong> View file contents or list directory entries</li>
+                <li><strong>Write (w = 2):</strong> Modify file contents or create/delete files in a directory</li>
+                <li><strong>Execute (x = 1):</strong> Run a file as a program or enter a directory</li>
+            </ul>
+            <p>Each digit in the numeric notation is the sum of permissions: 7 = rwx (4+2+1), 5 = r-x (4+0+1), 4 = r-- (4+0+0)</p>
+
+            <h3>Common Permission Patterns</h3>
+            <ul>
+                <li><strong>644:</strong> Standard file — owner reads/writes, everyone else reads only</li>
+                <li><strong>755:</strong> Executable/directory — owner has full access, others can read and execute</li>
+                <li><strong>600:</strong> Private file — only owner can read/write (SSH keys, configs with secrets)</li>
+                <li><strong>700:</strong> Private directory — only owner can access</li>
+                <li><strong>777:</strong> Full access for everyone — rarely appropriate, security risk</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>When should I use 755 vs 644?</h4>
+            <p>Use 755 for directories and executable files (scripts, binaries). Use 644 for regular files (documents, configs, source code). The key difference is the execute bit — directories need it for access, files need it to run as programs.</p>
+
+            <h4>Why is 777 dangerous?</h4>
+            <p>777 means anyone on the system can read, modify, and execute the file. On a web server, this could allow attackers to modify your scripts. Use the most restrictive permissions that still allow your application to function.</p>
+
+            <h4>What's the difference between numeric and symbolic notation?</h4>
+            <p>Numeric (755) sets all permissions at once. Symbolic (u+x, g-w) modifies specific permissions without changing others. Numeric is faster for setting exact permissions; symbolic is better for targeted changes.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    const PERM_IDS = ['ur','uw','ux','gr','gw','gx','or','ow','ox'];
+
+    function getPermsFromCheckboxes() {
+        return PERM_IDS.map(id => document.getElementById('p-' + id).checked);
+    }
+
+    function setCheckboxes(perms) {
+        PERM_IDS.forEach((id, i) => {
+            document.getElementById('p-' + id).checked = perms[i];
+        });
+    }
+
+    function permsToNumeric(perms) {
+        let owner = (perms[0] ? 4 : 0) + (perms[1] ? 2 : 0) + (perms[2] ? 1 : 0);
+        let group = (perms[3] ? 4 : 0) + (perms[4] ? 2 : 0) + (perms[5] ? 1 : 0);
+        let others = (perms[6] ? 4 : 0) + (perms[7] ? 2 : 0) + (perms[8] ? 1 : 0);
+        return `${owner}${group}${others}`;
+    }
+
+    function numericToPerms(num) {
+        const str = num.padStart(3, '0');
+        const perms = [];
+        for (const digit of str) {
+            const n = parseInt(digit);
+            perms.push(!!(n & 4), !!(n & 2), !!(n & 1));
+        }
+        return perms;
+    }
+
+    function permsToSymbolic(perms) {
+        let result = '';
+        const chars = ['r','w','x'];
+        for (let i = 0; i < 9; i++) {
+            result += perms[i] ? chars[i % 3] : '-';
+        }
+        return result;
+    }
+
+    function permsToSymbolicCommand(perms) {
+        const parts = [];
+        const entities = ['u', 'g', 'o'];
+        const chars = ['r', 'w', 'x'];
+
+        for (let e = 0; e < 3; e++) {
+            let set = '';
+            for (let p = 0; p < 3; p++) {
+                if (perms[e * 3 + p]) set += chars[p];
+            }
+            if (set) parts.push(`${entities[e]}=${set}`);
+            else parts.push(`${entities[e]}=`);
+        }
+
+        return parts.join(',');
+    }
+
+    function updateDisplay(perms) {
+        const numeric = permsToNumeric(perms);
+        const symbolic = permsToSymbolic(perms);
+        const symCommand = permsToSymbolicCommand(perms);
+
+        document.getElementById('numeric-input').value = numeric;
+        document.getElementById('symbolic-display').textContent = symbolic;
+        document.getElementById('chmod-command').textContent = `chmod ${numeric} filename`;
+        document.getElementById('chmod-symbolic').textContent = `chmod ${symCommand} filename`;
+        document.getElementById('ls-output').textContent = `-${symbolic}`;
+    }
+
+    function fromCheckboxes() {
+        const perms = getPermsFromCheckboxes();
+        updateDisplay(perms);
+    }
+
+    function fromNumeric() {
+        const input = document.getElementById('numeric-input').value.trim();
+        if (!/^[0-7]{3,4}$/.test(input)) return;
+
+        // Take last 3 digits (ignore sticky bit for now)
+        const num = input.slice(-3);
+        const perms = numericToPerms(num);
+        setCheckboxes(perms);
+        updateDisplay(perms);
+    }
+
+    function setNumeric(val) {
+        document.getElementById('numeric-input').value = val;
+        fromNumeric();
+    }
+
+    function copyCommand() {
+        const cmd = document.getElementById('chmod-command').textContent;
+        navigator.clipboard.writeText(cmd).then(() => showStatus('Copied!', 'success'));
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Initialize
+    fromNumeric();
+    </script>
+</body>
+</html>
