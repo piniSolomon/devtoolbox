@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Decoder - Free Online JSON Web Token Parser | DevToolBox</title>
+    <meta name="description" content="Free online JWT decoder. Decode and inspect JSON Web Tokens - view header, payload, and signature. No sign-up required.">
+    <meta name="keywords" content="jwt decoder, jwt parser, json web token decoder, decode jwt online, jwt debugger">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/jwt-decoder.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JWT Decoder</div>
+            <h1>JWT Decoder</h1>
+            <p>Decode and inspect JSON Web Tokens. View header, payload, and verify expiration.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-col">
+                <label for="input">Paste JWT Token</label>
+                <textarea id="input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" style="min-height: 120px;"></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="decodeJWT()">Decode JWT</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+            <div id="results"></div>
+        </div>
+        <div class="ad-space">Ad space</div>
+        <div class="info-section">
+            <h2>About JSON Web Tokens (JWT)</h2>
+            <p>JWTs are a compact, URL-safe means of representing claims to be transferred between two parties. They consist of three Base64-encoded parts separated by dots: Header, Payload, and Signature.</p>
+            <h3>JWT Structure</h3>
+            <ul>
+                <li><strong>Header</strong> — Contains the token type and signing algorithm (e.g., HS256, RS256)</li>
+                <li><strong>Payload</strong> — Contains the claims (data) such as user ID, expiration, etc.</li>
+                <li><strong>Signature</strong> — Used to verify the token hasn't been tampered with</li>
+            </ul>
+            <h3>Common Claims</h3>
+            <ul>
+                <li><strong>iss</strong> — Issuer</li>
+                <li><strong>sub</strong> — Subject (usually user ID)</li>
+                <li><strong>exp</strong> — Expiration time (Unix timestamp)</li>
+                <li><strong>iat</strong> — Issued at time</li>
+                <li><strong>aud</strong> — Audience</li>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        function decodeBase64Url(str) {
+            str = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (str.length % 4) str += '=';
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        function formatTimestamp(ts) {
+            if (!ts || typeof ts !== 'number') return null;
+            const d = new Date(ts * 1000);
+            const now = Date.now();
+            const expired = ts * 1000 < now;
+            return `${d.toISOString()} (${expired ? 'EXPIRED' : 'valid'} — ${expired ? 'expired' : 'expires'} ${Math.abs(Math.round((ts*1000 - now)/3600000))}h ${expired ? 'ago' : 'from now'})`;
+        }
+
+        function decodeJWT() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please paste a JWT token', 'error'); return; }
+
+            const parts = input.split('.');
+            if (parts.length !== 3) { showStatus('Invalid JWT format. Expected 3 parts separated by dots.', 'error'); return; }
+
+            try {
+                const header = JSON.parse(decodeBase64Url(parts[0]));
+                const payload = JSON.parse(decodeBase64Url(parts[1]));
+
+                let payloadHtml = JSON.stringify(payload, null, 2);
+                // Highlight known timestamp fields
+                ['exp', 'iat', 'nbf'].forEach(key => {
+                    if (payload[key]) {
+                        const ts = formatTimestamp(payload[key]);
+                        if (ts) payloadHtml = payloadHtml.replace(`"${key}": ${payload[key]}`, `"${key}": ${payload[key]}  // ${ts}`);
+                    }
+                });
+
+                const isExpired = payload.exp && payload.exp * 1000 < Date.now();
+
+                document.getElementById('results').innerHTML = `
+                    <div class="jwt-section" style="margin-top:20px;">
+                        <div class="jwt-section-label">Header</div>
+                        <div class="output-box">${JSON.stringify(header, null, 2)}</div>
+                    </div>
+                    <div class="jwt-section">
+                        <div class="jwt-section-label">Payload ${isExpired ? '<span style="color:var(--error);font-size:0.75rem;"> EXPIRED</span>' : payload.exp ? '<span style="color:var(--success);font-size:0.75rem;"> VALID</span>' : ''}</div>
+                        <div class="output-box">${payloadHtml}</div>
+                    </div>
+                    <div class="jwt-section">
+                        <div class="jwt-section-label">Signature (encoded)</div>
+                        <div class="output-box" style="min-height:auto;">${parts[2]}</div>
+                    </div>
+                `;
+                showStatus('JWT decoded successfully!', 'success');
+            } catch (e) {
+                showStatus('Failed to decode JWT: ' + e.message, 'error');
+            }
+        }
+
+        function loadSample() {
+            document.getElementById('input').value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNzE2MjM5MDIyfQ.x5TkW7FpSSr_DOuMdSjHHBo3DEv_rzt1-GtDBGUbdnE';
+            decodeJWT();
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+
+        // Auto-decode on paste
+        document.getElementById('input').addEventListener('paste', () => setTimeout(decodeJWT, 50));
+    </script>
+</body>
+</html>

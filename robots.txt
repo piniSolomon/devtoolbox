@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://devtoolbox.dev/sitemap.xml

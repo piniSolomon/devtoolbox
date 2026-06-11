@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter & Validator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online JSON formatter, validator, and beautifier. Format, validate, and pretty-print JSON data with syntax highlighting. No sign-up required.">
+    <meta name="keywords" content="json formatter, json validator, json beautifier, json pretty print, format json online, json lint">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/json-formatter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JSON Formatter</div>
+            <h1>JSON Formatter & Validator</h1>
+            <p>Paste your JSON to format, validate, and beautify it with syntax highlighting.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Input JSON</label>
+                    <textarea id="input" placeholder='{"name":"John","age":30,"city":"New York"}'></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Formatted Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Indent:
+                    <select id="indent">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                        <option value="\t">Tab</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="sort-keys"> Sort keys</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="formatJSON()">Format</button>
+                <button class="btn btn-secondary" onclick="minifyJSON()">Minify</button>
+                <button class="btn btn-secondary" onclick="validateJSON()">Validate</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy Output</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <!-- Ad placeholder -->
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About JSON Formatter</h2>
+            <p>This free online JSON formatter lets you quickly format, validate, and beautify JSON data. All processing happens entirely in your browser - your data never leaves your device.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li>Format JSON with customizable indentation (2 spaces, 4 spaces, or tabs)</li>
+                <li>Validate JSON and get clear error messages for invalid data</li>
+                <li>Minify JSON by removing all whitespace</li>
+                <li>Sort object keys alphabetically</li>
+                <li>One-click copy to clipboard</li>
+            </ul>
+
+            <h3>What is JSON?</h3>
+            <p>JSON (JavaScript Object Notation) is a lightweight data interchange format. It's easy for humans to read and write, and easy for machines to parse and generate. JSON is commonly used for API responses, configuration files, and data storage.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Formatting API responses for debugging</li>
+                <li>Validating JSON configuration files</li>
+                <li>Cleaning up minified JSON data</li>
+                <li>Preparing JSON for documentation</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        function sortObjectKeys(obj) {
+            if (Array.isArray(obj)) return obj.map(sortObjectKeys);
+            if (obj !== null && typeof obj === 'object') {
+                return Object.keys(obj).sort().reduce((acc, key) => {
+                    acc[key] = sortObjectKeys(obj[key]);
+                    return acc;
+                }, {});
+            }
+            return obj;
+        }
+
+        function formatJSON() {
+            const input = document.getElementById('input').value.trim();
+            const status = document.getElementById('status');
+            if (!input) { showStatus('Please enter JSON data', 'error'); return; }
+            try {
+                let parsed = JSON.parse(input);
+                const sortKeys = document.getElementById('sort-keys').checked;
+                if (sortKeys) parsed = sortObjectKeys(parsed);
+                let indent = document.getElementById('indent').value;
+                indent = indent === '\\t' ? '\t' : parseInt(indent);
+                document.getElementById('output').value = JSON.stringify(parsed, null, indent);
+                showStatus('JSON formatted successfully!', 'success');
+            } catch (e) {
+                showStatus('Invalid JSON: ' + e.message, 'error');
+            }
+        }
+
+        function minifyJSON() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter JSON data', 'error'); return; }
+            try {
+                const parsed = JSON.parse(input);
+                document.getElementById('output').value = JSON.stringify(parsed);
+                showStatus('JSON minified! Saved ' + (input.length - document.getElementById('output').value.length) + ' characters', 'success');
+            } catch (e) {
+                showStatus('Invalid JSON: ' + e.message, 'error');
+            }
+        }
+
+        function validateJSON() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter JSON data', 'error'); return; }
+            try {
+                JSON.parse(input);
+                showStatus('Valid JSON!', 'success');
+            } catch (e) {
+                showStatus('Invalid JSON: ' + e.message, 'error');
+            }
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
+
+        // Auto-format on paste
+        document.getElementById('input').addEventListener('paste', () => setTimeout(formatJSON, 50));
+    </script>
+</body>
+</html>

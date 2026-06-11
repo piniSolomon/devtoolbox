@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unix Timestamp Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online Unix timestamp converter. Convert between Unix timestamps and human-readable dates instantly.">
+    <meta name="keywords" content="unix timestamp converter, epoch converter, timestamp to date, date to timestamp, unix time">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/timestamp-converter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Timestamp Converter</div>
+            <h1>Unix Timestamp Converter</h1>
+            <p>Convert between Unix/Epoch timestamps and human-readable dates.</p>
+        </div>
+        <div class="tool-container">
+            <div style="text-align:center;margin-bottom:24px;">
+                <div style="font-size:0.85rem;color:var(--text-secondary);">Current Unix Timestamp</div>
+                <div id="current-ts" style="font-size:2rem;font-weight:700;font-family:var(--font-mono);color:var(--accent);"></div>
+                <div id="current-date" style="font-size:0.9rem;color:var(--text-secondary);"></div>
+            </div>
+
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="ts-input">Unix Timestamp</label>
+                    <input type="text" id="ts-input" placeholder="e.g. 1700000000">
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="tsToDate()">Timestamp to Date</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('ts-input').value=Math.floor(Date.now()/1000);tsToDate()">Now</button>
+                    </div>
+                    <div class="output-box" id="ts-output" style="min-height:80px;"></div>
+                </div>
+                <div class="tool-col">
+                    <label for="date-input">Date String</label>
+                    <input type="text" id="date-input" placeholder="e.g. 2025-01-15 12:00:00">
+                    <div class="btn-row">
+                        <button class="btn btn-primary" onclick="dateToTs()">Date to Timestamp</button>
+                    </div>
+                    <div class="output-box" id="date-output" style="min-height:80px;"></div>
+                </div>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space</div>
+        <div class="info-section">
+            <h2>About Unix Timestamps</h2>
+            <p>A Unix timestamp (or Epoch time) is the number of seconds that have elapsed since January 1, 1970 (UTC). It's a common way to represent time in programming.</p>
+            <h3>Quick Reference</h3>
+            <ul>
+                <li>Seconds: 10-digit number (e.g., 1700000000)</li>
+                <li>Milliseconds: 13-digit number (e.g., 1700000000000)</li>
+                <li>The converter auto-detects seconds vs milliseconds</li>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        function updateCurrent() {
+            const now = Math.floor(Date.now() / 1000);
+            document.getElementById('current-ts').textContent = now;
+            document.getElementById('current-date').textContent = new Date().toISOString();
+        }
+        setInterval(updateCurrent, 1000);
+        updateCurrent();
+
+        function tsToDate() {
+            let ts = document.getElementById('ts-input').value.trim();
+            if (!ts) { showStatus('Enter a timestamp', 'error'); return; }
+            ts = parseInt(ts);
+            // Auto-detect ms vs seconds
+            if (ts > 1e12) ts = Math.floor(ts / 1000);
+            const d = new Date(ts * 1000);
+            if (isNaN(d.getTime())) { showStatus('Invalid timestamp', 'error'); return; }
+            document.getElementById('ts-output').innerHTML =
+                `<strong>UTC:</strong> ${d.toUTCString()}\n<strong>ISO:</strong> ${d.toISOString()}\n<strong>Local:</strong> ${d.toLocaleString()}\n<strong>Relative:</strong> ${relativeTime(ts)}`;
+            showStatus('Converted!', 'success');
+        }
+
+        function dateToTs() {
+            const input = document.getElementById('date-input').value.trim();
+            if (!input) { showStatus('Enter a date', 'error'); return; }
+            const d = new Date(input);
+            if (isNaN(d.getTime())) { showStatus('Invalid date. Try: YYYY-MM-DD HH:mm:ss', 'error'); return; }
+            const ts = Math.floor(d.getTime() / 1000);
+            document.getElementById('date-output').innerHTML =
+                `<strong>Seconds:</strong> ${ts}\n<strong>Milliseconds:</strong> ${ts * 1000}\n<strong>ISO:</strong> ${d.toISOString()}`;
+            showStatus('Converted!', 'success');
+        }
+
+        function relativeTime(ts) {
+            const diff = Math.floor(Date.now()/1000) - ts;
+            if (Math.abs(diff) < 60) return `${Math.abs(diff)} seconds ${diff>0?'ago':'from now'}`;
+            if (Math.abs(diff) < 3600) return `${Math.round(Math.abs(diff)/60)} minutes ${diff>0?'ago':'from now'}`;
+            if (Math.abs(diff) < 86400) return `${Math.round(Math.abs(diff)/3600)} hours ${diff>0?'ago':'from now'}`;
+            return `${Math.round(Math.abs(diff)/86400)} days ${diff>0?'ago':'from now'}`;
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+    </script>
+</body>
+</html>

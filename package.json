@@ -1,0 +1,12 @@
+{
+  "name": "devtoolbox",
+  "version": "1.0.0",
+  "description": "Free online developer tools - JSON formatter, Base64 encoder, URL encoder, hash generator, and more",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": ["developer tools", "json formatter", "base64 encoder", "url encoder", "hash generator"],
+  "author": "DevToolBox",
+  "license": "MIT"
+}

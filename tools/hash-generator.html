@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Generator (MD5, SHA-1, SHA-256, SHA-512) - Free Online | DevToolBox</title>
+    <meta name="description" content="Free online hash generator. Generate MD5, SHA-1, SHA-256, and SHA-512 hashes instantly. All processing in browser - your data stays private.">
+    <meta name="keywords" content="hash generator, md5 hash, sha256 hash, sha1 hash, sha512 hash, online hash, checksum generator">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/hash-generator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Hash Generator</div>
+            <h1>Hash Generator</h1>
+            <p>Generate MD5, SHA-1, SHA-256, and SHA-512 hashes from any text input.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-col">
+                <label for="input">Input Text</label>
+                <textarea id="input" placeholder="Enter text to hash..."></textarea>
+            </div>
+            <div class="option-row">
+                <label><input type="checkbox" id="uppercase"> Uppercase output</label>
+                <label><input type="checkbox" id="live" checked> Live hashing</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="generateHashes()">Generate Hashes</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div id="results" style="margin-top: 20px;"></div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+        <div class="info-section">
+            <h2>About Hash Functions</h2>
+            <p>A hash function converts input data of any size into a fixed-size string of characters. Hash functions are one-way — you cannot reverse-engineer the original input from the hash.</p>
+            <h3>Hash Algorithms</h3>
+            <ul>
+                <li><strong>MD5</strong> — 128-bit hash. Fast but not cryptographically secure. Used for checksums.</li>
+                <li><strong>SHA-1</strong> — 160-bit hash. Deprecated for security use but still used in git.</li>
+                <li><strong>SHA-256</strong> — 256-bit hash. Part of SHA-2 family. Widely used in security.</li>
+                <li><strong>SHA-512</strong> — 512-bit hash. Stronger variant of SHA-256 for higher security.</li>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        // MD5 implementation (public domain)
+        function md5(string) {
+            function M(d){for(var _,m,f,r,i=String(d),n=i.length,e=[1732584193,-271733879,-1732584194,271733878],j=0;j<=n;j+=64){for(_=i.substring(j,j+64),m=new Array(16),r=0;r<64;r+=4)m[r>>2]=_.charCodeAt(r)+(_.charCodeAt(r+1)<<8)+(_.charCodeAt(r+2)<<16)+(_.charCodeAt(r+3)<<24);m[14]=n*8;m[15]=0;for(r=0;r<64;r++){if(r<16){f=e[1]&e[2]|~e[1]&e[3];_=r}else if(r<32){f=e[3]&e[1]|~e[3]&e[2];_=(5*r+1)%16}else if(r<48){f=e[1]^e[2]^e[3];_=(3*r+5)%16}else{f=e[2]^(e[1]|~e[3]);_=(7*r)%16}var a=[7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];var t=[0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,0x6b901122,0xfd987193,0xa679438e,0x49b40821,0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,0xf4292244,0x432aff97,0xab9423a7,0xfc93a039,0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391];f=e[0]+f+t[r]+m[_];f=((f<<a[r])|(f>>>(32-a[r])))+e[1];e=[e[3],f&0xFFFFFFFF,e[1],e[2]];e[0]=e[0]&0xFFFFFFFF}}return Array.from(e,v=>{for(var s='',i=0;i<4;i++)s+=(((v>>(i*8))&255)+256).toString(16).slice(1);return s}).join('')}
+            return M(unescape(encodeURIComponent(string)));
+        }
+
+        async function sha(algo, text) {
+            const data = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest(algo, data);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function generateHashes() {
+            const input = document.getElementById('input').value;
+            if (!input) { showStatus('Please enter text to hash', 'error'); return; }
+            const upper = document.getElementById('uppercase').checked;
+            const md5Hash = md5(input);
+            const sha1Hash = await sha('SHA-1', input);
+            const sha256Hash = await sha('SHA-256', input);
+            const sha512Hash = await sha('SHA-512', input);
+
+            const hashes = [
+                { name: 'MD5', value: md5Hash },
+                { name: 'SHA-1', value: sha1Hash },
+                { name: 'SHA-256', value: sha256Hash },
+                { name: 'SHA-512', value: sha512Hash },
+            ];
+
+            document.getElementById('results').innerHTML = hashes.map(h => `
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block;font-weight:600;font-size:0.85rem;color:var(--accent);margin-bottom:4px;">${h.name}</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <div class="output-box" style="flex:1;min-height:auto;padding:10px;font-size:0.82rem;word-break:break-all;">${upper ? h.value.toUpperCase() : h.value}</div>
+                        <button class="btn btn-secondary btn-small" onclick="navigator.clipboard.writeText('${upper ? h.value.toUpperCase() : h.value}').then(()=>showStatus('${h.name} copied!','success'))">Copy</button>
+                    </div>
+                </div>
+            `).join('');
+            showStatus('Hashes generated!', 'success');
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+
+        // Live hashing
+        document.getElementById('input').addEventListener('input', () => {
+            if (document.getElementById('live').checked && document.getElementById('input').value) generateHashes();
+        });
+    </script>
+</body>
+</html>

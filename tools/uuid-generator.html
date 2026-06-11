@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUID Generator - Free Online UUID/GUID Generator | DevToolBox</title>
+    <meta name="description" content="Free online UUID v4 generator. Generate one or many random UUIDs/GUIDs instantly. Bulk generation supported.">
+    <meta name="keywords" content="uuid generator, guid generator, uuid v4, random uuid, generate uuid online, bulk uuid">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/uuid-generator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / UUID Generator</div>
+            <h1>UUID Generator</h1>
+            <p>Generate random UUID v4 identifiers. Supports bulk generation.</p>
+        </div>
+        <div class="tool-container">
+            <div class="option-row">
+                <label>Count:
+                    <select id="count">
+                        <option value="1" selected>1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="uppercase"> Uppercase</label>
+                <label><input type="checkbox" id="no-hyphens"> No hyphens</label>
+                <label><input type="checkbox" id="braces"> With braces {}</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="generate()">Generate UUIDs</button>
+                <button class="btn btn-secondary" onclick="copyAll()">Copy All</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="output-box" id="output" style="min-height: 60px;"></div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space</div>
+        <div class="info-section">
+            <h2>About UUIDs</h2>
+            <p>A UUID (Universally Unique Identifier) is a 128-bit number used to uniquely identify resources. UUID v4 uses random numbers, making collisions astronomically unlikely.</p>
+            <h3>UUID Format</h3>
+            <p>Standard format: <code>xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx</code> where x is a random hex digit and y is one of 8, 9, a, or b.</p>
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Database primary keys</li>
+                <li>API request/response identifiers</li>
+                <li>Session tokens</li>
+                <li>File naming to avoid collisions</li>
+                <li>Distributed system identifiers</li>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        }
+
+        function generate() {
+            const count = parseInt(document.getElementById('count').value);
+            const upper = document.getElementById('uppercase').checked;
+            const noHyphens = document.getElementById('no-hyphens').checked;
+            const braces = document.getElementById('braces').checked;
+
+            const uuids = [];
+            for (let i = 0; i < count; i++) {
+                let uuid = uuidv4();
+                if (noHyphens) uuid = uuid.replace(/-/g, '');
+                if (upper) uuid = uuid.toUpperCase();
+                if (braces) uuid = '{' + uuid + '}';
+                uuids.push(uuid);
+            }
+
+            document.getElementById('output').textContent = uuids.join('\n');
+            showStatus(`Generated ${count} UUID${count > 1 ? 's' : ''}!`, 'success');
+        }
+
+        function copyAll() {
+            const text = document.getElementById('output').textContent;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => showStatus('Copied!', 'success'));
+        }
+
+        function clearAll() {
+            document.getElementById('output').textContent = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+
+        // Generate one on load
+        generate();
+    </script>
+</body>
+</html>

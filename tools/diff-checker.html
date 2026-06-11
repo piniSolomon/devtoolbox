@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Diff Checker - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online diff checker. Compare two texts and see differences highlighted. Find what changed between two versions.">
+    <meta name="keywords" content="diff checker, text compare, difference checker, compare text online, diff tool">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/diff-checker.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Diff Checker</div>
+            <h1>Text Diff Checker</h1>
+            <p>Compare two texts and see differences highlighted line by line.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="text1">Original Text</label>
+                    <textarea id="text1" placeholder="Paste original text here..."></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="text2">Modified Text</label>
+                    <textarea id="text2" placeholder="Paste modified text here..."></textarea>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="compare()">Compare</button>
+                <button class="btn btn-secondary" onclick="swap()">Swap</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+            <div id="diff-output" class="diff-output" style="margin-top:16px;"></div>
+        </div>
+        <div class="ad-space">Ad space</div>
+        <div class="info-section">
+            <h2>About Diff Checking</h2>
+            <p>A diff (difference) shows what changed between two versions of text. Lines added are shown in green, and lines removed are shown in red.</p>
+            <h3>Use Cases</h3>
+            <ul>
+                <li>Compare code changes before committing</li>
+                <li>Verify configuration file changes</li>
+                <li>Compare API responses</li>
+                <li>Review document edits</li>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        function compare() {
+            const t1 = document.getElementById('text1').value;
+            const t2 = document.getElementById('text2').value;
+            if (!t1 && !t2) { showStatus('Enter text in both fields', 'error'); return; }
+
+            const lines1 = t1.split('\n');
+            const lines2 = t2.split('\n');
+
+            // Simple LCS-based diff
+            const diff = computeDiff(lines1, lines2);
+
+            let html = '<div class="output-box" style="max-height:500px;overflow-y:auto;">';
+            let added = 0, removed = 0, unchanged = 0;
+
+            diff.forEach(d => {
+                const escaped = escapeHtml(d.line);
+                if (d.type === 'added') {
+                    html += `<div class="diff-added">+ ${escaped}</div>`;
+                    added++;
+                } else if (d.type === 'removed') {
+                    html += `<div class="diff-removed">- ${escaped}</div>`;
+                    removed++;
+                } else {
+                    html += `<div>  ${escaped}</div>`;
+                    unchanged++;
+                }
+            });
+            html += '</div>';
+
+            document.getElementById('diff-output').innerHTML = html;
+            showStatus(`${added} added, ${removed} removed, ${unchanged} unchanged lines`, 'success');
+        }
+
+        function computeDiff(a, b) {
+            // Myers diff simplified
+            const n = a.length, m = b.length;
+            const max = n + m;
+            const v = new Array(2 * max + 1).fill(0);
+            const trace = [];
+
+            for (let d = 0; d <= max; d++) {
+                trace.push([...v]);
+                for (let k = -d; k <= d; k += 2) {
+                    let x;
+                    if (k === -d || (k !== d && v[k - 1 + max] < v[k + 1 + max])) {
+                        x = v[k + 1 + max];
+                    } else {
+                        x = v[k - 1 + max] + 1;
+                    }
+                    let y = x - k;
+                    while (x < n && y < m && a[x] === b[y]) { x++; y++; }
+                    v[k + max] = x;
+                    if (x >= n && y >= m) {
+                        return buildResult(trace, a, b, d, max);
+                    }
+                }
+            }
+            return [];
+        }
+
+        function buildResult(trace, a, b, d, max) {
+            const result = [];
+            let x = a.length, y = b.length;
+
+            for (let i = d; i > 0; i--) {
+                const v = trace[i - 1];
+                const k = x - y;
+                let prevK;
+                if (k === -i || (k !== i && v[k - 1 + max] < v[k + 1 + max])) {
+                    prevK = k + 1;
+                } else {
+                    prevK = k - 1;
+                }
+                const prevX = v[prevK + max];
+                const prevY = prevX - prevK;
+
+                while (x > prevX && y > prevY) {
+                    result.unshift({ type: 'unchanged', line: a[x - 1] });
+                    x--; y--;
+                }
+                if (x > prevX) {
+                    result.unshift({ type: 'removed', line: a[x - 1] });
+                    x--;
+                } else if (y > prevY) {
+                    result.unshift({ type: 'added', line: b[y - 1] });
+                    y--;
+                }
+            }
+            while (x > 0 && y > 0) {
+                result.unshift({ type: 'unchanged', line: a[x - 1] });
+                x--; y--;
+            }
+            return result;
+        }
+
+        function swap() {
+            const t1 = document.getElementById('text1'), t2 = document.getElementById('text2');
+            [t1.value, t2.value] = [t2.value, t1.value];
+        }
+
+        function clearAll() {
+            document.getElementById('text1').value = '';
+            document.getElementById('text2').value = '';
+            document.getElementById('diff-output').innerHTML = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+    </script>
+</body>
+</html>

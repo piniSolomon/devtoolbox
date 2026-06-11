@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Minifier - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online JSON minifier. Compress JSON data by removing whitespace and formatting. Reduce JSON size instantly.">
+    <meta name="keywords" content="json minifier, json compress, minify json, compact json, json minify online">
+    <link rel="canonical" href="https://devtoolbox.dev/tools/json-minifier.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links"><a href="../">Tools</a></div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JSON Minifier</div>
+            <h1>JSON Minifier</h1>
+            <p>Minify and compress JSON data by removing all unnecessary whitespace.</p>
+        </div>
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Input JSON</label>
+                    <textarea id="input" placeholder="Paste formatted JSON here..."></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Minified Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="minify()">Minify</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+        <div class="ad-space">Ad space</div>
+        <div class="info-section">
+            <h2>About JSON Minification</h2>
+            <p>JSON minification removes all unnecessary whitespace (spaces, tabs, newlines) from JSON data, reducing its size while maintaining validity. This is useful for reducing payload sizes in API responses and configuration files.</p>
+        </div>
+    </div>
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox</p></div></footer>
+    <script>
+        function minify() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Enter JSON to minify', 'error'); return; }
+            try {
+                const parsed = JSON.parse(input);
+                const minified = JSON.stringify(parsed);
+                document.getElementById('output').value = minified;
+                const saved = input.length - minified.length;
+                const pct = ((saved / input.length) * 100).toFixed(1);
+                showStatus(`Minified! Saved ${saved} chars (${pct}% reduction)`, 'success');
+            } catch (e) { showStatus('Invalid JSON: ' + e.message, 'error'); }
+        }
+        function copyOutput() {
+            const o = document.getElementById('output').value;
+            if (!o) return;
+            navigator.clipboard.writeText(o).then(() => showStatus('Copied!', 'success'));
+        }
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('status').classList.remove('show');
+        }
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg; el.className = 'status show ' + type;
+        }
+        document.getElementById('input').addEventListener('paste', () => setTimeout(minify, 50));
+    </script>
+</body>
+</html>
