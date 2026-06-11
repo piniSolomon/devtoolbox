@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to JSON Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online CSV to JSON and JSON to CSV converter. Convert between CSV and JSON formats instantly in your browser. No sign-up required.">
+    <meta name="keywords" content="csv to json, json to csv, csv converter, csv parser, convert csv online, csv json tool">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/csv-converter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / CSV Converter</div>
+            <h1>CSV to JSON Converter</h1>
+            <p>Convert between CSV and JSON formats. Supports custom delimiters, headers, and nested data.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Input</label>
+                    <textarea id="input" placeholder="name,age,city&#10;John,30,New York&#10;Jane,25,London"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Delimiter:
+                    <select id="delimiter">
+                        <option value="," selected>Comma (,)</option>
+                        <option value="&#9;">Tab</option>
+                        <option value=";">Semicolon (;)</option>
+                        <option value="|">Pipe (|)</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="has-headers" checked> First row is header</label>
+                <label>JSON indent:
+                    <select id="indent">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="csvToJson()">CSV &rarr; JSON</button>
+                <button class="btn btn-primary" onclick="jsonToCsv()">JSON &rarr; CSV</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy Output</button>
+                <button class="btn btn-secondary" onclick="downloadOutput()">Download</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <!-- Ad placeholder -->
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About CSV to JSON Converter</h2>
+            <p>This free online tool converts between CSV (Comma-Separated Values) and JSON (JavaScript Object Notation) formats. All processing happens in your browser — your data never leaves your device.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li>Convert CSV to JSON array of objects (with headers) or array of arrays</li>
+                <li>Convert JSON back to CSV format</li>
+                <li>Support for multiple delimiters: comma, tab, semicolon, pipe</li>
+                <li>Handles quoted fields with commas, newlines, and escaped quotes</li>
+                <li>Download converted output as a file</li>
+            </ul>
+
+            <h3>What is CSV?</h3>
+            <p>CSV (Comma-Separated Values) is a simple text format for storing tabular data. Each line represents a row, and values are separated by a delimiter (usually a comma). CSV files are widely used for data exchange between spreadsheets, databases, and applications.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Converting spreadsheet exports to JSON for API consumption</li>
+                <li>Transforming API JSON responses into CSV for Excel or Google Sheets</li>
+                <li>Migrating data between different database formats</li>
+                <li>Preparing test data for development</li>
+                <li>Converting log files from CSV to structured JSON</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>How does it handle quoted fields?</h4>
+            <p>Fields enclosed in double quotes can contain the delimiter character, newlines, and escaped quotes (doubled: ""). The parser handles all standard CSV quoting rules.</p>
+
+            <h4>What about nested JSON?</h4>
+            <p>When converting JSON to CSV, nested objects are flattened using dot notation (e.g., address.city). Arrays within objects are converted to JSON strings in the CSV output.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        function parseCSV(text, delimiter, hasHeaders) {
+            const rows = [];
+            let current = '';
+            let inQuotes = false;
+            let row = [];
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const next = text[i + 1];
+
+                if (inQuotes) {
+                    if (char === '"' && next === '"') {
+                        current += '"';
+                        i++;
+                    } else if (char === '"') {
+                        inQuotes = false;
+                    } else {
+                        current += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuotes = true;
+                    } else if (char === delimiter) {
+                        row.push(current.trim());
+                        current = '';
+                    } else if (char === '\n' || (char === '\r' && next === '\n')) {
+                        row.push(current.trim());
+                        if (row.some(cell => cell !== '')) rows.push(row);
+                        row = [];
+                        current = '';
+                        if (char === '\r') i++;
+                    } else {
+                        current += char;
+                    }
+                }
+            }
+            // Last field
+            row.push(current.trim());
+            if (row.some(cell => cell !== '')) rows.push(row);
+
+            if (hasHeaders && rows.length > 0) {
+                const headers = rows[0];
+                return rows.slice(1).map(r => {
+                    const obj = {};
+                    headers.forEach((h, i) => { obj[h] = r[i] !== undefined ? r[i] : ''; });
+                    return obj;
+                });
+            }
+            return rows;
+        }
+
+        function csvToJson() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter CSV data', 'error'); return; }
+
+            try {
+                const delimiter = document.getElementById('delimiter').value;
+                const hasHeaders = document.getElementById('has-headers').checked;
+                const indent = parseInt(document.getElementById('indent').value);
+                const result = parseCSV(input, delimiter, hasHeaders);
+                document.getElementById('output').value = JSON.stringify(result, null, indent);
+                showStatus(`Converted ${hasHeaders ? result.length + ' rows' : result.length + ' rows'} to JSON`, 'success');
+            } catch (e) {
+                showStatus('Error parsing CSV: ' + e.message, 'error');
+            }
+        }
+
+        function flattenObject(obj, prefix = '') {
+            const result = {};
+            for (const key in obj) {
+                const fullKey = prefix ? prefix + '.' + key : key;
+                if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                    Object.assign(result, flattenObject(obj[key], fullKey));
+                } else if (Array.isArray(obj[key])) {
+                    result[fullKey] = JSON.stringify(obj[key]);
+                } else {
+                    result[fullKey] = obj[key];
+                }
+            }
+            return result;
+        }
+
+        function escapeCSVField(value, delimiter) {
+            const str = value === null || value === undefined ? '' : String(value);
+            if (str.includes(delimiter) || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function jsonToCsv() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter JSON data', 'error'); return; }
+
+            try {
+                const delimiter = document.getElementById('delimiter').value;
+                let data = JSON.parse(input);
+
+                if (!Array.isArray(data)) {
+                    showStatus('JSON must be an array of objects or arrays', 'error');
+                    return;
+                }
+
+                if (data.length === 0) {
+                    showStatus('JSON array is empty', 'error');
+                    return;
+                }
+
+                // Array of objects
+                if (typeof data[0] === 'object' && !Array.isArray(data[0])) {
+                    const flattened = data.map(item => flattenObject(item));
+                    const allKeys = [...new Set(flattened.flatMap(obj => Object.keys(obj)))];
+                    const header = allKeys.map(k => escapeCSVField(k, delimiter)).join(delimiter);
+                    const rows = flattened.map(obj =>
+                        allKeys.map(k => escapeCSVField(obj[k], delimiter)).join(delimiter)
+                    );
+                    document.getElementById('output').value = header + '\n' + rows.join('\n');
+                }
+                // Array of arrays
+                else if (Array.isArray(data[0])) {
+                    const rows = data.map(row =>
+                        row.map(cell => escapeCSVField(cell, delimiter)).join(delimiter)
+                    );
+                    document.getElementById('output').value = rows.join('\n');
+                }
+                else {
+                    showStatus('JSON must contain objects or arrays', 'error');
+                    return;
+                }
+
+                showStatus(`Converted ${data.length} items to CSV`, 'success');
+            } catch (e) {
+                showStatus('Invalid JSON: ' + e.message, 'error');
+            }
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+        }
+
+        function downloadOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to download', 'error'); return; }
+            const isJson = output.trim().startsWith('[') || output.trim().startsWith('{');
+            const ext = isJson ? 'json' : 'csv';
+            const mime = isJson ? 'application/json' : 'text/csv';
+            const blob = new Blob([output], { type: mime });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `converted.${ext}`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showStatus(`Downloaded as converted.${ext}`, 'success');
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
+
+        // Auto-detect format on paste
+        document.getElementById('input').addEventListener('paste', () => {
+            setTimeout(() => {
+                const input = document.getElementById('input').value.trim();
+                if (input.startsWith('[') || input.startsWith('{')) {
+                    jsonToCsv();
+                } else {
+                    csvToJson();
+                }
+            }, 50);
+        });
+    </script>
+</body>
+</html>

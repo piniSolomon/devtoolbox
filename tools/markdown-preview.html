@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Preview - Free Online Editor | DevToolBox</title>
+    <meta name="description" content="Free online Markdown editor with live preview. Write Markdown and see rendered HTML in real-time. Supports tables, code blocks, and more. No sign-up required.">
+    <meta name="keywords" content="markdown editor, markdown preview, markdown to html, markdown renderer, online markdown, live markdown">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/markdown-preview.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .preview-pane {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            min-height: 200px;
+            max-height: 600px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+        }
+        .preview-pane h1 { font-size: 1.8rem; margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .preview-pane h2 { font-size: 1.5rem; margin: 14px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        .preview-pane h3 { font-size: 1.25rem; margin: 12px 0 6px; }
+        .preview-pane h4 { font-size: 1.1rem; margin: 10px 0 4px; }
+        .preview-pane h5 { font-size: 1rem; margin: 8px 0 4px; }
+        .preview-pane h6 { font-size: 0.9rem; margin: 8px 0 4px; color: var(--text-secondary); }
+        .preview-pane p { margin: 8px 0; }
+        .preview-pane ul, .preview-pane ol { padding-left: 24px; margin: 8px 0; }
+        .preview-pane li { margin: 4px 0; }
+        .preview-pane code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            color: var(--accent);
+        }
+        .preview-pane pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        .preview-pane pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+        .preview-pane blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 16px;
+            margin: 12px 0;
+            color: var(--text-secondary);
+        }
+        .preview-pane table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+        }
+        .preview-pane th, .preview-pane td {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .preview-pane th {
+            background: var(--bg-primary);
+            font-weight: 600;
+        }
+        .preview-pane hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+        .preview-pane img {
+            max-width: 100%;
+            border-radius: var(--radius-sm);
+        }
+        .preview-pane a { color: var(--accent); text-decoration: underline; }
+        .preview-pane strong { font-weight: 700; }
+        .preview-pane em { font-style: italic; }
+        .preview-pane del { text-decoration: line-through; color: var(--text-secondary); }
+        .preview-pane .task-list-item { list-style: none; margin-left: -20px; }
+        .preview-pane .task-list-item input { margin-right: 6px; }
+        #input { min-height: 400px; }
+        .word-count {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 6px;
+        }
+    </style>
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Markdown Preview</div>
+            <h1>Markdown Preview</h1>
+            <p>Write Markdown on the left, see the rendered preview on the right — in real time.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">Markdown Input</label>
+                    <textarea id="input" placeholder="# Hello World&#10;&#10;Write your **markdown** here...&#10;&#10;- Item 1&#10;- Item 2&#10;&#10;```javascript&#10;console.log('Hello!');&#10;```"></textarea>
+                    <div class="word-count" id="word-count">0 words, 0 characters</div>
+                </div>
+                <div class="tool-col">
+                    <label>Preview</label>
+                    <div class="preview-pane" id="preview">
+                        <p style="color: var(--text-secondary);">Start typing Markdown to see a live preview...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="renderMarkdown()">Render</button>
+                <button class="btn btn-secondary" onclick="copyHTML()">Copy HTML</button>
+                <button class="btn btn-secondary" onclick="downloadHTML()">Download HTML</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <!-- Ad placeholder -->
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Markdown Preview</h2>
+            <p>This free online Markdown editor gives you a live preview of your Markdown content. All processing happens in your browser — your data never leaves your device.</p>
+
+            <h3>Supported Syntax</h3>
+            <ul>
+                <li>Headings (# through ######)</li>
+                <li>Bold (**text**), italic (*text*), strikethrough (~~text~~)</li>
+                <li>Ordered and unordered lists, task lists</li>
+                <li>Code blocks with syntax indicators (```language)</li>
+                <li>Inline code (`code`)</li>
+                <li>Links and images</li>
+                <li>Blockquotes</li>
+                <li>Tables</li>
+                <li>Horizontal rules</li>
+            </ul>
+
+            <h3>What is Markdown?</h3>
+            <p>Markdown is a lightweight markup language created by John Gruber in 2004. It's designed to be easy to read and write, using plain text formatting that converts to HTML. Markdown is widely used in documentation, README files, blogs, forums, and note-taking apps.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Writing README files for GitHub repositories</li>
+                <li>Drafting blog posts and documentation</li>
+                <li>Preparing content for static site generators (Jekyll, Hugo, Gatsby)</li>
+                <li>Writing notes in tools like Obsidian, Notion, or Bear</li>
+                <li>Creating formatted messages for Discord, Slack, and Reddit</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Does this support GitHub Flavored Markdown?</h4>
+            <p>Yes! This editor supports most GFM features including tables, task lists, strikethrough, and fenced code blocks.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Lightweight Markdown parser — no external dependencies
+        function parseMarkdown(md) {
+            let html = md;
+
+            // Escape HTML
+            html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // Code blocks (fenced) — must come before other inline processing
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+                return `<pre><code class="language-${lang}">${code.trim()}</code></pre>`;
+            });
+
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            // Tables
+            html = html.replace(/^(\|.+\|)\n(\|[\s:|-]+\|)\n((?:\|.+\|\n?)*)/gm, (match, header, align, body) => {
+                const headers = header.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+                const rows = body.trim().split('\n').map(row => {
+                    const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+                return `<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+            });
+
+            // Headings
+            html = html.replace(/^###### (.+)$/gm, '<h6>$1</h6>');
+            html = html.replace(/^##### (.+)$/gm, '<h5>$1</h5>');
+            html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+            // Horizontal rule
+            html = html.replace(/^(-{3,}|\*{3,}|_{3,})$/gm, '<hr>');
+
+            // Blockquotes
+            html = html.replace(/^&gt; (.+)$/gm, '<blockquote><p>$1</p></blockquote>');
+
+            // Bold & italic
+            html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+            // Images (before links to avoid conflict)
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+            // Task lists
+            html = html.replace(/^- \[x\] (.+)$/gm, '<li class="task-list-item"><input type="checkbox" checked disabled> $1</li>');
+            html = html.replace(/^- \[ \] (.+)$/gm, '<li class="task-list-item"><input type="checkbox" disabled> $1</li>');
+
+            // Unordered lists
+            html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, match => `<ul>${match}</ul>`);
+
+            // Ordered lists
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+            // Paragraphs — wrap remaining lines
+            html = html.split('\n\n').map(block => {
+                block = block.trim();
+                if (!block) return '';
+                if (/^<[a-z]/.test(block)) return block;
+                return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+            }).join('\n');
+
+            // Clean up duplicate blockquotes
+            html = html.replace(/<\/blockquote>\s*<blockquote>/g, '');
+
+            return html;
+        }
+
+        function renderMarkdown() {
+            const input = document.getElementById('input').value;
+            if (!input.trim()) {
+                document.getElementById('preview').innerHTML = '<p style="color: var(--text-secondary);">Start typing Markdown to see a live preview...</p>';
+                return;
+            }
+            document.getElementById('preview').innerHTML = parseMarkdown(input);
+            showStatus('Rendered successfully!', 'success');
+        }
+
+        function copyHTML() {
+            const html = parseMarkdown(document.getElementById('input').value);
+            if (!html.trim()) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(html).then(() => showStatus('HTML copied to clipboard!', 'success'));
+        }
+
+        function downloadHTML() {
+            const md = document.getElementById('input').value;
+            if (!md.trim()) { showStatus('Nothing to download', 'error'); return; }
+            const html = '<!DOCTYPE html>\n<html><head><meta charset="UTF-8"><title>Markdown Output</title></head><body>\n' + parseMarkdown(md) + '\n</body></html>';
+            const blob = new Blob([html], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'markdown-output.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showStatus('Downloaded as markdown-output.html', 'success');
+        }
+
+        function loadSample() {
+            document.getElementById('input').value = `# Markdown Preview Demo
+
+## Features
+
+This editor supports **bold**, *italic*, ~~strikethrough~~, and ***bold italic*** text.
+
+### Lists
+
+- Unordered item 1
+- Unordered item 2
+- Unordered item 3
+
+1. Ordered item 1
+2. Ordered item 2
+
+### Task List
+
+- [x] Build the Markdown preview tool
+- [x] Add live preview
+- [ ] Add syntax highlighting
+
+### Code
+
+Inline code: \`console.log("Hello")\`
+
+\`\`\`javascript
+function greet(name) {
+    return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+### Links & Images
+
+[DevToolBox](https://pinisolomon.github.io/devtoolbox/)
+
+### Blockquote
+
+> The best way to predict the future is to create it.
+
+### Table
+
+| Feature | Status |
+|---------|--------|
+| Bold | Supported |
+| Tables | Supported |
+| Code blocks | Supported |
+
+---
+
+*Made with DevToolBox*`;
+            renderMarkdown();
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('preview').innerHTML = '<p style="color: var(--text-secondary);">Start typing Markdown to see a live preview...</p>';
+            document.getElementById('status').classList.remove('show');
+            updateWordCount();
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('input').value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            document.getElementById('word-count').textContent = `${words} word${words !== 1 ? 's' : ''}, ${chars} character${chars !== 1 ? 's' : ''}`;
+        }
+
+        // Live preview on typing
+        document.getElementById('input').addEventListener('input', () => {
+            renderMarkdown();
+            updateWordCount();
+        });
+
+        // Auto-render on paste
+        document.getElementById('input').addEventListener('paste', () => {
+            setTimeout(() => { renderMarkdown(); updateWordCount(); }, 50);
+        });
+    </script>
+</body>
+</html>

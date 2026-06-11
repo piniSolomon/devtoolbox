@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://devtoolbox.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/json-formatter.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/json-minifier.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/base64.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/url-encoder.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/html-encoder.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/hash-generator.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/jwt-decoder.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/regex-tester.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/diff-checker.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/uuid-generator.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/timestamp-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://devtoolbox.dev/tools/color-converter.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/json-formatter.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/json-minifier.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/base64.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/url-encoder.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/html-encoder.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/hash-generator.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/jwt-decoder.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/regex-tester.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/diff-checker.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/uuid-generator.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/timestamp-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/color-converter.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/csv-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/markdown-preview.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/cron-parser.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
