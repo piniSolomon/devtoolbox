@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML to Markdown Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online HTML to Markdown converter. Convert HTML code to clean Markdown syntax. Handles headings, bold, italic, links, images, lists, code blocks, and tables. No sign-up required.">
+    <meta name="keywords" content="html to markdown, html to md, convert html markdown, html markdown converter, turndown, html2md, reverse markdown">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/html-to-markdown.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / HTML to Markdown</div>
+            <h1>HTML to Markdown Converter</h1>
+            <p>Convert HTML code to clean, readable Markdown syntax. All processing happens in your browser.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">HTML Input</label>
+                    <textarea id="input" placeholder="<h1>Hello World</h1>&#10;<p>This is a <strong>bold</strong> and <em>italic</em> paragraph.</p>&#10;<a href='https://example.com'>Link</a>"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Markdown Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Heading style:
+                    <select id="heading-style">
+                        <option value="atx" selected>ATX (# Heading)</option>
+                        <option value="setext">Setext (underline)</option>
+                    </select>
+                </label>
+                <label>Link style:
+                    <select id="link-style">
+                        <option value="inline" selected>Inline [text](url)</option>
+                        <option value="reference">Reference [text][1]</option>
+                    </select>
+                </label>
+                <label>Code block:
+                    <select id="code-style">
+                        <option value="fenced" selected>Fenced (```)</option>
+                        <option value="indented">Indented (4 spaces)</option>
+                    </select>
+                </label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="convertHTML()">Convert to Markdown</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About HTML to Markdown Converter</h2>
+            <p>This free online tool converts HTML to clean Markdown syntax. It handles all common HTML elements including headings, formatting, links, images, lists, code blocks, blockquotes, and tables.</p>
+
+            <h3>Supported HTML Elements</h3>
+            <ul>
+                <li><strong>Headings:</strong> &lt;h1&gt; through &lt;h6&gt; to # through ######</li>
+                <li><strong>Text formatting:</strong> &lt;strong&gt;/&lt;b&gt; to **bold**, &lt;em&gt;/&lt;i&gt; to *italic*, &lt;del&gt;/&lt;s&gt; to ~~strikethrough~~</li>
+                <li><strong>Links:</strong> &lt;a href&gt; to [text](url) or reference style</li>
+                <li><strong>Images:</strong> &lt;img src&gt; to ![alt](src)</li>
+                <li><strong>Lists:</strong> &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt; to - item or 1. item</li>
+                <li><strong>Code:</strong> &lt;code&gt; to `inline` and &lt;pre&gt;&lt;code&gt; to fenced blocks</li>
+                <li><strong>Blockquotes:</strong> &lt;blockquote&gt; to &gt; quoted text</li>
+                <li><strong>Tables:</strong> &lt;table&gt; to Markdown pipe tables</li>
+                <li><strong>Horizontal rules:</strong> &lt;hr&gt; to ---</li>
+                <li><strong>Line breaks:</strong> &lt;br&gt; to newlines</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>What is Markdown?</h4>
+            <p>Markdown is a lightweight markup language created by John Gruber in 2004. It uses simple plain-text syntax to format text, and can be converted to HTML. It's widely used for documentation (GitHub READMEs, wikis), note-taking (Obsidian, Notion), static site generators (Jekyll, Hugo), and content management systems.</p>
+
+            <h4>Why convert HTML to Markdown?</h4>
+            <p>Common use cases include migrating content from HTML-based CMS to Markdown-based platforms, cleaning up HTML emails or web content for documentation, preparing content for static site generators, and making content more readable and portable.</p>
+
+            <h4>Does this handle complex HTML?</h4>
+            <p>This converter handles all standard HTML elements. Inline styles, scripts, and non-standard elements are stripped. Complex nested structures and custom components may need manual cleanup.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    function convertHTML() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) { showStatus('Please enter HTML', 'error'); return; }
+
+        const headingStyle = document.getElementById('heading-style').value;
+        const linkStyle = document.getElementById('link-style').value;
+        const codeStyle = document.getElementById('code-style').value;
+
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(input, 'text/html');
+            const links = [];
+            let linkIndex = 0;
+
+            function processNode(node, listDepth) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.textContent;
+                    // Don't collapse whitespace inside <pre>
+                    if (!isInsidePre(node)) {
+                        text = text.replace(/\s+/g, ' ');
+                    }
+                    return text;
+                }
+
+                if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+                const tag = node.tagName.toLowerCase();
+                const children = Array.from(node.childNodes).map(c => processNode(c, listDepth)).join('');
+                const trimmed = children.trim();
+
+                switch (tag) {
+                    // Headings
+                    case 'h1': case 'h2': case 'h3': case 'h4': case 'h5': case 'h6': {
+                        const level = parseInt(tag[1]);
+                        if (headingStyle === 'setext' && level <= 2) {
+                            const underline = level === 1 ? '=' : '-';
+                            return '\n\n' + trimmed + '\n' + underline.repeat(Math.max(trimmed.length, 3)) + '\n\n';
+                        }
+                        return '\n\n' + '#'.repeat(level) + ' ' + trimmed + '\n\n';
+                    }
+
+                    // Paragraphs
+                    case 'p':
+                        return '\n\n' + trimmed + '\n\n';
+
+                    // Bold
+                    case 'strong': case 'b':
+                        return '**' + trimmed + '**';
+
+                    // Italic
+                    case 'em': case 'i':
+                        return '*' + trimmed + '*';
+
+                    // Strikethrough
+                    case 'del': case 's': case 'strike':
+                        return '~~' + trimmed + '~~';
+
+                    // Inline code
+                    case 'code':
+                        if (node.parentElement && node.parentElement.tagName.toLowerCase() === 'pre') {
+                            return children; // Handled by <pre>
+                        }
+                        return '`' + trimmed + '`';
+
+                    // Code blocks
+                    case 'pre': {
+                        const codeEl = node.querySelector('code');
+                        const content = codeEl ? codeEl.textContent : node.textContent;
+                        const lang = codeEl ? (codeEl.className.match(/language-(\w+)/) || [])[1] || '' : '';
+                        if (codeStyle === 'fenced') {
+                            return '\n\n```' + lang + '\n' + content.trim() + '\n```\n\n';
+                        } else {
+                            return '\n\n' + content.trim().split('\n').map(l => '    ' + l).join('\n') + '\n\n';
+                        }
+                    }
+
+                    // Links
+                    case 'a': {
+                        const href = node.getAttribute('href') || '';
+                        const title = node.getAttribute('title');
+                        if (linkStyle === 'reference') {
+                            linkIndex++;
+                            const titlePart = title ? ' "' + title + '"' : '';
+                            links.push('[' + linkIndex + ']: ' + href + titlePart);
+                            return '[' + trimmed + '][' + linkIndex + ']';
+                        }
+                        const titlePart = title ? ' "' + title + '"' : '';
+                        return '[' + trimmed + '](' + href + titlePart + ')';
+                    }
+
+                    // Images
+                    case 'img': {
+                        const src = node.getAttribute('src') || '';
+                        const alt = node.getAttribute('alt') || '';
+                        const title = node.getAttribute('title');
+                        const titlePart = title ? ' "' + title + '"' : '';
+                        return '![' + alt + '](' + src + titlePart + ')';
+                    }
+
+                    // Lists
+                    case 'ul': case 'ol':
+                        return '\n\n' + children + '\n';
+
+                    case 'li': {
+                        const parent = node.parentElement;
+                        const isOrdered = parent && parent.tagName.toLowerCase() === 'ol';
+                        const prefix = isOrdered
+                            ? (Array.from(parent.children).indexOf(node) + 1) + '. '
+                            : '- ';
+                        const indent = '  '.repeat(listDepth);
+                        // Handle nested lists: separate content from nested list
+                        let content = '';
+                        let nested = '';
+                        for (const child of node.childNodes) {
+                            if (child.nodeType === Node.ELEMENT_NODE &&
+                                (child.tagName.toLowerCase() === 'ul' || child.tagName.toLowerCase() === 'ol')) {
+                                nested += processNode(child, listDepth + 1);
+                            } else {
+                                content += processNode(child, listDepth);
+                            }
+                        }
+                        return indent + prefix + content.trim() + '\n' + nested;
+                    }
+
+                    // Blockquotes
+                    case 'blockquote':
+                        return '\n\n' + trimmed.split('\n').map(l => '> ' + l.trim()).join('\n') + '\n\n';
+
+                    // Horizontal rule
+                    case 'hr':
+                        return '\n\n---\n\n';
+
+                    // Line break
+                    case 'br':
+                        return '\n';
+
+                    // Tables
+                    case 'table': return '\n\n' + convertTable(node) + '\n\n';
+
+                    // Div/section/article - treat as block
+                    case 'div': case 'section': case 'article': case 'main': case 'header': case 'footer': case 'nav':
+                        return '\n\n' + trimmed + '\n\n';
+
+                    // Span - inline
+                    case 'span':
+                        return children;
+
+                    // Skip these
+                    case 'script': case 'style': case 'noscript':
+                        return '';
+
+                    // Default: just return children
+                    default:
+                        return children;
+                }
+            }
+
+            function isInsidePre(node) {
+                let parent = node.parentElement;
+                while (parent) {
+                    if (parent.tagName && parent.tagName.toLowerCase() === 'pre') return true;
+                    parent = parent.parentElement;
+                }
+                return false;
+            }
+
+            function convertTable(tableEl) {
+                const rows = [];
+                for (const tr of tableEl.querySelectorAll('tr')) {
+                    const cells = [];
+                    for (const td of tr.querySelectorAll('td, th')) {
+                        cells.push(processNode(td, 0).trim().replace(/\|/g, '\\|'));
+                    }
+                    rows.push(cells);
+                }
+                if (rows.length === 0) return '';
+
+                const colCount = Math.max(...rows.map(r => r.length));
+                // Ensure all rows have same column count
+                for (const row of rows) {
+                    while (row.length < colCount) row.push('');
+                }
+
+                let md = '| ' + rows[0].join(' | ') + ' |\n';
+                md += '| ' + rows[0].map(() => '---').join(' | ') + ' |\n';
+                for (let i = 1; i < rows.length; i++) {
+                    md += '| ' + rows[i].join(' | ') + ' |\n';
+                }
+                return md.trimEnd();
+            }
+
+            // Process body content
+            let result = processNode(doc.body, 0);
+
+            // Add reference links at the bottom
+            if (links.length > 0) {
+                result += '\n\n' + links.join('\n');
+            }
+
+            // Clean up excessive newlines
+            result = result.replace(/\n{3,}/g, '\n\n').trim();
+
+            document.getElementById('output').value = result;
+            showStatus('Converted HTML to Markdown successfully', 'success');
+        } catch (e) {
+            showStatus('Error converting HTML: ' + e.message, 'error');
+        }
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = `<h1>Project Documentation</h1>
+<p>This is a <strong>sample HTML</strong> document with <em>various</em> elements to demonstrate the converter.</p>
+
+<h2>Features</h2>
+<ul>
+  <li>Fast and <strong>reliable</strong> conversion</li>
+  <li>Handles nested <em>formatting</em></li>
+  <li>Supports <a href="https://example.com">links</a> and <code>inline code</code></li>
+</ul>
+
+<h2>Code Example</h2>
+<pre><code class="language-javascript">function greet(name) {
+  return \`Hello, \${name}!\`;
+}</code></pre>
+
+<h2>Table</h2>
+<table>
+  <tr><th>Name</th><th>Language</th><th>Stars</th></tr>
+  <tr><td>React</td><td>JavaScript</td><td>200k+</td></tr>
+  <tr><td>Vue</td><td>JavaScript</td><td>200k+</td></tr>
+  <tr><td>Svelte</td><td>JavaScript</td><td>70k+</td></tr>
+</table>
+
+<blockquote>
+  <p>The best way to predict the future is to invent it. — Alan Kay</p>
+</blockquote>
+
+<p>For more info, visit <a href="https://devtoolbox.dev" title="DevToolBox">our website</a>.</p>
+
+<hr>
+
+<h3>Ordered Steps</h3>
+<ol>
+  <li>Clone the repository</li>
+  <li>Install dependencies</li>
+  <li>Run the development server</li>
+</ol>`;
+        convertHTML();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>
