@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Formatter & Beautifier - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online XML formatter and beautifier. Format, validate, and beautify XML with proper indentation. Supports CDATA, comments, and namespaces. Also minify XML. No sign-up required.">
+    <meta name="keywords" content="xml formatter, xml beautifier, format xml online, xml pretty print, xml indent, xml validator, xml minifier, beautify xml">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/xml-formatter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / XML Formatter</div>
+            <h1>XML Formatter & Beautifier</h1>
+            <p>Format, validate, and beautify XML with proper indentation. Also minify XML for production.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">XML Input</label>
+                    <textarea id="input" placeholder='<?xml version="1.0"?><root><item id="1"><name>Test</name></item></root>'></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Formatted XML</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Indent:
+                    <select id="indent-size">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="collapse-empty" checked> Collapse empty tags</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="formatXML()">Format</button>
+                <button class="btn btn-primary" onclick="minifyXML()">Minify</button>
+                <button class="btn btn-secondary" onclick="validateXML()">Validate</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About XML Formatter</h2>
+            <p>This free online XML formatter and beautifier helps you format messy XML with proper indentation, validate XML structure, or minify XML for production. All processing runs in your browser.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li>Format XML with customizable indentation (2 spaces, 4 spaces, or tabs)</li>
+                <li>Validate XML structure and report parsing errors</li>
+                <li>Minify XML (remove whitespace between tags)</li>
+                <li>Handles CDATA sections, comments, processing instructions, and namespaces</li>
+                <li>Option to collapse empty tags (&lt;tag/&gt; vs &lt;tag&gt;&lt;/tag&gt;)</li>
+                <li>100% client-side — no data leaves your browser</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>What's the difference between XML and HTML?</h4>
+            <p>XML is a strict markup language designed for data storage and transport. Unlike HTML, XML requires all tags to be closed, attribute values to be quoted, and is case-sensitive. XML is used for configuration files, data exchange (SOAP/REST APIs), and document formats (SVG, XHTML, RSS).</p>
+
+            <h4>Does formatting change my XML?</h4>
+            <p>Formatting only changes whitespace between tags. It doesn't modify tag names, attributes, text content, or CDATA sections. The formatted XML is semantically identical to the original.</p>
+
+            <h4>What does XML validation check?</h4>
+            <p>The validator checks for well-formedness: proper tag nesting, matching open/close tags, valid attribute syntax, and correct XML declaration. It does NOT validate against a schema (XSD/DTD) — it only checks structural validity.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    function formatXML() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) { showStatus('Please enter XML', 'error'); return; }
+
+        const indentVal = document.getElementById('indent-size').value;
+        const indentStr = indentVal === 'tab' ? '\t' : ' '.repeat(parseInt(indentVal));
+        const collapseEmpty = document.getElementById('collapse-empty').checked;
+
+        // Parse with DOMParser to validate
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(input, 'application/xml');
+        const errorNode = doc.querySelector('parsererror');
+        if (errorNode) {
+            showStatus('XML Parse Error: ' + errorNode.textContent.split('\n')[0], 'error');
+            return;
+        }
+
+        try {
+            const result = formatNode(doc, 0, indentStr, collapseEmpty);
+            document.getElementById('output').value = result.trim();
+            showStatus('XML formatted successfully', 'success');
+        } catch (e) {
+            showStatus('Error formatting XML: ' + e.message, 'error');
+        }
+    }
+
+    function formatNode(node, level, indent, collapseEmpty) {
+        let result = '';
+        const pad = indent.repeat(level);
+
+        if (node.nodeType === Node.DOCUMENT_NODE) {
+            // Check for XML declaration in original input
+            const input = document.getElementById('input').value.trim();
+            if (input.startsWith('<?xml')) {
+                const declEnd = input.indexOf('?>');
+                result += input.slice(0, declEnd + 2) + '\n';
+            }
+            for (const child of node.childNodes) {
+                if (child.nodeType === Node.ELEMENT_NODE) {
+                    result += formatNode(child, 0, indent, collapseEmpty);
+                } else if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
+                    result += '<?' + child.target + ' ' + child.data + '?>\n';
+                } else if (child.nodeType === Node.COMMENT_NODE) {
+                    result += '<!-- ' + child.data.trim() + ' -->\n';
+                }
+            }
+            return result;
+        }
+
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            const tag = node.tagName;
+            let attrs = '';
+            for (const attr of node.attributes) {
+                attrs += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
+            }
+
+            const children = node.childNodes;
+            const hasChildren = children.length > 0;
+            const hasOnlyText = children.length === 1 && children[0].nodeType === Node.TEXT_NODE;
+
+            if (!hasChildren && collapseEmpty) {
+                result += pad + '<' + tag + attrs + '/>\n';
+            } else if (hasOnlyText) {
+                const text = children[0].textContent;
+                if (text.trim().length < 80) {
+                    result += pad + '<' + tag + attrs + '>' + escapeXML(text.trim()) + '</' + tag + '>\n';
+                } else {
+                    result += pad + '<' + tag + attrs + '>\n';
+                    result += indent.repeat(level + 1) + escapeXML(text.trim()) + '\n';
+                    result += pad + '</' + tag + '>\n';
+                }
+            } else {
+                result += pad + '<' + tag + attrs + '>\n';
+                for (const child of children) {
+                    if (child.nodeType === Node.ELEMENT_NODE) {
+                        result += formatNode(child, level + 1, indent, collapseEmpty);
+                    } else if (child.nodeType === Node.TEXT_NODE) {
+                        const text = child.textContent.trim();
+                        if (text) result += indent.repeat(level + 1) + escapeXML(text) + '\n';
+                    } else if (child.nodeType === Node.COMMENT_NODE) {
+                        result += indent.repeat(level + 1) + '<!-- ' + child.data.trim() + ' -->\n';
+                    } else if (child.nodeType === Node.CDATA_SECTION_NODE) {
+                        result += indent.repeat(level + 1) + '<![CDATA[' + child.data + ']]>\n';
+                    } else if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
+                        result += indent.repeat(level + 1) + '<?' + child.target + ' ' + child.data + '?>\n';
+                    }
+                }
+                result += pad + '</' + tag + '>\n';
+            }
+        }
+
+        return result;
+    }
+
+    function escapeXML(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function escapeAttr(str) {
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function minifyXML() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) { showStatus('Please enter XML', 'error'); return; }
+
+        // Remove whitespace between tags, preserve content
+        let result = input
+            .replace(/>\s+</g, '><')     // Remove whitespace between tags
+            .replace(/\s+/g, ' ')         // Collapse remaining whitespace
+            .trim();
+
+        document.getElementById('output').value = result;
+        showStatus('XML minified (' + input.length + ' → ' + result.length + ' chars, ' +
+            ((1 - result.length / input.length) * 100).toFixed(1) + '% reduction)', 'success');
+    }
+
+    function validateXML() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) { showStatus('Please enter XML to validate', 'error'); return; }
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(input, 'application/xml');
+        const errorNode = doc.querySelector('parsererror');
+
+        if (errorNode) {
+            const errorText = errorNode.textContent;
+            document.getElementById('output').value = 'VALIDATION FAILED\n\n' + errorText;
+            showStatus('XML is NOT well-formed', 'error');
+        } else {
+            const elements = doc.getElementsByTagName('*').length;
+            document.getElementById('output').value = 'VALIDATION PASSED\n\nXML is well-formed.\n' +
+                'Root element: <' + doc.documentElement.tagName + '>\n' +
+                'Total elements: ' + elements;
+            showStatus('XML is well-formed (' + elements + ' elements)', 'success');
+        }
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = '<?xml version="1.0" encoding="UTF-8"?><catalog><book id="bk101"><author>Gambardella, Matthew</author><title>XML Developer\'s Guide</title><genre>Computer</genre><price>44.95</price><publish_date>2000-10-01</publish_date><description>An in-depth look at creating applications with XML.</description></book><book id="bk102"><author>Ralls, Kim</author><title>Midnight Rain</title><genre>Fantasy</genre><price>5.95</price><publish_date>2000-12-16</publish_date><description>A former architect battles corporate zombies, an evil sorceress, and her own childhood to become queen of the world.</description></book><book id="bk103"><author>Corets, Eva</author><title>Maeve Ascendant</title><genre>Fantasy</genre><price>5.95</price><publish_date>2000-11-17</publish_date><description>After the collapse of a nanotechnology society, the young survivors lay the foundation for a new society.</description></book><!-- More books can be added here --></catalog>';
+        formatXML();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

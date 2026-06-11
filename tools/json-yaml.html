@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to YAML Converter - Free Online Tool | DevToolBox</title>
-    <meta name="description" content="Free online JSON to YAML and YAML to JSON converter. Convert between JSON and YAML formats instantly in your browser. Supports nested objects, arrays, and comments. No sign-up required.">
-    <meta name="keywords" content="json to yaml, yaml to json, json yaml converter, yaml converter, convert json online, yaml parser, json parser, yml to json">
+    <meta name="description" content="Free online JSON to YAML and YAML to JSON converter. Convert between JSON and YAML formats instantly in your browser. No sign-up required.">
+    <meta name="keywords" content="json to yaml, yaml to json, json yaml converter, convert json yaml, yaml parser, json converter online">
     <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/json-yaml.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,24 +17,20 @@
     <nav class="navbar">
         <div class="container">
             <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
-            <div class="nav-links">
-                <a href="../">Tools</a>
-            </div>
+            <div class="nav-links"><a href="../">Tools</a></div>
         </div>
     </nav>
-
     <div class="container">
         <div class="tool-header">
             <div class="breadcrumb"><a href="../">Tools</a> / JSON to YAML Converter</div>
             <h1>JSON to YAML Converter</h1>
-            <p>Convert between JSON and YAML formats instantly. All processing happens in your browser.</p>
+            <p>Convert between JSON and YAML formats. Bidirectional conversion with proper formatting.</p>
         </div>
-
         <div class="tool-container">
             <div class="tool-row">
                 <div class="tool-col">
                     <label for="input">Input</label>
-                    <textarea id="input" placeholder='{"name": "John", "age": 30, "skills": ["JavaScript", "Python"]}'></textarea>
+                    <textarea id="input" placeholder='{"name": "John", "age": 30, "hobbies": ["reading", "coding"]}'></textarea>
                 </div>
                 <div class="tool-col">
                     <label for="output">Output</label>
@@ -42,448 +38,242 @@
                 </div>
             </div>
             <div class="option-row">
-                <label>Indent:
+                <label>YAML indent:
                     <select id="indent">
                         <option value="2" selected>2 spaces</option>
                         <option value="4">4 spaces</option>
                     </select>
                 </label>
-                <label><input type="checkbox" id="sort-keys"> Sort keys alphabetically</label>
-                <label><input type="checkbox" id="flow-level" title="Use inline notation for short arrays/objects"> Compact arrays</label>
             </div>
             <div class="btn-row">
                 <button class="btn btn-primary" onclick="jsonToYaml()">JSON &rarr; YAML</button>
                 <button class="btn btn-primary" onclick="yamlToJson()">YAML &rarr; JSON</button>
                 <button class="btn btn-secondary" onclick="copyOutput()">Copy Output</button>
-                <button class="btn btn-secondary" onclick="swapPanels()">Swap</button>
+                <button class="btn btn-secondary" onclick="downloadOutput()">Download</button>
                 <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
             </div>
             <div class="status" id="status"></div>
         </div>
-
         <div class="ad-space">Ad space - AdSense banner will appear here</div>
-
         <div class="info-section">
             <h2>About JSON to YAML Converter</h2>
-            <p>This free online converter transforms JSON to YAML and YAML to JSON instantly in your browser. No data is sent to any server — everything runs client-side for maximum privacy and speed.</p>
-
+            <p>This free online tool converts between JSON and YAML formats. All processing happens in your browser — your data never leaves your device.</p>
             <h3>Features</h3>
             <ul>
                 <li>Bidirectional conversion: JSON to YAML and YAML to JSON</li>
-                <li>Supports nested objects, arrays, and complex data structures</li>
                 <li>Configurable indentation (2 or 4 spaces)</li>
-                <li>Option to sort keys alphabetically</li>
-                <li>Compact array notation for cleaner YAML output</li>
-                <li>Error highlighting with descriptive messages</li>
-                <li>One-click copy and swap functionality</li>
+                <li>Handles nested objects, arrays, and all JSON data types</li>
+                <li>Preserves null values, booleans, and numbers</li>
             </ul>
-
-            <h3>When to Use JSON vs YAML</h3>
+            <h3>What is YAML?</h3>
+            <p>YAML is a human-readable data serialization format commonly used for configuration files. It's popular in Docker Compose, Kubernetes, Ansible, and GitHub Actions.</p>
+            <h3>JSON vs YAML</h3>
             <ul>
-                <li><strong>JSON</strong> is best for APIs, data interchange, and when strict parsing is needed. It's the native data format for JavaScript and widely supported across all programming languages.</li>
-                <li><strong>YAML</strong> is preferred for configuration files (Docker Compose, Kubernetes, GitHub Actions, Ansible), where human readability matters. It supports comments and is more compact.</li>
-            </ul>
-
-            <h3>Key Differences</h3>
-            <ul>
+                <li><strong>Readability:</strong> YAML is more readable for configuration files</li>
                 <li><strong>Comments:</strong> YAML supports comments (#), JSON does not</li>
-                <li><strong>Syntax:</strong> YAML uses indentation; JSON uses braces and brackets</li>
-                <li><strong>Data types:</strong> Both support strings, numbers, booleans, arrays, objects, and null</li>
-                <li><strong>Readability:</strong> YAML is generally more human-readable for configuration</li>
-                <li><strong>Parsing:</strong> JSON is stricter and faster to parse programmatically</li>
+                <li><strong>Use cases:</strong> JSON for APIs and data exchange; YAML for configuration</li>
             </ul>
-
             <h3>FAQ</h3>
-            <h4>Is YAML a superset of JSON?</h4>
-            <p>Yes — since YAML 1.2, every valid JSON document is also valid YAML. This means you can paste JSON directly into a YAML parser and it will work. However, the reverse is not true: YAML features like comments, anchors, and multi-line strings have no JSON equivalent.</p>
-
-            <h4>Which format should I use for config files?</h4>
-            <p>YAML is the standard for most modern DevOps and infrastructure tools: Docker Compose, Kubernetes, GitHub Actions, CircleCI, Ansible, and more. Use YAML when humans will read and edit the file frequently. Use JSON when the file is primarily machine-generated or consumed by APIs.</p>
-
-            <h4>Can I convert YAML with comments to JSON?</h4>
-            <p>Comments are stripped during conversion since JSON doesn't support comments. The data itself converts perfectly. When converting back to YAML, you'll need to re-add comments manually.</p>
+            <h4>Does this tool handle all YAML features?</h4>
+            <p>This tool handles common YAML features: mappings, sequences, scalars, and nested structures. Advanced features like anchors and aliases are not supported.</p>
+            <h4>Is my data safe?</h4>
+            <p>Yes. All conversion happens in your browser using JavaScript. No data is sent to any server.</p>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
-        </div>
-    </footer>
-
+    <footer class="footer"><div class="container"><p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p></div></footer>
     <script>
-    // Lightweight YAML parser/serializer (no external dependencies)
-    const YAML = {
-        parse(text) {
-            text = text.replace(/\r\n/g, '\n').replace(/\t/g, '  ');
-            // Strip full-line comments and blank lines for simpler parsing
+        function toYamlValue(value, indent, level) {
+            const pad = ' '.repeat(indent * level);
+            const padInner = ' '.repeat(indent * (level + 1));
+            if (value === null) return 'null';
+            if (typeof value === 'boolean') return value.toString();
+            if (typeof value === 'number') return value.toString();
+            if (typeof value === 'string') {
+                if (value === '' || value === 'true' || value === 'false' || value === 'null' ||
+                    value === 'yes' || value === 'no' || /^[\d.e+-]+$/i.test(value) ||
+                    value.includes(':') || value.includes('#') || value.includes('{') ||
+                    value.includes('[') || value.includes("'") || value.includes('"') ||
+                    value.startsWith(' ') || value.endsWith(' ')) {
+                    return "'" + value.replace(/'/g, "''") + "'";
+                }
+                if (value.includes('\n')) {
+                    return '|\n' + value.split('\n').map(line => padInner + line).join('\n');
+                }
+                return value;
+            }
+            if (Array.isArray(value)) {
+                if (value.length === 0) return '[]';
+                if (value.every(v => typeof v !== 'object' || v === null) && value.length <= 6) {
+                    return '[' + value.map(v => v === null ? 'null' : typeof v === 'string' ? "'" + v.replace(/'/g, "''") + "'" : String(v)).join(', ') + ']';
+                }
+                return '\n' + value.map(item => {
+                    if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+                        const lines = objToYaml(item, indent, level + 1).split('\n');
+                        return pad + '- ' + lines[0].trimStart() + (lines.length > 1 ? '\n' + lines.slice(1).map(l => pad + '  ' + l.trimStart()).join('\n') : '');
+                    }
+                    return pad + '- ' + toYamlValue(item, indent, level + 1);
+                }).join('\n');
+            }
+            if (typeof value === 'object') {
+                if (Object.keys(value).length === 0) return '{}';
+                return '\n' + objToYaml(value, indent, level);
+            }
+            return String(value);
+        }
+
+        function objToYaml(obj, indent, level) {
+            const pad = ' '.repeat(indent * level);
+            return Object.entries(obj).map(([key, val]) => {
+                const safeKey = /[:{}\[\],&*!|>'"%@`]/.test(key) || key === '' ? "'" + key.replace(/'/g, "''") + "'" : key;
+                const yamlVal = toYamlValue(val, indent, level + 1);
+                const needsNewline = typeof val === 'object' && val !== null &&
+                    ((Array.isArray(val) && val.length > 0 && !(val.every(v => typeof v !== 'object' || v === null) && val.length <= 6)) ||
+                     (!Array.isArray(val) && Object.keys(val).length > 0));
+                return pad + safeKey + ':' + (needsNewline ? yamlVal : ' ' + yamlVal);
+            }).join('\n');
+        }
+
+        function jsonToYaml() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter JSON data', 'error'); return; }
+            try {
+                const data = JSON.parse(input);
+                const indent = parseInt(document.getElementById('indent').value);
+                let yaml;
+                if (Array.isArray(data)) {
+                    yaml = data.map(item => {
+                        if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+                            const inner = objToYaml(item, indent, 0).split('\n');
+                            return '- ' + inner[0] + (inner.length > 1 ? '\n' + inner.slice(1).map(l => '  ' + l).join('\n') : '');
+                        }
+                        return '- ' + toYamlValue(item, indent, 0);
+                    }).join('\n');
+                } else {
+                    yaml = objToYaml(data, indent, 0);
+                }
+                document.getElementById('output').value = yaml;
+                showStatus('Converted JSON to YAML', 'success');
+            } catch (e) { showStatus('Invalid JSON: ' + e.message, 'error'); }
+        }
+
+        function parseYaml(text) {
             const lines = text.split('\n');
-            const cleaned = [];
-            for (const line of lines) {
-                const trimmed = line.trimStart();
-                if (trimmed === '' || trimmed.startsWith('#')) continue;
-                // Remove inline comments (but not inside quoted strings)
-                cleaned.push(line);
-            }
-            if (cleaned.length === 0) throw new Error('Empty YAML document');
-            // Try JSON parse first (YAML is superset of JSON)
-            const joined = cleaned.join('\n').trim();
-            if (joined.startsWith('{') || joined.startsWith('[')) {
-                try { return JSON.parse(joined); } catch(e) {}
-            }
-            return this._parseValue(cleaned, {pos: 0, indent: -1});
-        },
+            return parseBlock(lines, 0, 0).value;
+        }
 
-        _getIndent(line) {
-            const m = line.match(/^( *)/);
-            return m ? m[1].length : 0;
-        },
-
-        _parseValue(lines, state) {
-            if (state.pos >= lines.length) return null;
-            const line = lines[state.pos];
-            const trimmed = line.trim();
-
-            // Flow sequences: [a, b, c]
-            if (trimmed.startsWith('[')) return this._parseFlowSeq(trimmed);
-            // Flow mappings: {a: 1, b: 2}
-            if (trimmed.startsWith('{')) return this._parseFlowMap(trimmed);
-
-            // Check if it's a sequence (starts with -)
-            const seqMatch = line.match(/^( *)- /);
-            const mapMatch = line.match(/^( *)([^-][^:]*|"[^"]*"|'[^']*'):\s*(.*)/);
-            const seqOnlyMatch = line.match(/^( *)- ?(.*)/);
-
-            if (seqMatch || (seqOnlyMatch && !mapMatch)) {
-                return this._parseSequence(lines, state);
-            } else if (mapMatch) {
-                return this._parseMapping(lines, state);
-            } else {
-                state.pos++;
-                return this._parseScalar(trimmed);
-            }
-        },
-
-        _parseScalar(s) {
-            s = s.trim();
-            if (s === '' || s === 'null' || s === '~') return null;
-            if (s === 'true') return true;
-            if (s === 'false') return false;
-            // Remove inline comments
-            s = this._stripInlineComment(s);
-            // Quoted strings
-            if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
-                return s.slice(1, -1).replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\\\/g, '\\').replace(/\\"/g, '"');
-            }
-            // Numbers
-            if (/^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$/.test(s)) return Number(s);
-            if (/^0x[0-9a-fA-F]+$/.test(s)) return parseInt(s, 16);
-            if (/^0o[0-7]+$/.test(s)) return parseInt(s.slice(2), 8);
-            return s;
-        },
-
-        _stripInlineComment(s) {
-            // Remove # comments that aren't inside quotes
-            let inSingle = false, inDouble = false;
-            for (let i = 0; i < s.length; i++) {
-                if (s[i] === '"' && !inSingle) inDouble = !inDouble;
-                if (s[i] === "'" && !inDouble) inSingle = !inSingle;
-                if (s[i] === '#' && !inSingle && !inDouble && i > 0 && s[i-1] === ' ') {
-                    return s.slice(0, i).trim();
-                }
-            }
-            return s;
-        },
-
-        _parseFlowSeq(s) {
-            try { return JSON.parse(s.replace(/'/g, '"')); } catch(e) {}
-            // Manual parse for unquoted values
-            s = s.slice(1, -1).trim();
-            if (s === '') return [];
-            return s.split(',').map(v => this._parseScalar(v.trim()));
-        },
-
-        _parseFlowMap(s) {
-            try { return JSON.parse(s); } catch(e) {}
-            s = s.slice(1, -1).trim();
-            if (s === '') return {};
-            const obj = {};
-            const parts = s.split(',');
-            for (const part of parts) {
-                const colonIdx = part.indexOf(':');
-                if (colonIdx === -1) continue;
-                const key = part.slice(0, colonIdx).trim().replace(/^["']|["']$/g, '');
-                const val = part.slice(colonIdx + 1).trim();
-                obj[key] = this._parseScalar(val);
-            }
-            return obj;
-        },
-
-        _parseSequence(lines, state) {
-            const result = [];
-            const baseIndent = this._getIndent(lines[state.pos]);
-            while (state.pos < lines.length) {
-                const line = lines[state.pos];
-                const indent = this._getIndent(line);
-                if (indent < baseIndent) break;
-                if (indent > baseIndent) { state.pos++; continue; }
-                const trimmed = line.trim();
-                if (!trimmed.startsWith('-')) break;
-
-                const afterDash = trimmed.slice(1).trim();
-                if (afterDash === '' || afterDash === '|' || afterDash === '>') {
-                    // Block value or nested structure
-                    state.pos++;
-                    if (state.pos < lines.length && this._getIndent(lines[state.pos]) > baseIndent) {
-                        if (afterDash === '|' || afterDash === '>') {
-                            result.push(this._parseBlockScalar(lines, state, baseIndent, afterDash));
-                        } else {
-                            result.push(this._parseValue(lines, state));
+        function parseBlock(lines, start, baseIndent) {
+            let i = start, result = null, isArray = false;
+            while (i < lines.length) {
+                const line = lines[i], trimmed = line.trimEnd();
+                if (trimmed === '' || trimmed.trimStart().startsWith('#')) { i++; continue; }
+                const lineIndent = line.length - line.trimStart().length;
+                if (lineIndent < baseIndent) break;
+                if (lineIndent > baseIndent && result !== null && !isArray) break;
+                const content = trimmed.trimStart();
+                if (content.startsWith('- ')) {
+                    isArray = true;
+                    if (result === null) result = [];
+                    const itemContent = content.substring(2).trim();
+                    if (itemContent.includes(': ')) {
+                        const subLines = [' '.repeat(lineIndent + 2) + itemContent];
+                        let j = i + 1;
+                        while (j < lines.length) {
+                            const sl = lines[j].trimEnd();
+                            if (sl === '' || sl.trimStart().startsWith('#')) { j++; continue; }
+                            if (lines[j].length - lines[j].trimStart().length <= lineIndent) break;
+                            subLines.push(lines[j]); j++;
                         }
-                    } else {
-                        result.push(null);
+                        result.push(parseBlock(subLines, 0, lineIndent + 2).value);
+                        i = j; continue;
                     }
-                } else if (afterDash.includes(': ') || afterDash.endsWith(':')) {
-                    // Inline map inside sequence: - key: value
-                    // We need to handle this as a mapping
-                    const fakeLines = [];
-                    const subIndent = line.indexOf('-') + 2;
-                    fakeLines.push(' '.repeat(subIndent) + afterDash);
-                    state.pos++;
-                    while (state.pos < lines.length && this._getIndent(lines[state.pos]) > baseIndent) {
-                        fakeLines.push(lines[state.pos]);
-                        state.pos++;
-                    }
-                    const subState = {pos: 0, indent: -1};
-                    result.push(this._parseValue(fakeLines, subState));
-                } else {
-                    state.pos++;
-                    if (afterDash.startsWith('[')) {
-                        result.push(this._parseFlowSeq(afterDash));
-                    } else if (afterDash.startsWith('{')) {
-                        result.push(this._parseFlowMap(afterDash));
-                    } else {
-                        result.push(this._parseScalar(afterDash));
-                    }
+                    result.push(parseScalar(itemContent));
+                    i++; continue;
                 }
-            }
-            return result;
-        },
-
-        _parseMapping(lines, state) {
-            const result = {};
-            const baseIndent = this._getIndent(lines[state.pos]);
-            while (state.pos < lines.length) {
-                const line = lines[state.pos];
-                const indent = this._getIndent(line);
-                const trimmed = line.trim();
-                if (indent < baseIndent) break;
-                if (indent > baseIndent || trimmed.startsWith('#') || trimmed === '') { state.pos++; continue; }
-
-                const match = trimmed.match(/^([^:]+?):\s*(.*)/);
-                if (!match) { state.pos++; continue; }
-
-                let key = match[1].trim().replace(/^["']|["']$/g, '');
-                const val = match[2].trim();
-
-                if (val === '' || val === '|' || val === '>' || val === '|+' || val === '|-' || val === '>+' || val === '>-') {
-                    state.pos++;
-                    if (state.pos < lines.length && this._getIndent(lines[state.pos]) > baseIndent) {
-                        if (val.startsWith('|') || val.startsWith('>')) {
-                            result[key] = this._parseBlockScalar(lines, state, baseIndent, val);
-                        } else {
-                            result[key] = this._parseValue(lines, state);
-                        }
-                    } else {
-                        result[key] = val.startsWith('|') || val.startsWith('>') ? '' : null;
-                    }
-                } else {
-                    state.pos++;
-                    if (val.startsWith('[')) result[key] = this._parseFlowSeq(val);
-                    else if (val.startsWith('{')) result[key] = this._parseFlowMap(val);
-                    else result[key] = this._parseScalar(val);
-                }
-            }
-            return result;
-        },
-
-        _parseBlockScalar(lines, state, parentIndent, style) {
-            const blockLines = [];
-            const blockIndent = state.pos < lines.length ? this._getIndent(lines[state.pos]) : parentIndent + 2;
-            while (state.pos < lines.length) {
-                const indent = this._getIndent(lines[state.pos]);
-                if (indent < blockIndent && lines[state.pos].trim() !== '') break;
-                blockLines.push(lines[state.pos].slice(blockIndent));
-                state.pos++;
-            }
-            const joiner = style.startsWith('|') ? '\n' : ' ';
-            let text = blockLines.join(joiner);
-            if (style.endsWith('-')) text = text.replace(/\s+$/, '');
-            else if (!style.endsWith('+')) text = text.replace(/\s+$/, '') + '\n';
-            return text.trim();
-        },
-
-        stringify(obj, indent = 2, sortKeys = false, flowArrays = false) {
-            return this._dump(obj, 0, indent, sortKeys, flowArrays).trimEnd();
-        },
-
-        _dump(val, level, indent, sortKeys, flowArrays) {
-            const pad = ' '.repeat(level * indent);
-            if (val === null || val === undefined) return 'null\n';
-            if (typeof val === 'boolean') return val ? 'true\n' : 'false\n';
-            if (typeof val === 'number') return String(val) + '\n';
-            if (typeof val === 'string') return this._dumpString(val) + '\n';
-            if (Array.isArray(val)) {
-                if (val.length === 0) return '[]\n';
-                // Use flow style for simple short arrays
-                if (flowArrays && val.every(v => typeof v !== 'object' || v === null) && val.length <= 10) {
-                    const items = val.map(v => v === null ? 'null' : typeof v === 'string' ? this._dumpString(v) : String(v));
-                    const flow = '[' + items.join(', ') + ']\n';
-                    if (flow.length < 80) return flow;
-                }
-                let result = '\n';
-                for (const item of val) {
-                    if (item !== null && typeof item === 'object') {
-                        const sub = this._dump(item, level + 1, indent, sortKeys, flowArrays);
-                        // For objects/arrays in sequences, inline the first key
-                        if (!Array.isArray(item)) {
-                            const subLines = sub.trim().split('\n');
-                            result += pad + '- ' + subLines[0] + '\n';
-                            for (let i = 1; i < subLines.length; i++) {
-                                result += pad + '  ' + subLines[i] + '\n';
+                const colonIdx = content.indexOf(': ');
+                const colonEnd = colonIdx === -1 && content.endsWith(':') ? content.length - 1 : colonIdx;
+                if (colonEnd > 0) {
+                    if (result === null) result = {};
+                    let key = content.substring(0, colonEnd).trim();
+                    if ((key.startsWith("'") && key.endsWith("'")) || (key.startsWith('"') && key.endsWith('"')))
+                        key = key.slice(1, -1);
+                    const afterColon = content.substring(colonEnd + 1).trim();
+                    if (afterColon === '' || afterColon === '|' || afterColon === '>') {
+                        let j = i + 1;
+                        if (afterColon === '|' || afterColon === '>') {
+                            const blockLines = [];
+                            while (j < lines.length) {
+                                const bl = lines[j].trimEnd();
+                                if (bl === '') { blockLines.push(''); j++; continue; }
+                                if (lines[j].length - lines[j].trimStart().length <= lineIndent) break;
+                                blockLines.push(lines[j].trimStart()); j++;
                             }
-                        } else {
-                            result += pad + '-\n' + sub.split('\n').filter(l => l).map(l => pad + '  ' + l.trimStart()).join('\n') + '\n';
+                            result[key] = afterColon === '|' ? blockLines.join('\n') : blockLines.join(' ');
+                            i = j; continue;
                         }
+                        const sub = parseBlock(lines, j, lineIndent + 2);
+                        result[key] = sub.value; i = sub.nextIdx; continue;
+                    }
+                    if (afterColon.startsWith('[') && afterColon.endsWith(']')) {
+                        try { result[key] = JSON.parse(afterColon.replace(/'/g, '"')); }
+                        catch { result[key] = parseScalar(afterColon); }
+                    } else if (afterColon.startsWith('{') && afterColon.endsWith('}')) {
+                        try { result[key] = JSON.parse(afterColon.replace(/'/g, '"')); }
+                        catch { result[key] = parseScalar(afterColon); }
                     } else {
-                        result += pad + '- ' + this._dump(item, level + 1, indent, sortKeys, flowArrays).trim() + '\n';
+                        result[key] = parseScalar(afterColon);
                     }
                 }
-                return result;
+                i++;
             }
-            if (typeof val === 'object') {
-                const keys = Object.keys(val);
-                if (keys.length === 0) return '{}\n';
-                if (sortKeys) keys.sort();
-                let result = '\n';
-                for (const key of keys) {
-                    const safeKey = /^[a-zA-Z0-9_.-]+$/.test(key) ? key : '"' + key.replace(/"/g, '\\"') + '"';
-                    const child = val[key];
-                    if (child !== null && typeof child === 'object') {
-                        result += pad + safeKey + ':' + this._dump(child, level + 1, indent, sortKeys, flowArrays);
-                    } else {
-                        result += pad + safeKey + ': ' + this._dump(child, level + 1, indent, sortKeys, flowArrays).trim() + '\n';
-                    }
-                }
-                return result;
-            }
-            return String(val) + '\n';
-        },
-
-        _dumpString(s) {
-            // Check if quoting is needed
-            if (s === '') return '""';
-            if (s === 'true' || s === 'false' || s === 'null' || s === '~' || /^-?\d+(\.\d+)?$/.test(s)) {
-                return '"' + s + '"';
-            }
-            if (s.includes('\n')) {
-                return '|\n  ' + s.split('\n').join('\n  ');
-            }
-            if (/[:{}\[\],&*?|><=%@`#]/.test(s) || s.startsWith(' ') || s.endsWith(' ')) {
-                return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
-            }
-            return s;
+            return { value: result, nextIdx: i };
         }
-    };
 
-    // Main functions
-    function jsonToYaml() {
-        const input = document.getElementById('input').value.trim();
-        if (!input) { showStatus('Please enter JSON data', 'error'); return; }
-        try {
-            const parsed = JSON.parse(input);
-            const indent = parseInt(document.getElementById('indent').value);
-            const sortKeys = document.getElementById('sort-keys').checked;
-            const flowArrays = document.getElementById('flow-level').checked;
-            const yaml = YAML.stringify(parsed, indent, sortKeys, flowArrays);
-            document.getElementById('output').value = yaml;
-            showStatus('Converted JSON to YAML successfully', 'success');
-        } catch (e) {
-            showStatus('Invalid JSON: ' + e.message, 'error');
+        function parseScalar(str) {
+            if (str === 'null' || str === '~') return null;
+            if (str === 'true' || str === 'yes') return true;
+            if (str === 'false' || str === 'no') return false;
+            if (/^-?\d+$/.test(str)) return parseInt(str, 10);
+            if (/^-?\d*\.\d+$/.test(str)) return parseFloat(str);
+            if ((str.startsWith("'") && str.endsWith("'")) || (str.startsWith('"') && str.endsWith('"')))
+                return str.slice(1, -1);
+            return str;
         }
-    }
 
-    function yamlToJson() {
-        const input = document.getElementById('input').value.trim();
-        if (!input) { showStatus('Please enter YAML data', 'error'); return; }
-        try {
-            const parsed = YAML.parse(input);
-            const indent = parseInt(document.getElementById('indent').value);
-            const sortKeys = document.getElementById('sort-keys').checked;
-            let result;
-            if (sortKeys) {
-                result = JSON.stringify(parsed, Object.keys(parsed).sort(), indent);
-            } else {
-                result = JSON.stringify(parsed, null, indent);
-            }
-            document.getElementById('output').value = result;
-            showStatus('Converted YAML to JSON successfully', 'success');
-        } catch (e) {
-            showStatus('Invalid YAML: ' + e.message, 'error');
+        function yamlToJson() {
+            const input = document.getElementById('input').value.trim();
+            if (!input) { showStatus('Please enter YAML data', 'error'); return; }
+            try {
+                const data = parseYaml(input);
+                if (data === null) { showStatus('Could not parse YAML', 'error'); return; }
+                document.getElementById('output').value = JSON.stringify(data, null, 2);
+                showStatus('Converted YAML to JSON', 'success');
+            } catch (e) { showStatus('Error parsing YAML: ' + e.message, 'error'); }
         }
-    }
 
-    function copyOutput() {
-        const output = document.getElementById('output').value;
-        if (!output) { showStatus('Nothing to copy', 'error'); return; }
-        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
-    }
-
-    function swapPanels() {
-        const input = document.getElementById('input');
-        const output = document.getElementById('output');
-        const temp = output.value;
-        input.value = temp;
-        output.value = '';
-    }
-
-    function clearAll() {
-        document.getElementById('input').value = '';
-        document.getElementById('output').value = '';
-        document.getElementById('status').classList.remove('show');
-    }
-
-    function loadSample() {
-        document.getElementById('input').value = JSON.stringify({
-            name: "DevToolBox",
-            version: "1.0.0",
-            description: "Free online developer tools",
-            features: ["JSON formatter", "YAML converter", "Base64 encoder"],
-            config: {
-                port: 3000,
-                debug: false,
-                database: {
-                    host: "localhost",
-                    port: 5432,
-                    name: "devtools"
-                }
-            },
-            authors: [
-                { name: "Alice", role: "developer" },
-                { name: "Bob", role: "designer" }
-            ],
-            tags: null,
-            active: true
-        }, null, 2);
-        jsonToYaml();
-    }
-
-    function showStatus(msg, type) {
-        const el = document.getElementById('status');
-        el.textContent = msg;
-        el.className = 'status show ' + type;
-    }
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+        }
+        function downloadOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to download', 'error'); return; }
+            const isJson = output.trim().startsWith('{') || output.trim().startsWith('[');
+            const ext = isJson ? 'json' : 'yaml';
+            const blob = new Blob([output], { type: 'text/plain' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = 'converted.' + ext; a.click(); URL.revokeObjectURL(a.href);
+            showStatus('Downloaded as converted.' + ext, 'success');
+        }
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('status').className = 'status';
+        }
+        function showStatus(msg, type) {
+            const el = document.getElementById('status'); el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
     </script>
 </body>
 </html>

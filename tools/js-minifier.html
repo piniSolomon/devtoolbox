@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Minifier & Beautifier - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online JavaScript minifier and beautifier. Minify JS to reduce file size or beautify compressed JavaScript for readability. Shows size reduction statistics. No sign-up required.">
+    <meta name="keywords" content="javascript minifier, js minifier, minify javascript, javascript beautifier, js formatter, compress javascript, uglify js online">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/js-minifier.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JavaScript Minifier</div>
+            <h1>JavaScript Minifier & Beautifier</h1>
+            <p>Minify JavaScript to reduce file size or beautify compressed JS for readability.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">JavaScript Input</label>
+                    <textarea id="input" placeholder="function greet(name) {
+  // Say hello
+  const message = `Hello, ${name}!`;
+  console.log(message);
+  return message;
+}"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Indent:
+                    <select id="indent-size">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="remove-comments" checked> Remove comments</label>
+                <label><input type="checkbox" id="remove-console"> Remove console.log</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="minifyJS()">Minify</button>
+                <button class="btn btn-primary" onclick="beautifyJS()">Beautify</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+
+            <div id="stats" style="display: none; margin-top: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                    <div><span style="color: var(--text-muted);">Original:</span> <strong id="stat-original">0 B</strong></div>
+                    <div><span style="color: var(--text-muted);">Output:</span> <strong id="stat-output">0 B</strong></div>
+                    <div><span style="color: var(--text-muted);">Savings:</span> <strong id="stat-savings" style="color: var(--accent);">0%</strong></div>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About JavaScript Minifier</h2>
+            <p>This free online JavaScript minifier and beautifier helps you optimize JS for production or format minified code for readability. All processing runs entirely in your browser — no code is sent to any server.</p>
+
+            <h3>What Does JS Minification Do?</h3>
+            <ul>
+                <li>Removes all comments (single-line // and multi-line /* */)</li>
+                <li>Strips unnecessary whitespace, newlines, and indentation</li>
+                <li>Preserves string literals, template literals, and regex patterns</li>
+                <li>Optionally removes <code>console.log</code> statements</li>
+                <li>Typically reduces JavaScript file size by 30-60%</li>
+            </ul>
+
+            <h3>Minification vs Uglification</h3>
+            <ul>
+                <li><strong>Minification</strong> (this tool): Removes whitespace and comments. Code remains readable if formatted. No variable renaming.</li>
+                <li><strong>Uglification</strong> (tools like Terser/UglifyJS): Additionally renames variables, inlines constants, removes dead code, and performs other transformations. More compression but requires build tools.</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Should I minify my JavaScript?</h4>
+            <p>Yes, for production. Minified JS loads faster and reduces bandwidth costs. Modern build tools (webpack, Vite, esbuild, Rollup) do this automatically. This tool is useful for quick one-off minification or when you don't use a build pipeline.</p>
+
+            <h4>Does minification break my code?</h4>
+            <p>No. This minifier only removes whitespace and comments — it doesn't change your code's logic, variable names, or structure. The minified code will run exactly the same as the original.</p>
+
+            <h4>What about source maps?</h4>
+            <p>This tool doesn't generate source maps. For production use with source maps, use a build tool like Terser, esbuild, or webpack's built-in minification. This tool is best for quick minification tasks.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    function tokenize(code) {
+        // Tokenize JS to separate strings, regex, comments from code
+        const tokens = [];
+        let i = 0;
+        while (i < code.length) {
+            // Single-line comment
+            if (code[i] === '/' && code[i+1] === '/') {
+                let end = code.indexOf('\n', i);
+                if (end === -1) end = code.length;
+                tokens.push({ type: 'comment-line', value: code.slice(i, end) });
+                i = end;
+                continue;
+            }
+            // Multi-line comment
+            if (code[i] === '/' && code[i+1] === '*') {
+                let end = code.indexOf('*/', i + 2);
+                if (end === -1) end = code.length - 2;
+                tokens.push({ type: 'comment-block', value: code.slice(i, end + 2) });
+                i = end + 2;
+                continue;
+            }
+            // Template literal
+            if (code[i] === '`') {
+                let j = i + 1;
+                let depth = 0;
+                while (j < code.length) {
+                    if (code[j] === '\\') { j += 2; continue; }
+                    if (code[j] === '$' && code[j+1] === '{') { depth++; j += 2; continue; }
+                    if (code[j] === '}' && depth > 0) { depth--; j++; continue; }
+                    if (code[j] === '`' && depth === 0) { j++; break; }
+                    j++;
+                }
+                tokens.push({ type: 'template', value: code.slice(i, j) });
+                i = j;
+                continue;
+            }
+            // String (single or double quote)
+            if (code[i] === "'" || code[i] === '"') {
+                const quote = code[i];
+                let j = i + 1;
+                while (j < code.length) {
+                    if (code[j] === '\\') { j += 2; continue; }
+                    if (code[j] === quote) { j++; break; }
+                    j++;
+                }
+                tokens.push({ type: 'string', value: code.slice(i, j) });
+                i = j;
+                continue;
+            }
+            // Regex (heuristic: / after operator, keyword, or start)
+            if (code[i] === '/') {
+                // Look back for context
+                const before = code.slice(0, i).replace(/\s+$/, '');
+                const lastChar = before[before.length - 1];
+                const isRegex = !lastChar || '=(!&|,;:?[{+->~%^'.includes(lastChar) ||
+                    /\b(return|typeof|instanceof|in|of|new|delete|void|throw|case)\s*$/.test(before);
+                if (isRegex) {
+                    let j = i + 1;
+                    while (j < code.length) {
+                        if (code[j] === '\\') { j += 2; continue; }
+                        if (code[j] === '[') {
+                            while (j < code.length && code[j] !== ']') {
+                                if (code[j] === '\\') j++;
+                                j++;
+                            }
+                        }
+                        if (code[j] === '/') { j++; break; }
+                        j++;
+                    }
+                    // Flags
+                    while (j < code.length && /[gimsuy]/.test(code[j])) j++;
+                    tokens.push({ type: 'regex', value: code.slice(i, j) });
+                    i = j;
+                    continue;
+                }
+            }
+            // Whitespace
+            if (/\s/.test(code[i])) {
+                let j = i;
+                while (j < code.length && /\s/.test(code[j])) j++;
+                tokens.push({ type: 'whitespace', value: code.slice(i, j) });
+                i = j;
+                continue;
+            }
+            // Code characters
+            let j = i;
+            while (j < code.length && !/[\s\/'"` ]/.test(code[j])) {
+                if (code[j] === '/' && (code[j+1] === '/' || code[j+1] === '*')) break;
+                j++;
+            }
+            if (j === i) j = i + 1;
+            tokens.push({ type: 'code', value: code.slice(i, j) });
+            i = j;
+        }
+        return tokens;
+    }
+
+    function minifyJS() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter JavaScript', 'error'); return; }
+
+        const removeComments = document.getElementById('remove-comments').checked;
+        const removeConsole = document.getElementById('remove-console').checked;
+
+        try {
+            const tokens = tokenize(input);
+            let result = '';
+            let prevNonWS = '';
+
+            for (let i = 0; i < tokens.length; i++) {
+                const t = tokens[i];
+
+                if (t.type === 'comment-line' || t.type === 'comment-block') {
+                    if (!removeComments) result += t.value;
+                    continue;
+                }
+
+                if (t.type === 'whitespace') {
+                    // Check if whitespace is needed between identifiers/keywords
+                    const prevCode = getPrevCodeChar(tokens, i);
+                    const nextCode = getNextCodeChar(tokens, i);
+                    if (needsSpace(prevCode, nextCode)) {
+                        result += ' ';
+                    } else if (t.value.includes('\n') && prevCode && !';{}'.includes(prevCode)) {
+                        // Preserve newline as space if it could be an ASI point
+                        const needsNewline = isASIPoint(tokens, i);
+                        if (needsNewline) result += '\n';
+                    }
+                    continue;
+                }
+
+                result += t.value;
+            }
+
+            // Remove console.log statements
+            if (removeConsole) {
+                result = result.replace(/console\.(log|debug|info|warn|error|trace|dir|table)\([^)]*\);?/g, '');
+            }
+
+            // Clean up
+            result = result.replace(/\n{2,}/g, '\n').trim();
+
+            document.getElementById('output').value = result;
+            showStats(input, result);
+            showStatus('JavaScript minified successfully', 'success');
+        } catch (e) {
+            showStatus('Error: ' + e.message, 'error');
+        }
+    }
+
+    function getPrevCodeChar(tokens, idx) {
+        for (let i = idx - 1; i >= 0; i--) {
+            if (tokens[i].type !== 'whitespace' && tokens[i].type !== 'comment-line' && tokens[i].type !== 'comment-block') {
+                const v = tokens[i].value;
+                return v[v.length - 1];
+            }
+        }
+        return '';
+    }
+
+    function getNextCodeChar(tokens, idx) {
+        for (let i = idx + 1; i < tokens.length; i++) {
+            if (tokens[i].type !== 'whitespace' && tokens[i].type !== 'comment-line' && tokens[i].type !== 'comment-block') {
+                return tokens[i].value[0];
+            }
+        }
+        return '';
+    }
+
+    function needsSpace(prev, next) {
+        if (!prev || !next) return false;
+        const isIdChar = c => /[a-zA-Z0-9_$]/.test(c);
+        return isIdChar(prev) && isIdChar(next);
+    }
+
+    function isASIPoint(tokens, wsIdx) {
+        // Check if a newline here could trigger automatic semicolon insertion
+        const ws = tokens[wsIdx].value;
+        if (!ws.includes('\n')) return false;
+
+        // Look at what's before and after
+        let prevToken = null, nextToken = null;
+        for (let i = wsIdx - 1; i >= 0; i--) {
+            if (tokens[i].type !== 'whitespace') { prevToken = tokens[i]; break; }
+        }
+        for (let i = wsIdx + 1; i < tokens.length; i++) {
+            if (tokens[i].type !== 'whitespace') { nextToken = tokens[i]; break; }
+        }
+
+        if (!prevToken || !nextToken) return false;
+
+        const prev = prevToken.value;
+        const next = nextToken.value;
+
+        // After return/throw/continue/break + newline, ASI might kick in
+        if (/\b(return|throw|continue|break)\b/.test(prev)) return true;
+        // After ++ or -- on newline
+        if (prev.endsWith('++') || prev.endsWith('--')) return true;
+
+        return false;
+    }
+
+    function beautifyJS() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter JavaScript', 'error'); return; }
+
+        const indentVal = document.getElementById('indent-size').value;
+        const indentStr = indentVal === 'tab' ? '\t' : ' '.repeat(parseInt(indentVal));
+
+        try {
+            const tokens = tokenize(input);
+            let result = '';
+            let level = 0;
+            let newLine = false;
+
+            for (let i = 0; i < tokens.length; i++) {
+                const t = tokens[i];
+
+                if (t.type === 'whitespace') {
+                    // Convert all whitespace to single space or newline
+                    if (t.value.includes('\n')) {
+                        newLine = true;
+                    } else if (result.length > 0 && !/\s$/.test(result)) {
+                        result += ' ';
+                    }
+                    continue;
+                }
+
+                if (t.type === 'comment-line') {
+                    if (newLine) {
+                        result = result.trimEnd() + '\n' + indentStr.repeat(level);
+                        newLine = false;
+                    }
+                    result += t.value + '\n' + indentStr.repeat(level);
+                    continue;
+                }
+
+                if (t.type === 'comment-block') {
+                    result += t.value + ' ';
+                    continue;
+                }
+
+                if (t.type === 'string' || t.type === 'template' || t.type === 'regex') {
+                    if (newLine) {
+                        result = result.trimEnd() + '\n' + indentStr.repeat(level);
+                        newLine = false;
+                    }
+                    result += t.value;
+                    continue;
+                }
+
+                // Code tokens
+                const val = t.value;
+                for (let c = 0; c < val.length; c++) {
+                    const ch = val[c];
+
+                    if (ch === '{') {
+                        result = result.trimEnd() + ' {\n';
+                        level++;
+                        result += indentStr.repeat(level);
+                        newLine = false;
+                    } else if (ch === '}') {
+                        level = Math.max(0, level - 1);
+                        result = result.trimEnd() + '\n' + indentStr.repeat(level) + '}';
+                        newLine = true;
+                    } else if (ch === ';') {
+                        result += ';\n' + indentStr.repeat(level);
+                        newLine = false;
+                    } else if (ch === ',') {
+                        result += ', ';
+                    } else {
+                        if (newLine) {
+                            result = result.trimEnd() + '\n' + indentStr.repeat(level);
+                            newLine = false;
+                        }
+                        result += ch;
+                    }
+                }
+            }
+
+            // Clean up
+            result = result.replace(/\n{3,}/g, '\n\n').trim();
+
+            document.getElementById('output').value = result;
+            showStats(input, result);
+            showStatus('JavaScript beautified successfully', 'success');
+        } catch (e) {
+            showStatus('Error: ' + e.message, 'error');
+        }
+    }
+
+    function showStats(original, output) {
+        const origSize = new Blob([original]).size;
+        const outSize = new Blob([output]).size;
+        const savings = origSize > 0 ? ((1 - outSize / origSize) * 100).toFixed(1) : 0;
+        document.getElementById('stat-original').textContent = formatBytes(origSize);
+        document.getElementById('stat-output').textContent = formatBytes(outSize);
+        document.getElementById('stat-savings').textContent = savings + '%';
+        document.getElementById('stat-savings').style.color = savings > 0 ? '#22c55e' : savings < 0 ? '#ef4444' : 'var(--text)';
+        document.getElementById('stats').style.display = '';
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('stats').style.display = 'none';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = `// User authentication module
+// Handles login, logout, and session management
+
+class AuthManager {
+  constructor(apiUrl) {
+    this.apiUrl = apiUrl;
+    this.token = null;
+    this.user = null;
+    console.log('AuthManager initialized');
+  }
+
+  /**
+   * Login with email and password
+   * @param {string} email - User email
+   * @param {string} password - User password
+   * @returns {Promise<object>} User data
+   */
+  async login(email, password) {
+    try {
+      const response = await fetch(\`\${this.apiUrl}/auth/login\`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error(\`Login failed: \${response.status}\`);
+      }
+
+      const data = await response.json();
+      this.token = data.token;
+      this.user = data.user;
+
+      // Store token in localStorage
+      localStorage.setItem('auth_token', this.token);
+      console.log('User logged in:', this.user.name);
+
+      return this.user;
+    } catch (error) {
+      console.error('Login error:', error.message);
+      throw error;
+    }
+  }
+
+  // Check if user is authenticated
+  isAuthenticated() {
+    return this.token !== null && this.token !== undefined;
+  }
+
+  // Logout and clear session
+  logout() {
+    this.token = null;
+    this.user = null;
+    localStorage.removeItem('auth_token');
+    console.log('User logged out');
+  }
+}
+
+// Export for use in other modules
+export default AuthManager;`;
+        minifyJS();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

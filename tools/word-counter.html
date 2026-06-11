@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word &amp; Character Counter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online word counter and character counter. Count words, characters, sentences, paragraphs, and estimate reading time. No sign-up required.">
+    <meta name="keywords" content="word counter, character counter, word count, char count, letter counter, text counter, reading time, sentence counter">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/word-counter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .keyword-chip {
+            background: var(--accent-glow);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+        .keyword-chip .kw-count {
+            color: var(--accent);
+            font-weight: 600;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Word &amp; Character Counter</div>
+            <h1>Word &amp; Character Counter</h1>
+            <p>Count words, characters, sentences, and paragraphs. Estimate reading and speaking time.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="s-words">0</div><div class="stat-label">Words</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-chars">0</div><div class="stat-label">Characters</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-chars-ns">0</div><div class="stat-label">Chars (no spaces)</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-sentences">0</div><div class="stat-label">Sentences</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-paragraphs">0</div><div class="stat-label">Paragraphs</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-lines">0</div><div class="stat-label">Lines</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-reading">0s</div><div class="stat-label">Reading Time</div></div>
+                <div class="stat-card"><div class="stat-value" id="s-speaking">0s</div><div class="stat-label">Speaking Time</div></div>
+            </div>
+
+            <textarea id="input" placeholder="Start typing or paste your text here..." style="min-height: 250px;" oninput="analyze()"></textarea>
+
+            <div style="margin-top: 16px;">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Top Keywords</label>
+                <div id="keywords" class="keyword-list"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="copyText()">Copy Text</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Word &amp; Character Counter</h2>
+            <p>This free online tool counts words, characters, sentences, paragraphs, and lines in your text. It also estimates reading and speaking time, and shows your most-used keywords. All processing happens in your browser.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li>Real-time word, character, and sentence counting</li>
+                <li>Characters with and without spaces</li>
+                <li>Paragraph and line counting</li>
+                <li>Reading time estimate (~238 words/minute average)</li>
+                <li>Speaking time estimate (~150 words/minute average)</li>
+                <li>Top keyword frequency analysis</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Checking essay or article word counts for assignments</li>
+                <li>Staying within social media character limits (Twitter: 280, LinkedIn: 3000)</li>
+                <li>Estimating presentation speaking time</li>
+                <li>SEO content length optimization</li>
+                <li>Analyzing keyword density in content</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>How is reading time calculated?</h4>
+            <p>Reading time is based on an average reading speed of 238 words per minute (the average for adult readers according to research). Speaking time uses 150 words per minute.</p>
+
+            <h4>How are keywords determined?</h4>
+            <p>The tool counts word frequency, excluding common stop words (the, a, is, are, etc.) and words shorter than 3 characters. The top 10 most frequent words are shown.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        const STOP_WORDS = new Set(['the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us']);
+
+        function formatTime(minutes) {
+            if (minutes < 1) return Math.round(minutes * 60) + 's';
+            if (minutes < 60) return Math.round(minutes) + 'm';
+            const h = Math.floor(minutes / 60);
+            const m = Math.round(minutes % 60);
+            return h + 'h ' + m + 'm';
+        }
+
+        function analyze() {
+            const text = document.getElementById('input').value;
+
+            const words = text.trim() ? text.trim().split(/\s+/) : [];
+            const wordCount = words.length;
+            const charCount = text.length;
+            const charNoSpaces = text.replace(/\s/g, '').length;
+            const sentences = text.trim() ? text.split(/[.!?]+/).filter(s => s.trim().length > 0).length : 0;
+            const paragraphs = text.trim() ? text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length : 0;
+            const lines = text.trim() ? text.split('\n').length : 0;
+
+            document.getElementById('s-words').textContent = wordCount.toLocaleString();
+            document.getElementById('s-chars').textContent = charCount.toLocaleString();
+            document.getElementById('s-chars-ns').textContent = charNoSpaces.toLocaleString();
+            document.getElementById('s-sentences').textContent = sentences.toLocaleString();
+            document.getElementById('s-paragraphs').textContent = paragraphs.toLocaleString();
+            document.getElementById('s-lines').textContent = lines.toLocaleString();
+            document.getElementById('s-reading').textContent = formatTime(wordCount / 238);
+            document.getElementById('s-speaking').textContent = formatTime(wordCount / 150);
+
+            const freq = {};
+            words.forEach(w => {
+                const lw = w.toLowerCase().replace(/[^a-zA-Z]/g, '');
+                if (lw.length >= 3 && !STOP_WORDS.has(lw)) {
+                    freq[lw] = (freq[lw] || 0) + 1;
+                }
+            });
+            const topWords = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            const kwEl = document.getElementById('keywords');
+            kwEl.innerHTML = topWords.length > 0
+                ? topWords.map(([word, count]) => '<span class="keyword-chip">' + word + '<span class="kw-count">' + count + '</span></span>').join('')
+                : '<span style="color: var(--text-secondary); font-size: 0.85rem;">Start typing to see keywords...</span>';
+        }
+
+        function copyText() {
+            const text = document.getElementById('input').value;
+            if (!text) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(text).then(() => showStatus('Copied to clipboard!', 'success'));
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            analyze();
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
+    </script>
+</body>
+</html>

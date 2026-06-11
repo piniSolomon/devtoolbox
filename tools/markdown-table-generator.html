@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Table Generator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online Markdown table generator. Create Markdown tables visually with a spreadsheet-like editor. Add rows, columns, set alignment, import from CSV. No sign-up required.">
+    <meta name="keywords" content="markdown table generator, markdown table maker, create markdown table, markdown table editor, md table, github table generator">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/markdown-table-generator.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+    <style>
+        .table-editor {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        .table-editor table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .table-editor th, .table-editor td {
+            border: 1px solid var(--border);
+            padding: 0;
+        }
+        .table-editor input {
+            width: 100%;
+            min-width: 100px;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+        .table-editor input:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+        .table-editor th input {
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .align-row {
+            display: flex;
+            gap: 2px;
+            padding: 4px 6px;
+            justify-content: center;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+        .align-btn {
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-muted);
+        }
+        .align-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .row-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 4px;
+        }
+        .row-btn {
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-muted);
+        }
+        .row-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .row-btn.danger:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Markdown Table Generator</div>
+            <h1>Markdown Table Generator</h1>
+            <p>Create Markdown tables visually with a spreadsheet-like editor. Set column alignment, add rows and columns, import from CSV.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="btn-row" style="margin-bottom: 8px;">
+                <button class="btn btn-secondary" onclick="addColumn()">+ Column</button>
+                <button class="btn btn-secondary" onclick="removeColumn()">- Column</button>
+                <button class="btn btn-secondary" onclick="addRow()">+ Row</button>
+                <button class="btn btn-secondary" onclick="removeRow()">- Row</button>
+                <button class="btn btn-secondary" onclick="resetTable()">Reset</button>
+            </div>
+
+            <div class="table-editor" id="table-editor"></div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="generateMarkdown()">Generate Markdown</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="importCSV()">Import CSV</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+
+            <div class="tool-row" style="margin-top: 12px;">
+                <div class="tool-col" style="flex: 1;">
+                    <label for="output">Markdown Output</label>
+                    <textarea id="output" readonly style="min-height: 150px; font-family: 'JetBrains Mono', monospace;"></textarea>
+                </div>
+            </div>
+
+            <div id="csv-import" style="display: none; margin-top: 12px;">
+                <label for="csv-input" style="display: block; margin-bottom: 6px;">Paste CSV/TSV data:</label>
+                <textarea id="csv-input" placeholder="Name,Age,City&#10;Alice,30,New York&#10;Bob,25,London" style="min-height: 100px; font-family: 'JetBrains Mono', monospace;"></textarea>
+                <div class="btn-row" style="margin-top: 8px;">
+                    <label>Delimiter:
+                        <select id="csv-delimiter">
+                            <option value="," selected>Comma</option>
+                            <option value="&#9;">Tab</option>
+                            <option value=";">Semicolon</option>
+                        </select>
+                    </label>
+                    <label><input type="checkbox" id="csv-header" checked> First row is header</label>
+                    <button class="btn btn-primary" onclick="doImportCSV()">Import</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('csv-import').style.display='none'">Cancel</button>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Markdown Table Generator</h2>
+            <p>This free online tool lets you create Markdown tables using a visual spreadsheet-like editor. No need to manually type pipes and dashes — just fill in the cells and generate perfect Markdown syntax.</p>
+
+            <h3>Markdown Table Syntax</h3>
+            <p>Markdown tables use pipes (|) to separate columns and hyphens (-) for the header separator row:</p>
+            <pre style="background: var(--surface); padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">| Name  | Age | City     |
+| ----- | --- | -------- |
+| Alice | 30  | New York |
+| Bob   | 25  | London   |</pre>
+
+            <h3>Column Alignment</h3>
+            <p>Control text alignment using colons in the separator row:</p>
+            <ul>
+                <li><code>| --- |</code> — Left-aligned (default)</li>
+                <li><code>| :---: |</code> — Center-aligned</li>
+                <li><code>| ---: |</code> — Right-aligned</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Which platforms support Markdown tables?</h4>
+            <p>Markdown tables work on GitHub, GitLab, Bitbucket, Reddit, Stack Overflow, Notion, Obsidian, Discord, Slack, and most modern Markdown renderers. They're part of GitHub Flavored Markdown (GFM) and CommonMark extensions.</p>
+
+            <h4>Can I import data from a spreadsheet?</h4>
+            <p>Yes! Copy your spreadsheet data (which is tab-separated), click "Import CSV", select Tab as the delimiter, paste your data, and click Import. The data will populate the table editor.</p>
+
+            <h4>Is there a limit on table size?</h4>
+            <p>There's no hard limit, but very large tables (50+ rows/columns) may be slow to render in some Markdown viewers. For large datasets, consider linking to a CSV file instead.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    let tableData = {
+        headers: ['Column 1', 'Column 2', 'Column 3'],
+        alignments: ['left', 'left', 'left'],
+        rows: [
+            ['', '', ''],
+            ['', '', '']
+        ]
+    };
+
+    function renderTable() {
+        const editor = document.getElementById('table-editor');
+        const cols = tableData.headers.length;
+
+        let html = '<table>';
+        // Header row
+        html += '<tr>';
+        for (let c = 0; c < cols; c++) {
+            html += '<th>';
+            html += '<input type="text" value="' + escapeAttr(tableData.headers[c]) + '" ' +
+                    'oninput="tableData.headers[' + c + ']=this.value; autoGenerate()" ' +
+                    'placeholder="Header ' + (c + 1) + '">';
+            html += '<div class="align-row">';
+            ['left', 'center', 'right'].forEach(a => {
+                const label = a === 'left' ? 'L' : a === 'center' ? 'C' : 'R';
+                const active = tableData.alignments[c] === a ? ' active' : '';
+                html += '<button class="align-btn' + active + '" onclick="setAlign(' + c + ',\'' + a + '\')">' + label + '</button>';
+            });
+            html += '</div>';
+            html += '</th>';
+        }
+        html += '</tr>';
+
+        // Data rows
+        for (let r = 0; r < tableData.rows.length; r++) {
+            html += '<tr>';
+            for (let c = 0; c < cols; c++) {
+                const val = tableData.rows[r][c] || '';
+                html += '<td><input type="text" value="' + escapeAttr(val) + '" ' +
+                        'oninput="tableData.rows[' + r + '][' + c + ']=this.value; autoGenerate()" ' +
+                        'placeholder="...">';
+                html += '</td>';
+            }
+            html += '</tr>';
+        }
+
+        html += '</table>';
+        editor.innerHTML = html;
+    }
+
+    function escapeAttr(s) {
+        return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+
+    function setAlign(col, align) {
+        tableData.alignments[col] = align;
+        renderTable();
+        autoGenerate();
+    }
+
+    function addColumn() {
+        const idx = tableData.headers.length + 1;
+        tableData.headers.push('Column ' + idx);
+        tableData.alignments.push('left');
+        tableData.rows.forEach(row => row.push(''));
+        renderTable();
+        autoGenerate();
+    }
+
+    function removeColumn() {
+        if (tableData.headers.length <= 1) return;
+        tableData.headers.pop();
+        tableData.alignments.pop();
+        tableData.rows.forEach(row => row.pop());
+        renderTable();
+        autoGenerate();
+    }
+
+    function addRow() {
+        tableData.rows.push(new Array(tableData.headers.length).fill(''));
+        renderTable();
+        autoGenerate();
+    }
+
+    function removeRow() {
+        if (tableData.rows.length <= 1) return;
+        tableData.rows.pop();
+        renderTable();
+        autoGenerate();
+    }
+
+    function resetTable() {
+        tableData = {
+            headers: ['Column 1', 'Column 2', 'Column 3'],
+            alignments: ['left', 'left', 'left'],
+            rows: [['', '', ''], ['', '', '']]
+        };
+        renderTable();
+        document.getElementById('output').value = '';
+    }
+
+    function generateMarkdown() {
+        const cols = tableData.headers.length;
+
+        // Calculate column widths
+        const widths = [];
+        for (let c = 0; c < cols; c++) {
+            let max = tableData.headers[c].length;
+            for (const row of tableData.rows) {
+                max = Math.max(max, (row[c] || '').length);
+            }
+            widths.push(Math.max(max, 3)); // minimum 3 for separator
+        }
+
+        // Header row
+        let md = '| ' + tableData.headers.map((h, i) => h.padEnd(widths[i])).join(' | ') + ' |\n';
+
+        // Separator row
+        md += '| ' + tableData.alignments.map((a, i) => {
+            const w = widths[i];
+            if (a === 'center') return ':' + '-'.repeat(w - 2) + ':';
+            if (a === 'right') return '-'.repeat(w - 1) + ':';
+            return '-'.repeat(w);
+        }).join(' | ') + ' |\n';
+
+        // Data rows
+        for (const row of tableData.rows) {
+            md += '| ' + row.map((cell, i) => {
+                const val = cell || '';
+                const a = tableData.alignments[i];
+                if (a === 'right') return val.padStart(widths[i]);
+                if (a === 'center') {
+                    const total = widths[i] - val.length;
+                    const left = Math.floor(total / 2);
+                    return ' '.repeat(left) + val + ' '.repeat(total - left);
+                }
+                return val.padEnd(widths[i]);
+            }).join(' | ') + ' |\n';
+        }
+
+        document.getElementById('output').value = md;
+        showStatus('Markdown table generated (' + cols + ' columns, ' + tableData.rows.length + ' rows)', 'success');
+    }
+
+    function autoGenerate() {
+        // Auto-generate as user types
+        generateMarkdown();
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { generateMarkdown(); }
+        const text = document.getElementById('output').value;
+        if (!text) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(text).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function importCSV() {
+        document.getElementById('csv-import').style.display = '';
+    }
+
+    function doImportCSV() {
+        const csv = document.getElementById('csv-input').value.trim();
+        if (!csv) { showStatus('Paste CSV data first', 'error'); return; }
+
+        const delimiter = document.getElementById('csv-delimiter').value;
+        const hasHeader = document.getElementById('csv-header').checked;
+
+        const lines = csv.split('\n').map(l => l.trim()).filter(l => l);
+        if (lines.length === 0) return;
+
+        const parsed = lines.map(line => {
+            // Simple CSV parse (handles basic cases)
+            const cells = [];
+            let current = '';
+            let inQuote = false;
+            for (let i = 0; i < line.length; i++) {
+                if (line[i] === '"') {
+                    if (inQuote && line[i+1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuote = !inQuote;
+                    }
+                } else if (line[i] === delimiter && !inQuote) {
+                    cells.push(current);
+                    current = '';
+                } else {
+                    current += line[i];
+                }
+            }
+            cells.push(current);
+            return cells;
+        });
+
+        const cols = Math.max(...parsed.map(r => r.length));
+
+        if (hasHeader) {
+            tableData.headers = parsed[0].concat(new Array(Math.max(0, cols - parsed[0].length)).fill(''));
+            tableData.rows = parsed.slice(1).map(r => r.concat(new Array(Math.max(0, cols - r.length)).fill('')));
+        } else {
+            tableData.headers = new Array(cols).fill('').map((_, i) => 'Column ' + (i + 1));
+            tableData.rows = parsed.map(r => r.concat(new Array(Math.max(0, cols - r.length)).fill('')));
+        }
+        tableData.alignments = new Array(cols).fill('left');
+
+        if (tableData.rows.length === 0) tableData.rows.push(new Array(cols).fill(''));
+
+        document.getElementById('csv-import').style.display = 'none';
+        renderTable();
+        generateMarkdown();
+        showStatus('Imported ' + tableData.rows.length + ' rows from CSV', 'success');
+    }
+
+    function loadSample() {
+        tableData = {
+            headers: ['Feature', 'Free Tier', 'Pro Plan', 'Enterprise'],
+            alignments: ['left', 'center', 'center', 'center'],
+            rows: [
+                ['Users', '5', '50', 'Unlimited'],
+                ['Storage', '1 GB', '100 GB', '1 TB'],
+                ['API Calls', '1,000/day', '100,000/day', 'Unlimited'],
+                ['Support', 'Community', 'Email', '24/7 Phone'],
+                ['Price', 'Free', '$29/mo', 'Custom']
+            ]
+        };
+        renderTable();
+        generateMarkdown();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Initialize
+    renderTable();
+    </script>
+</body>
+</html>
