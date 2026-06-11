@@ -4,7 +4,7 @@ Free online developer tools that run entirely in your browser. Your data never l
 
 ## Live Site
 
-Deployed at: (will be updated after deployment)
+**https://pinisolomon.github.io/devtoolbox/**
 
 ## Tools Included (12 tools)
 
