@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Minifier & Beautifier - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online CSS minifier and beautifier. Minify CSS to reduce file size or beautify compressed CSS for readability. Shows size reduction statistics. No sign-up required.">
+    <meta name="keywords" content="css minifier, css minify, css beautifier, css formatter, compress css, minify css online, css optimizer, css prettifier">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/css-minifier.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / CSS Minifier</div>
+            <h1>CSS Minifier & Beautifier</h1>
+            <p>Minify CSS to reduce file size or beautify compressed CSS for readability. All processing in your browser.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="input">CSS Input</label>
+                    <textarea id="input" placeholder=".container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Main section */
+  padding: 20px;
+}"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Output</label>
+                    <textarea id="output" readonly></textarea>
+                </div>
+            </div>
+            <div class="option-row">
+                <label>Indent:
+                    <select id="indent-size">
+                        <option value="2" selected>2 spaces</option>
+                        <option value="4">4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="remove-comments" checked> Remove comments</label>
+                <label><input type="checkbox" id="remove-last-semicolon"> Remove last semicolons</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="minifyCSS()">Minify</button>
+                <button class="btn btn-primary" onclick="beautifyCSS()">Beautify</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Sample</button>
+            </div>
+
+            <div id="stats" style="display: none; margin-top: 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                    <div><span style="color: var(--text-muted);">Original:</span> <strong id="stat-original">0 B</strong></div>
+                    <div><span style="color: var(--text-muted);">Output:</span> <strong id="stat-output">0 B</strong></div>
+                    <div><span style="color: var(--text-muted);">Savings:</span> <strong id="stat-savings" style="color: var(--accent);">0%</strong></div>
+                </div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About CSS Minifier</h2>
+            <p>This free online CSS minifier and beautifier helps you optimize CSS for production or format minified CSS for readability. All processing runs entirely in your browser — no data is sent to any server.</p>
+
+            <h3>What Does Minification Do?</h3>
+            <ul>
+                <li>Removes all comments (/* ... */)</li>
+                <li>Strips unnecessary whitespace, newlines, and indentation</li>
+                <li>Removes trailing semicolons from declaration blocks (optional)</li>
+                <li>Compresses spaces around selectors, colons, and braces</li>
+                <li>Typically reduces CSS file size by 20-40%</li>
+            </ul>
+
+            <h3>What Does Beautifying Do?</h3>
+            <ul>
+                <li>Adds proper indentation to nested rules</li>
+                <li>Places each declaration on its own line</li>
+                <li>Adds spaces after colons and around braces</li>
+                <li>Makes minified CSS readable and editable</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Should I minify my CSS?</h4>
+            <p>Yes, for production. Minified CSS loads faster because there's less data to transfer. Most build tools (webpack, Vite, esbuild) minify CSS automatically. This tool is useful for quick one-off minification or when you don't have a build pipeline.</p>
+
+            <h4>Does minification change how CSS works?</h4>
+            <p>No. Minification only removes whitespace and comments — it doesn't change selectors, properties, or values. Your CSS will render exactly the same in the browser.</p>
+
+            <h4>How much smaller will my CSS be?</h4>
+            <p>Typical savings are 20-40% depending on how much whitespace and comments your original CSS has. Well-commented code with consistent formatting will see the biggest reductions. The stats panel shows exact savings.</p>
+
+            <h4>What about CSS variables and custom properties?</h4>
+            <p>This minifier handles CSS custom properties (--variable-name) and all modern CSS features correctly. It only removes whitespace and comments without modifying values.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    function minifyCSS() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter CSS', 'error'); return; }
+
+        const removeComments = document.getElementById('remove-comments').checked;
+        const removeLastSemicolon = document.getElementById('remove-last-semicolon').checked;
+
+        let css = input;
+
+        // Remove comments
+        if (removeComments) {
+            css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+        }
+
+        // Remove whitespace
+        css = css
+            .replace(/\s+/g, ' ')           // collapse whitespace
+            .replace(/\s*{\s*/g, '{')        // around {
+            .replace(/\s*}\s*/g, '}')        // around }
+            .replace(/\s*;\s*/g, ';')        // around ;
+            .replace(/\s*:\s*/g, ':')        // around :
+            .replace(/\s*,\s*/g, ',')        // around ,
+            .replace(/\s*>\s*/g, '>')        // around >
+            .replace(/\s*~\s*/g, '~')        // around ~
+            .replace(/\s*\+\s*/g, '+')       // around + (combinator)
+            .replace(/;\}/g, '}')            // semicolon before }
+            .trim();
+
+        // Optionally remove last semicolons
+        if (removeLastSemicolon) {
+            css = css.replace(/;}/g, '}');
+        }
+
+        document.getElementById('output').value = css;
+        showStats(input, css);
+        showStatus('CSS minified successfully', 'success');
+    }
+
+    function beautifyCSS() {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter CSS', 'error'); return; }
+
+        const indentVal = document.getElementById('indent-size').value;
+        const indentStr = indentVal === 'tab' ? '\t' : ' '.repeat(parseInt(indentVal));
+
+        // First minify to normalize, but keep comments
+        let css = input
+            .replace(/\s+/g, ' ')
+            .replace(/\s*{\s*/g, ' {\n')
+            .replace(/\s*}\s*/g, '\n}\n')
+            .replace(/;\s*/g, ';\n')
+            .replace(/,\s*/g, ', ')
+            .trim();
+
+        // Now properly indent
+        const lines = css.split('\n');
+        let level = 0;
+        const result = [];
+
+        for (let line of lines) {
+            line = line.trim();
+            if (!line) continue;
+
+            // Decrease indent before closing brace
+            if (line.startsWith('}')) {
+                level = Math.max(0, level - 1);
+            }
+
+            result.push(indentStr.repeat(level) + line);
+
+            // Increase indent after opening brace
+            if (line.endsWith('{')) {
+                level++;
+            }
+        }
+
+        // Add spacing between rule blocks
+        let formatted = '';
+        for (let i = 0; i < result.length; i++) {
+            formatted += result[i] + '\n';
+            // Add blank line after closing brace (unless next line is also })
+            if (result[i].trim() === '}' && i + 1 < result.length && !result[i + 1].trim().startsWith('}')) {
+                formatted += '\n';
+            }
+        }
+
+        // Fix property: value spacing
+        formatted = formatted.replace(/:\s*/g, ': ');
+        // But fix pseudo-selectors back (::before, :hover, etc.)
+        formatted = formatted.replace(/([\w\]]):\s+:/g, '$1::');
+        formatted = formatted.replace(/([\w\]]):\s+(hover|focus|active|visited|first-child|last-child|nth-child|before|after|not|first-of-type|last-of-type|root|empty|checked|disabled|enabled|placeholder|selection)\b/g, ':$2');
+        // Fix pseudo-selectors properly
+        formatted = formatted.replace(/: :([\w-]+)/g, '::$1');
+        formatted = formatted.replace(/([\w\])]):\s(hover|focus|active|visited|first-child|last-child|nth-child|before|after|not|first-of-type|last-of-type|nth-of-type|root|empty|checked|disabled|enabled|placeholder|selection|focus-within|focus-visible|where|is|has)/g, '$1:$2');
+
+        document.getElementById('output').value = formatted.trim();
+        showStats(input, formatted.trim());
+        showStatus('CSS beautified successfully', 'success');
+    }
+
+    function showStats(original, output) {
+        const origSize = new Blob([original]).size;
+        const outSize = new Blob([output]).size;
+        const savings = origSize > 0 ? ((1 - outSize / origSize) * 100).toFixed(1) : 0;
+
+        document.getElementById('stat-original').textContent = formatBytes(origSize);
+        document.getElementById('stat-output').textContent = formatBytes(outSize);
+        document.getElementById('stat-savings').textContent = savings + '%';
+        document.getElementById('stat-savings').style.color = savings > 0 ? '#22c55e' : savings < 0 ? '#ef4444' : 'var(--text)';
+        document.getElementById('stats').style.display = '';
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('stats').style.display = 'none';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('input').value = `/* Main Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-decoration: none;
+}
+
+.header .nav-links {
+  display: flex;
+  gap: 24px;
+}
+
+.header .nav-links a {
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.header .nav-links a:hover {
+  color: #1f2937;
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 40px 0;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+}`;
+        minifyCSS();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>

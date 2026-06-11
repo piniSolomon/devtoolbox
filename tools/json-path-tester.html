@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Path Tester - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online JSONPath tester and evaluator. Test JSONPath expressions against JSON data with real-time matching and highlighted results. Common expression presets included. No sign-up required.">
+    <meta name="keywords" content="jsonpath tester, jsonpath evaluator, json path online, jsonpath expressions, test jsonpath, json query, json path finder">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/json-path-tester.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / JSON Path Tester</div>
+            <h1>JSONPath Tester</h1>
+            <p>Test JSONPath expressions against JSON data with real-time matching and highlighted results.</p>
+        </div>
+
+        <div class="tool-container">
+            <div style="margin-bottom: 16px;">
+                <label for="path-input" style="display: block; margin-bottom: 6px; font-weight: 500;">JSONPath Expression</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="path-input" value="$.store.book[*].author" placeholder="$.store.book[*].author" style="flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; padding: 10px 14px; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; color: var(--text);" oninput="evaluate()">
+                    <button class="btn btn-primary" onclick="evaluate()">Evaluate</button>
+                </div>
+            </div>
+
+            <div class="option-row" style="flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Presets:</span>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$')">Root $</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[*]')">All books</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[*].author')">Authors</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[0]')">First book</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[-1]')">Last book</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[0:2]')">Slice [0:2]</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$..price')">All prices</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.*')">Store children</button>
+                <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;" onclick="setPath('$.store.book[?(@.price<10)]')">Price &lt; 10</button>
+            </div>
+
+            <div class="tool-row">
+                <div class="tool-col">
+                    <label for="json-input">JSON Data</label>
+                    <textarea id="json-input" style="min-height: 300px;"></textarea>
+                </div>
+                <div class="tool-col">
+                    <label for="output">Results <span id="result-count" style="color: var(--accent); font-weight: 400;"></span></label>
+                    <textarea id="output" readonly style="min-height: 300px;"></textarea>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy Results</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About JSONPath Tester</h2>
+            <p>This free online JSONPath tester lets you evaluate JSONPath expressions against JSON data in real-time. JSONPath is a query language for JSON, similar to XPath for XML.</p>
+
+            <h3>JSONPath Syntax Reference</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Expression</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">$</td><td style="padding: 8px;">Root object</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">.key</td><td style="padding: 8px;">Child property</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">[n]</td><td style="padding: 8px;">Array index (0-based)</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">[-n]</td><td style="padding: 8px;">Array index from end</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">[start:end]</td><td style="padding: 8px;">Array slice</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">[*]</td><td style="padding: 8px;">All elements in array</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">.*</td><td style="padding: 8px;">All child properties</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">..</td><td style="padding: 8px;">Deep scan (recursive descent)</td></tr>
+                    <tr><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">[?(@.key op value)]</td><td style="padding: 8px;">Filter expression</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Filter Operators</h3>
+            <ul>
+                <li><code>==</code> — equals (strings must be quoted: <code>@.name=='Alice'</code>)</li>
+                <li><code>!=</code> — not equals</li>
+                <li><code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> — comparison</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>What is JSONPath?</h4>
+            <p>JSONPath is a query language for extracting data from JSON documents, proposed by Stefan Goessner in 2007. It's similar to XPath for XML. JSONPath expressions start with <code>$</code> (the root) and use dot notation or bracket notation to navigate the JSON structure.</p>
+
+            <h4>Where is JSONPath used?</h4>
+            <p>JSONPath is used in REST API testing (Postman, REST Assured), data pipelines (Apache NiFi, AWS Step Functions), monitoring and alerting (Datadog, PagerDuty), configuration management, and many programming libraries.</p>
+
+            <h4>What's the difference between JSONPath and jq?</h4>
+            <p>JSONPath uses dot notation (<code>$.store.book[0].title</code>) while jq uses pipe-based filters (<code>.store.book[0].title</code>). jq is more powerful for transformations; JSONPath is simpler for querying. Both are widely used.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Lightweight JSONPath evaluator
+    function jsonPath(obj, expr) {
+        if (!expr || expr === '$') return [obj];
+
+        // Remove leading $
+        let path = expr.startsWith('$.') ? expr.slice(2) : expr.startsWith('$') ? expr.slice(1) : expr;
+        if (path.startsWith('.')) path = path.slice(1);
+
+        return _resolve(obj, path, obj);
+    }
+
+    function _resolve(current, path, root) {
+        if (path === '' || path === undefined) return [current];
+        if (current === null || current === undefined) return [];
+
+        // Deep scan ..
+        if (path.startsWith('..')) {
+            const rest = path.slice(2);
+            // Extract the next segment
+            let nextSeg, remaining;
+            if (rest.startsWith('[')) {
+                const bracketEnd = rest.indexOf(']');
+                nextSeg = rest.slice(0, bracketEnd + 1);
+                remaining = rest.slice(bracketEnd + 1);
+                if (remaining.startsWith('.') && !remaining.startsWith('..')) remaining = remaining.slice(1);
+            } else {
+                const dotIdx = rest.indexOf('.');
+                const bracketIdx = rest.indexOf('[');
+                let end = rest.length;
+                if (dotIdx !== -1) end = Math.min(end, dotIdx);
+                if (bracketIdx !== -1) end = Math.min(end, bracketIdx);
+                nextSeg = rest.slice(0, end);
+                remaining = rest.slice(end);
+                if (remaining.startsWith('.') && !remaining.startsWith('..')) remaining = remaining.slice(1);
+            }
+
+            const results = [];
+            _deepScan(current, nextSeg, remaining, root, results);
+            return results;
+        }
+
+        // Bracket notation [...]
+        if (path.startsWith('[')) {
+            const bracketEnd = path.indexOf(']');
+            if (bracketEnd === -1) return [];
+            const inside = path.slice(1, bracketEnd);
+            const rest = path.slice(bracketEnd + 1);
+            const nextPath = rest.startsWith('.') && !rest.startsWith('..') ? rest.slice(1) : rest;
+
+            // Wildcard [*]
+            if (inside === '*') {
+                const results = [];
+                if (Array.isArray(current)) {
+                    for (const item of current) results.push(..._resolve(item, nextPath, root));
+                } else if (typeof current === 'object') {
+                    for (const key of Object.keys(current)) results.push(..._resolve(current[key], nextPath, root));
+                }
+                return results;
+            }
+
+            // Filter [?(...)]
+            if (inside.startsWith('?(') && inside.endsWith(')')) {
+                const filterExpr = inside.slice(2, -1);
+                if (!Array.isArray(current)) return [];
+                const results = [];
+                for (const item of current) {
+                    if (_evalFilter(item, filterExpr)) {
+                        results.push(..._resolve(item, nextPath, root));
+                    }
+                }
+                return results;
+            }
+
+            // Slice [start:end]
+            if (inside.includes(':')) {
+                const [startStr, endStr] = inside.split(':');
+                if (!Array.isArray(current)) return [];
+                const start = startStr ? parseInt(startStr) : 0;
+                const end = endStr ? parseInt(endStr) : current.length;
+                const results = [];
+                const sliced = current.slice(start, end);
+                for (const item of sliced) results.push(..._resolve(item, nextPath, root));
+                return results;
+            }
+
+            // Index [n] or [-n]
+            const idx = parseInt(inside);
+            if (!isNaN(idx)) {
+                if (!Array.isArray(current)) return [];
+                const actualIdx = idx < 0 ? current.length + idx : idx;
+                if (actualIdx < 0 || actualIdx >= current.length) return [];
+                return _resolve(current[actualIdx], nextPath, root);
+            }
+
+            // Property ['key']
+            const key = inside.replace(/^['"]|['"]$/g, '');
+            if (current && typeof current === 'object' && key in current) {
+                return _resolve(current[key], nextPath, root);
+            }
+            return [];
+        }
+
+        // Wildcard *
+        if (path === '*' || path.startsWith('*')) {
+            const rest = path.slice(1);
+            const nextPath = rest.startsWith('.') && !rest.startsWith('..') ? rest.slice(1) : rest;
+            const results = [];
+            if (Array.isArray(current)) {
+                for (const item of current) results.push(..._resolve(item, nextPath, root));
+            } else if (typeof current === 'object') {
+                for (const key of Object.keys(current)) results.push(..._resolve(current[key], nextPath, root));
+            }
+            return results;
+        }
+
+        // Dot property
+        let dotIdx = path.indexOf('.');
+        let bracketIdx = path.indexOf('[');
+        let end = path.length;
+        if (dotIdx !== -1) end = Math.min(end, dotIdx);
+        if (bracketIdx !== -1) end = Math.min(end, bracketIdx);
+
+        const key = path.slice(0, end);
+        const rest = path.slice(end);
+        const nextPath = rest.startsWith('.') && !rest.startsWith('..') ? rest.slice(1) : rest;
+
+        if (current && typeof current === 'object' && key in current) {
+            return _resolve(current[key], nextPath, root);
+        }
+        return [];
+    }
+
+    function _deepScan(obj, segment, remaining, root, results) {
+        if (obj === null || typeof obj !== 'object') return;
+
+        // Check current level
+        const current = _resolveSegment(obj, segment);
+        for (const item of current) {
+            results.push(..._resolve(item, remaining, root));
+        }
+
+        // Recurse into children
+        if (Array.isArray(obj)) {
+            for (const item of obj) _deepScan(item, segment, remaining, root, results);
+        } else {
+            for (const key of Object.keys(obj)) {
+                _deepScan(obj[key], segment, remaining, root, results);
+            }
+        }
+    }
+
+    function _resolveSegment(obj, segment) {
+        if (segment === '*') {
+            if (Array.isArray(obj)) return obj;
+            if (typeof obj === 'object') return Object.values(obj);
+            return [];
+        }
+        if (segment.startsWith('[')) {
+            return _resolve(obj, segment, obj);
+        }
+        if (obj && typeof obj === 'object' && segment in obj) return [obj[segment]];
+        return [];
+    }
+
+    function _evalFilter(item, expr) {
+        // Parse filter like @.price<10 or @.category=='fiction'
+        const match = expr.match(/^@\.(\w+)\s*(==|!=|<=|>=|<|>)\s*(.+)$/);
+        if (!match) return false;
+
+        const [, key, op, rawVal] = match;
+        if (!(key in item)) return false;
+
+        const itemVal = item[key];
+        let cmpVal;
+
+        // Parse comparison value
+        const trimVal = rawVal.trim();
+        if ((trimVal.startsWith("'") && trimVal.endsWith("'")) || (trimVal.startsWith('"') && trimVal.endsWith('"'))) {
+            cmpVal = trimVal.slice(1, -1);
+        } else if (trimVal === 'true') cmpVal = true;
+        else if (trimVal === 'false') cmpVal = false;
+        else if (trimVal === 'null') cmpVal = null;
+        else cmpVal = parseFloat(trimVal);
+
+        switch (op) {
+            case '==': return itemVal == cmpVal;
+            case '!=': return itemVal != cmpVal;
+            case '<': return itemVal < cmpVal;
+            case '>': return itemVal > cmpVal;
+            case '<=': return itemVal <= cmpVal;
+            case '>=': return itemVal >= cmpVal;
+            default: return false;
+        }
+    }
+
+    // UI functions
+    function evaluate() {
+        const jsonStr = document.getElementById('json-input').value.trim();
+        const pathExpr = document.getElementById('path-input').value.trim();
+        if (!jsonStr) { document.getElementById('output').value = ''; return; }
+        if (!pathExpr) { showStatus('Enter a JSONPath expression', 'error'); return; }
+
+        try {
+            const data = JSON.parse(jsonStr);
+            const results = jsonPath(data, pathExpr);
+
+            if (results.length === 0) {
+                document.getElementById('output').value = 'No matches found';
+                document.getElementById('result-count').textContent = '(0 matches)';
+                showStatus('No matches found for expression', 'error');
+            } else {
+                const output = results.length === 1 && typeof results[0] !== 'object'
+                    ? String(results[0])
+                    : JSON.stringify(results.length === 1 ? results[0] : results, null, 2);
+                document.getElementById('output').value = output;
+                document.getElementById('result-count').textContent = '(' + results.length + ' match' + (results.length !== 1 ? 'es' : '') + ')';
+                showStatus('Found ' + results.length + ' match' + (results.length !== 1 ? 'es' : ''), 'success');
+            }
+        } catch (e) {
+            if (e instanceof SyntaxError) {
+                showStatus('Invalid JSON: ' + e.message, 'error');
+            } else {
+                showStatus('Error: ' + e.message, 'error');
+            }
+        }
+    }
+
+    function setPath(path) {
+        document.getElementById('path-input').value = path;
+        evaluate();
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('json-input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('path-input').value = '';
+        document.getElementById('result-count').textContent = '';
+        document.getElementById('status').classList.remove('show');
+    }
+
+    function loadSample() {
+        document.getElementById('json-input').value = JSON.stringify({
+            store: {
+                book: [
+                    { category: "reference", author: "Nigel Rees", title: "Sayings of the Century", price: 8.95 },
+                    { category: "fiction", author: "Evelyn Waugh", title: "Sword of Honour", price: 12.99 },
+                    { category: "fiction", author: "Herman Melville", title: "Moby Dick", isbn: "0-553-21311-3", price: 8.99 },
+                    { category: "fiction", author: "J. R. R. Tolkien", title: "The Lord of the Rings", isbn: "0-395-19395-8", price: 22.99 }
+                ],
+                bicycle: {
+                    color: "red",
+                    price: 19.95
+                }
+            }
+        }, null, 2);
+        document.getElementById('path-input').value = '$.store.book[*].author';
+        evaluate();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    // Load sample on first visit
+    loadSample();
+    </script>
+</body>
+</html>

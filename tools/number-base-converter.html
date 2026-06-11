@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Base Converter - Binary, Octal, Decimal, Hex | DevToolBox</title>
+    <meta name="description" content="Free online number base converter. Convert between binary, octal, decimal, and hexadecimal instantly. Supports bases 2-36, floating point, and negative numbers. No sign-up required.">
+    <meta name="keywords" content="number base converter, binary converter, hex converter, octal converter, decimal to binary, binary to hex, base converter, radix converter">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/number-base-converter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Number Base Converter</div>
+            <h1>Number Base Converter</h1>
+            <p>Convert numbers between binary, octal, decimal, hexadecimal, and any base from 2 to 36.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="option-row" style="margin-bottom: 16px;">
+                <label>Input Base:
+                    <select id="input-base" onchange="convert()">
+                        <option value="2">Binary (2)</option>
+                        <option value="8">Octal (8)</option>
+                        <option value="10" selected>Decimal (10)</option>
+                        <option value="16">Hexadecimal (16)</option>
+                        <option value="custom">Custom...</option>
+                    </select>
+                </label>
+                <label id="custom-input-label" style="display:none;">Base:
+                    <input type="number" id="custom-input-base" min="2" max="36" value="10" style="width: 60px;" onchange="convert()">
+                </label>
+            </div>
+
+            <div class="tool-row" style="flex-direction: column;">
+                <label for="input">Input Number</label>
+                <input type="text" id="input" placeholder="255" style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; padding: 12px 16px; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; color: var(--text); width: 100%; box-sizing: border-box;" oninput="convert()">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="swapEndian()">Swap Endian</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Binary (Base 2)</label>
+                    <div id="result-bin" class="result-value" onclick="copyResult(this)">-</div>
+                </div>
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Octal (Base 8)</label>
+                    <div id="result-oct" class="result-value" onclick="copyResult(this)">-</div>
+                </div>
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Decimal (Base 10)</label>
+                    <div id="result-dec" class="result-value" onclick="copyResult(this)">-</div>
+                </div>
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Hexadecimal (Base 16)</label>
+                    <div id="result-hex" class="result-value" onclick="copyResult(this)">-</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <div class="result-box">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Binary Bit Visualization (8-bit groups)</label>
+                    <div id="bit-visual" style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; padding: 8px 0; word-break: break-all; letter-spacing: 1px;">-</div>
+                </div>
+            </div>
+
+            <details style="margin-top: 16px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 500;">Custom Base (2-36)</summary>
+                <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center;">
+                    <label>Output Base:
+                        <input type="number" id="custom-output-base" min="2" max="36" value="32" style="width: 60px;" onchange="convert()">
+                    </label>
+                    <div class="result-box" style="flex: 1;">
+                        <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;" id="custom-base-label">Base 32</label>
+                        <div id="result-custom" class="result-value" onclick="copyResult(this)">-</div>
+                    </div>
+                </div>
+            </details>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <style>
+            .result-box {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px 16px;
+            }
+            .result-value {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 1rem;
+                color: var(--text);
+                word-break: break-all;
+                cursor: pointer;
+                padding: 4px 0;
+                min-height: 1.5em;
+            }
+            .result-value:hover {
+                color: var(--accent);
+            }
+        </style>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Number Base Converter</h2>
+            <p>This free online tool converts numbers between different bases (radixes) instantly in your browser. It supports binary (base 2), octal (base 8), decimal (base 10), hexadecimal (base 16), and any custom base from 2 to 36.</p>
+
+            <h3>Common Number Bases</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Base</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Name</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Digits</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Used For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">2</td><td style="padding: 8px;">Binary</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">0-1</td><td style="padding: 8px;">CPU operations, bitwise math, networking masks</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">8</td><td style="padding: 8px;">Octal</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">0-7</td><td style="padding: 8px;">Unix file permissions (chmod 755)</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">10</td><td style="padding: 8px;">Decimal</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">0-9</td><td style="padding: 8px;">Everyday numbers, math, counting</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">16</td><td style="padding: 8px;">Hexadecimal</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">0-9, A-F</td><td style="padding: 8px;">Colors (#FF5733), memory addresses, byte values</td></tr>
+                    <tr><td style="padding: 8px;">36</td><td style="padding: 8px;">Base36</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">0-9, A-Z</td><td style="padding: 8px;">Short URLs, compact IDs</td></tr>
+                </tbody>
+            </table>
+
+            <h3>FAQ</h3>
+            <h4>Why is hexadecimal used in programming?</h4>
+            <p>Hexadecimal (base 16) is popular because each hex digit maps exactly to 4 binary bits. This makes it easy to represent byte values (00-FF) and memory addresses compactly. For example, the binary value <code>11111111</code> is simply <code>FF</code> in hex — much easier to read and remember.</p>
+
+            <h4>What are the bit visualization groups?</h4>
+            <p>The bit visualization shows the binary representation split into 8-bit groups (bytes). This makes it easy to see individual byte values, which is useful for networking, encoding, and low-level programming.</p>
+
+            <h4>How do I read binary numbers?</h4>
+            <p>Binary uses only 0 and 1. Each position represents a power of 2 from right to left: 1, 2, 4, 8, 16, 32, 64, 128... For example, binary <code>1010</code> = 8 + 0 + 2 + 0 = 10 in decimal.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Handle custom base dropdown
+    document.getElementById('input-base').addEventListener('change', function() {
+        document.getElementById('custom-input-label').style.display = this.value === 'custom' ? '' : 'none';
+        convert();
+    });
+
+    document.getElementById('custom-output-base').addEventListener('input', function() {
+        document.getElementById('custom-base-label').textContent = 'Base ' + this.value;
+        convert();
+    });
+
+    function getInputBase() {
+        const sel = document.getElementById('input-base').value;
+        if (sel === 'custom') return parseInt(document.getElementById('custom-input-base').value) || 10;
+        return parseInt(sel);
+    }
+
+    function convert() {
+        const input = document.getElementById('input').value.trim();
+        if (!input) {
+            ['result-bin', 'result-oct', 'result-dec', 'result-hex', 'result-custom', 'bit-visual'].forEach(id => {
+                document.getElementById(id).textContent = '-';
+            });
+            return;
+        }
+
+        const base = getInputBase();
+        let isNeg = false;
+        let cleanInput = input.replace(/\s/g, '');
+
+        // Handle negative
+        if (cleanInput.startsWith('-')) {
+            isNeg = true;
+            cleanInput = cleanInput.slice(1);
+        }
+
+        // Strip common prefixes
+        if (base === 16 && cleanInput.toLowerCase().startsWith('0x')) cleanInput = cleanInput.slice(2);
+        if (base === 2 && cleanInput.toLowerCase().startsWith('0b')) cleanInput = cleanInput.slice(2);
+        if (base === 8 && cleanInput.startsWith('0o')) cleanInput = cleanInput.slice(2);
+
+        // Validate input
+        const validChars = '0123456789abcdefghijklmnopqrstuvwxyz'.slice(0, base);
+        const cleanLower = cleanInput.toLowerCase();
+        for (const ch of cleanLower) {
+            if (!validChars.includes(ch)) {
+                showStatus('Invalid character "' + ch + '" for base ' + base, 'error');
+                return;
+            }
+        }
+
+        try {
+            // Use BigInt for large numbers
+            let decValue;
+            if (base === 10) {
+                decValue = BigInt((isNeg ? '-' : '') + cleanInput);
+            } else {
+                decValue = BigInt(0);
+                for (const ch of cleanLower) {
+                    const digit = ch >= 'a' ? ch.charCodeAt(0) - 87 : parseInt(ch);
+                    decValue = decValue * BigInt(base) + BigInt(digit);
+                }
+                if (isNeg) decValue = -decValue;
+            }
+
+            const prefix = decValue < 0n ? '-' : '';
+            const absVal = decValue < 0n ? -decValue : decValue;
+
+            // Convert to each base
+            document.getElementById('result-bin').textContent = prefix + absVal.toString(2);
+            document.getElementById('result-oct').textContent = prefix + absVal.toString(8);
+            document.getElementById('result-dec').textContent = prefix + absVal.toString(10).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('result-hex').textContent = prefix + absVal.toString(16).toUpperCase();
+
+            // Custom base
+            const customBase = parseInt(document.getElementById('custom-output-base').value) || 32;
+            if (customBase >= 2 && customBase <= 36) {
+                document.getElementById('result-custom').textContent = prefix + absVal.toString(customBase).toUpperCase();
+            }
+
+            // Bit visualization
+            const binStr = absVal.toString(2);
+            const padded = binStr.padStart(Math.ceil(binStr.length / 8) * 8, '0');
+            const groups = padded.match(/.{8}/g) || [];
+            document.getElementById('bit-visual').innerHTML = prefix + groups.map(g =>
+                '<span style="margin-right: 12px;">' +
+                g.split('').map((b, i) =>
+                    '<span style="color: ' + (b === '1' ? 'var(--accent)' : 'var(--text-muted)') + '">' + b + '</span>'
+                ).join('') +
+                '</span>'
+            ).join('');
+
+            document.getElementById('status').classList.remove('show');
+        } catch (e) {
+            showStatus('Error: ' + e.message, 'error');
+        }
+    }
+
+    function swapEndian() {
+        const binEl = document.getElementById('result-bin');
+        const bin = binEl.textContent;
+        if (bin === '-') return;
+        const isNeg = bin.startsWith('-');
+        const clean = isNeg ? bin.slice(1) : bin;
+        const padded = clean.padStart(Math.ceil(clean.length / 8) * 8, '0');
+        const bytes = padded.match(/.{8}/g) || [];
+        bytes.reverse();
+        const swapped = bytes.join('');
+        // Put swapped into input as binary
+        document.getElementById('input-base').value = '2';
+        document.getElementById('custom-input-label').style.display = 'none';
+        document.getElementById('input').value = (isNeg ? '-' : '') + swapped;
+        convert();
+        showStatus('Endianness swapped (bytes reversed)', 'success');
+    }
+
+    function copyResult(el) {
+        const text = el.textContent;
+        if (text === '-') return;
+        navigator.clipboard.writeText(text.replace(/,/g, '')).then(() => showStatus('Copied!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('status').classList.remove('show');
+        convert();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+    </script>
+</body>
+</html>
