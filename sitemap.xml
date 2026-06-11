@@ -16,4 +16,7 @@
   <url><loc>https://pinisolomon.github.io/devtoolbox/tools/csv-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://pinisolomon.github.io/devtoolbox/tools/markdown-preview.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://pinisolomon.github.io/devtoolbox/tools/cron-parser.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/lorem-ipsum.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/json-yaml.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pinisolomon.github.io/devtoolbox/tools/text-case-converter.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

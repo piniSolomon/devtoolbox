@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Generator - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online Lorem Ipsum placeholder text generator. Generate paragraphs, sentences, or words of dummy text for design and development. No sign-up required.">
+    <meta name="keywords" content="lorem ipsum generator, placeholder text, dummy text, filler text, lipsum, design text, mockup text">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/lorem-ipsum.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Lorem Ipsum Generator</div>
+            <h1>Lorem Ipsum Generator</h1>
+            <p>Generate placeholder text for your designs, mockups, and development projects.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="option-row">
+                <label>Generate:
+                    <input type="number" id="count" value="3" min="1" max="100" style="width: 70px;">
+                </label>
+                <label>Type:
+                    <select id="type">
+                        <option value="paragraphs" selected>Paragraphs</option>
+                        <option value="sentences">Sentences</option>
+                        <option value="words">Words</option>
+                    </select>
+                </label>
+                <label><input type="checkbox" id="start-lorem" checked> Start with "Lorem ipsum..."</label>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="generate()">Generate</button>
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+                <button class="btn btn-secondary" onclick="generateHTML()">Generate as HTML</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="tool-row">
+                <div class="tool-col" style="flex: 1;">
+                    <label for="output">Generated Text</label>
+                    <textarea id="output" readonly style="min-height: 300px;"></textarea>
+                </div>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Lorem Ipsum Generator</h2>
+            <p>This free online Lorem Ipsum generator creates placeholder text for designers, developers, and content creators. All text is generated instantly in your browser.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li>Generate paragraphs, sentences, or individual words</li>
+                <li>Option to start with the classic "Lorem ipsum dolor sit amet..." opening</li>
+                <li>Generate plain text or HTML-wrapped paragraphs</li>
+                <li>Customizable count (1-100 units)</li>
+                <li>One-click copy to clipboard</li>
+            </ul>
+
+            <h3>What is Lorem Ipsum?</h3>
+            <p>Lorem Ipsum is placeholder text used in the design and typesetting industry since the 1500s. It originates from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. The text was popularized in the 1960s with Letraset sheets and later by desktop publishing software like Aldus PageMaker.</p>
+
+            <h3>Why Use Lorem Ipsum?</h3>
+            <ul>
+                <li><strong>Design mockups:</strong> Fill layouts with realistic-looking text without distracting from the design</li>
+                <li><strong>Web development:</strong> Test responsive layouts, typography, and content areas</li>
+                <li><strong>Presentations:</strong> Create placeholder content for slide decks and prototypes</li>
+                <li><strong>Print design:</strong> Fill brochures, flyers, and magazines before final copy is ready</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <h4>Is Lorem Ipsum real Latin?</h4>
+            <p>It's based on real Latin from Cicero's writings, but the commonly used version has been altered, with words changed and removed, making it nonsensical. It reads like Latin but doesn't translate to anything meaningful.</p>
+
+            <h4>Why not just use random text?</h4>
+            <p>Lorem Ipsum has a natural distribution of letters and word lengths that mimics real language. Random text or repeated characters like "aaa bbb ccc" don't give an accurate impression of how final content will look in a layout.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        const LOREM_WORDS = [
+            'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit',
+            'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore',
+            'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam', 'quis', 'nostrud',
+            'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip', 'ex', 'ea', 'commodo',
+            'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate',
+            'velit', 'esse', 'cillum', 'fugiat', 'nulla', 'pariatur', 'excepteur', 'sint',
+            'occaecat', 'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui', 'officia',
+            'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum', 'perspiciatis', 'unde',
+            'omnis', 'iste', 'natus', 'error', 'voluptatem', 'accusantium', 'doloremque',
+            'laudantium', 'totam', 'rem', 'aperiam', 'eaque', 'ipsa', 'quae', 'ab', 'illo',
+            'inventore', 'veritatis', 'quasi', 'architecto', 'beatae', 'vitae', 'dicta',
+            'explicabo', 'nemo', 'ipsam', 'voluptas', 'aspernatur', 'aut', 'odit',
+            'fugit', 'consequuntur', 'magni', 'dolores', 'eos', 'ratione', 'sequi',
+            'nesciunt', 'neque', 'porro', 'quisquam', 'dolorem', 'adipisci', 'numquam',
+            'eius', 'modi', 'tempora', 'magnam', 'quaerat', 'minima', 'nostrum',
+            'exercitationem', 'ullam', 'corporis', 'suscipit', 'laboriosam', 'nihil',
+            'consequatur', 'vel', 'illum', 'blanditiis', 'praesentium', 'voluptatum',
+            'deleniti', 'atque', 'corrupti', 'quos', 'quas', 'molestias', 'excepturi',
+            'obcaecati', 'cupiditate', 'provident', 'similique', 'distinctio', 'nam',
+            'libero', 'tempore', 'cum', 'soluta', 'nobis', 'eligendi', 'optio',
+            'cumque', 'impedit', 'quo', 'minus', 'quod', 'maxime', 'placeat', 'facere',
+            'possimus', 'assumenda', 'repellendus', 'temporibus', 'autem', 'quibusdam',
+            'officiis', 'debitis', 'necessitatibus', 'saepe', 'eveniet', 'voluptates',
+            'repudiandae', 'recusandae', 'itaque', 'earum', 'rerum', 'hic', 'tenetur',
+            'sapiente', 'delectus', 'reiciendis', 'maiores', 'alias', 'perferendis',
+            'doloribus', 'asperiores', 'repellat'
+        ];
+
+        const FIRST_SENTENCE = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+
+        function randomWord() {
+            return LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)];
+        }
+
+        function generateSentence() {
+            const len = 8 + Math.floor(Math.random() * 12);
+            const words = [];
+            for (let i = 0; i < len; i++) words.push(randomWord());
+            words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+            // Add a comma somewhere in longer sentences
+            if (len > 10) {
+                const commaPos = 3 + Math.floor(Math.random() * (len - 6));
+                words[commaPos] = words[commaPos] + ',';
+            }
+            return words.join(' ') + '.';
+        }
+
+        function generateParagraph() {
+            const count = 3 + Math.floor(Math.random() * 4);
+            const sentences = [];
+            for (let i = 0; i < count; i++) sentences.push(generateSentence());
+            return sentences.join(' ');
+        }
+
+        function generate() {
+            const count = Math.max(1, Math.min(100, parseInt(document.getElementById('count').value) || 3));
+            const type = document.getElementById('type').value;
+            const startLorem = document.getElementById('start-lorem').checked;
+            let result = '';
+
+            if (type === 'paragraphs') {
+                const paragraphs = [];
+                for (let i = 0; i < count; i++) {
+                    if (i === 0 && startLorem) {
+                        paragraphs.push(FIRST_SENTENCE + ' ' + generateParagraph());
+                    } else {
+                        paragraphs.push(generateParagraph());
+                    }
+                }
+                result = paragraphs.join('\n\n');
+            } else if (type === 'sentences') {
+                const sentences = [];
+                for (let i = 0; i < count; i++) {
+                    if (i === 0 && startLorem) {
+                        sentences.push(FIRST_SENTENCE);
+                    } else {
+                        sentences.push(generateSentence());
+                    }
+                }
+                result = sentences.join(' ');
+            } else {
+                const words = [];
+                if (startLorem) {
+                    const loremStart = ['lorem', 'ipsum', 'dolor', 'sit', 'amet'];
+                    for (let i = 0; i < Math.min(count, loremStart.length); i++) words.push(loremStart[i]);
+                    for (let i = loremStart.length; i < count; i++) words.push(randomWord());
+                } else {
+                    for (let i = 0; i < count; i++) words.push(randomWord());
+                }
+                result = words.join(' ');
+            }
+
+            document.getElementById('output').value = result;
+            const wordCount = result.split(/\s+/).length;
+            showStatus(`Generated ${count} ${type} (${wordCount} words)`, 'success');
+        }
+
+        function generateHTML() {
+            const count = Math.max(1, Math.min(100, parseInt(document.getElementById('count').value) || 3));
+            const startLorem = document.getElementById('start-lorem').checked;
+            const paragraphs = [];
+            for (let i = 0; i < count; i++) {
+                let text;
+                if (i === 0 && startLorem) {
+                    text = FIRST_SENTENCE + ' ' + generateParagraph();
+                } else {
+                    text = generateParagraph();
+                }
+                paragraphs.push('<p>' + text + '</p>');
+            }
+            document.getElementById('output').value = paragraphs.join('\n');
+            showStatus(`Generated ${count} HTML paragraphs`, 'success');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            if (!output) { showStatus('Nothing to copy', 'error'); return; }
+            navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+        }
+
+        function clearAll() {
+            document.getElementById('output').value = '';
+            document.getElementById('status').classList.remove('show');
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status show ' + type;
+        }
+
+        // Generate on load
+        generate();
+    </script>
+</body>
+</html>

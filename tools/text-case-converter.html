@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Case Converter - Free Online Tool | DevToolBox</title>
+    <meta name="description" content="Free online text case converter. Transform text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, kebab-case, PascalCase, and more. No sign-up required.">
+    <meta name="keywords" content="text case converter, uppercase converter, lowercase converter, title case, camelCase, snake_case, kebab-case, PascalCase, text transform, case changer">
+    <link rel="canonical" href="https://pinisolomon.github.io/devtoolbox/tools/text-case-converter.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/analytics.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="logo"><span class="logo-icon">&#9881;</span> DevToolBox</a>
+            <div class="nav-links">
+                <a href="../">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tool-header">
+            <div class="breadcrumb"><a href="../">Tools</a> / Text Case Converter</div>
+            <h1>Text Case Converter</h1>
+            <p>Convert text between different cases: UPPER, lower, Title, camelCase, snake_case, kebab-case, PascalCase, and more.</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-row">
+                <div class="tool-col" style="flex: 1;">
+                    <label for="input">Input Text</label>
+                    <textarea id="input" placeholder="Enter your text here..." style="min-height: 120px;"></textarea>
+                </div>
+            </div>
+            <div class="btn-row" style="flex-wrap: wrap; gap: 8px;">
+                <button class="btn btn-primary" onclick="convert('upper')">UPPERCASE</button>
+                <button class="btn btn-primary" onclick="convert('lower')">lowercase</button>
+                <button class="btn btn-primary" onclick="convert('title')">Title Case</button>
+                <button class="btn btn-primary" onclick="convert('sentence')">Sentence case</button>
+                <button class="btn btn-primary" onclick="convert('camel')">camelCase</button>
+                <button class="btn btn-primary" onclick="convert('pascal')">PascalCase</button>
+                <button class="btn btn-primary" onclick="convert('snake')">snake_case</button>
+                <button class="btn btn-primary" onclick="convert('kebab')">kebab-case</button>
+                <button class="btn btn-primary" onclick="convert('constant')">CONSTANT_CASE</button>
+                <button class="btn btn-primary" onclick="convert('dot')">dot.case</button>
+                <button class="btn btn-primary" onclick="convert('path')">path/case</button>
+                <button class="btn btn-primary" onclick="convert('toggle')">tOGGLE cASE</button>
+                <button class="btn btn-primary" onclick="convert('alternating')">aLtErNaTiNg</button>
+            </div>
+            <div class="tool-row">
+                <div class="tool-col" style="flex: 1;">
+                    <label for="output">Output <span id="case-label" style="color: var(--accent); font-weight: 400;"></span></label>
+                    <textarea id="output" readonly style="min-height: 120px;"></textarea>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="copyOutput()">Copy Output</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+            <div class="char-count">
+                <span id="char-count">0 characters</span> | <span id="word-count">0 words</span>
+            </div>
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="ad-space">Ad space - AdSense banner will appear here</div>
+
+        <div class="info-section">
+            <h2>About Text Case Converter</h2>
+            <p>This free online text case converter helps you quickly transform text between different casing styles used in programming, writing, and design. All conversions run instantly in your browser.</p>
+
+            <h3>Supported Cases</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Case</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Example</th>
+                        <th style="text-align: left; padding: 8px; color: var(--text-muted);">Used For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">UPPERCASE</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">HELLO WORLD</td><td style="padding: 8px;">Constants, headings, emphasis</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">lowercase</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">hello world</td><td style="padding: 8px;">URLs, file names, emails</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">Title Case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">Hello World</td><td style="padding: 8px;">Titles, headings, labels</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">Sentence case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">Hello world</td><td style="padding: 8px;">Regular sentences, descriptions</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">camelCase</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">helloWorld</td><td style="padding: 8px;">JavaScript variables, Java methods</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">PascalCase</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">HelloWorld</td><td style="padding: 8px;">Class names, React components</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">snake_case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">hello_world</td><td style="padding: 8px;">Python, Ruby, database columns</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">kebab-case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">hello-world</td><td style="padding: 8px;">URLs, CSS classes, file names</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">CONSTANT_CASE</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">HELLO_WORLD</td><td style="padding: 8px;">Constants, env variables</td></tr>
+                    <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px;">dot.case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">hello.world</td><td style="padding: 8px;">Object properties, config keys</td></tr>
+                    <tr><td style="padding: 8px;">path/case</td><td style="padding: 8px; font-family: 'JetBrains Mono', monospace;">hello/world</td><td style="padding: 8px;">File paths, URL segments</td></tr>
+                </tbody>
+            </table>
+
+            <h3>FAQ</h3>
+            <h4>What is camelCase?</h4>
+            <p>camelCase is a naming convention where the first word is lowercase and subsequent words start with uppercase letters (e.g., <code>myVariableName</code>). It's the standard convention for variables and functions in JavaScript, TypeScript, and Java.</p>
+
+            <h4>What's the difference between camelCase and PascalCase?</h4>
+            <p>In camelCase, the first letter is lowercase (<code>myFunction</code>). In PascalCase, the first letter is also uppercase (<code>MyFunction</code>). PascalCase is typically used for class names in most languages and component names in React.</p>
+
+            <h4>When should I use snake_case vs kebab-case?</h4>
+            <p>snake_case is the standard in Python, Ruby, and SQL/database column names. kebab-case is preferred for CSS class names, HTML attributes, URLs, and file names. Most style guides are specific about which to use in each context.</p>
+
+            <h4>How does the converter handle multi-line text?</h4>
+            <p>For programming cases (camelCase, snake_case, etc.), the converter treats each line independently and converts each line separately. For text cases (UPPER, lower, Title), it converts the entire text while preserving line breaks.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 DevToolBox. Free developer tools that respect your privacy.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Split text into words, handling camelCase, PascalCase, snake_case, kebab-case, etc.
+    function splitWords(text) {
+        // First, replace common separators with spaces
+        let s = text
+            .replace(/[-_./\\]+/g, ' ')  // Replace separators with space
+            .replace(/([a-z])([A-Z])/g, '$1 $2')  // Split camelCase
+            .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');  // Split ACRONYMWord
+        return s.split(/\s+/).filter(w => w.length > 0);
+    }
+
+    // Convert a line to a specific case
+    function convertLine(text, caseType) {
+        const words = splitWords(text);
+        if (words.length === 0) return '';
+
+        switch (caseType) {
+            case 'upper': return text.toUpperCase();
+            case 'lower': return text.toLowerCase();
+            case 'title': return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            case 'sentence': return words.map((w, i) => i === 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase()).join(' ');
+            case 'camel': return words.map((w, i) => i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+            case 'pascal': return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+            case 'snake': return words.map(w => w.toLowerCase()).join('_');
+            case 'kebab': return words.map(w => w.toLowerCase()).join('-');
+            case 'constant': return words.map(w => w.toUpperCase()).join('_');
+            case 'dot': return words.map(w => w.toLowerCase()).join('.');
+            case 'path': return words.map(w => w.toLowerCase()).join('/');
+            case 'toggle': return text.split('').map(c => c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()).join('');
+            case 'alternating': return text.split('').map((c, i) => i % 2 === 0 ? c.toLowerCase() : c.toUpperCase()).join('');
+            default: return text;
+        }
+    }
+
+    const caseLabels = {
+        upper: 'UPPERCASE', lower: 'lowercase', title: 'Title Case',
+        sentence: 'Sentence case', camel: 'camelCase', pascal: 'PascalCase',
+        snake: 'snake_case', kebab: 'kebab-case', constant: 'CONSTANT_CASE',
+        dot: 'dot.case', path: 'path/case', toggle: 'tOGGLE cASE', alternating: 'aLtErNaTiNg'
+    };
+
+    function convert(caseType) {
+        const input = document.getElementById('input').value;
+        if (!input.trim()) { showStatus('Please enter some text', 'error'); return; }
+
+        // For text-level cases (upper, lower, toggle, alternating), apply to entire text
+        // For programming cases, handle line by line
+        const textCases = ['upper', 'lower', 'toggle', 'alternating'];
+        let result;
+        if (textCases.includes(caseType)) {
+            result = convertLine(input, caseType);
+        } else {
+            result = input.split('\n').map(line => {
+                if (line.trim() === '') return line;
+                return convertLine(line.trim(), caseType);
+            }).join('\n');
+        }
+
+        document.getElementById('output').value = result;
+        document.getElementById('case-label').textContent = '(' + caseLabels[caseType] + ')';
+        showStatus('Converted to ' + caseLabels[caseType], 'success');
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('output').value;
+        if (!output) { showStatus('Nothing to copy', 'error'); return; }
+        navigator.clipboard.writeText(output).then(() => showStatus('Copied to clipboard!', 'success'));
+    }
+
+    function clearAll() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').value = '';
+        document.getElementById('case-label').textContent = '';
+        document.getElementById('status').classList.remove('show');
+        updateCounts();
+    }
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('status');
+        el.textContent = msg;
+        el.className = 'status show ' + type;
+    }
+
+    function updateCounts() {
+        const text = document.getElementById('input').value;
+        const chars = text.length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        document.getElementById('char-count').textContent = chars + ' character' + (chars !== 1 ? 's' : '');
+        document.getElementById('word-count').textContent = words + ' word' + (words !== 1 ? 's' : '');
+    }
+
+    document.getElementById('input').addEventListener('input', updateCounts);
+    </script>
+</body>
+</html>
